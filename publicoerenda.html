@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Público e Renda - vMix</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;0,900;1,900&display=swap');
+
+        body {
+            margin: 0; padding: 0; font-family: 'Montserrat', sans-serif;
+            color: white; overflow: hidden; display: flex; justify-content: center; align-items: center;
+            height: 100vh; background-color: transparent;
+        }
+
+        .estadio-container {
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% -20%, #1e3c28 0%, #0a110d 60%, #000000 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; transform: scale(1.1); transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+        }
+
+        .estadio-container.visible { opacity: 1; transform: scale(1); }
+
+        .estadio-container::before {
+            content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 30%;
+            background: repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 2px, transparent 2px, transparent 40px);
+            z-index: 1; pointer-events: none;
+        }
+
+        .header-estatistica { z-index: 2; text-align: center; margin-bottom: 50px; }
+        .header-estatistica h1 { font-size: 5rem; font-weight: 900; color: #f1c40f; text-transform: uppercase; letter-spacing: 10px; margin: 0; text-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+
+        .info-box {
+            z-index: 2; background: rgba(0,0,0,0.6);
+            border-top: 15px solid #3498db; border-radius: 20px;
+            padding: 60px 80px; text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+        }
+
+        .info-label { font-size: 3rem; font-weight: 800; color: #aaa; text-transform: uppercase; letter-spacing: 5px; margin-bottom: 20px; }
+        .info-value { font-size: 8rem; font-weight: 900; color: #fff; text-shadow: 0 5px 15px rgba(0,0,0,0.8); margin: 0; line-height: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="estadio-container" id="painelEstats">
+        <div class="header-estatistica">
+            <h1>ESTATÍSTICAS DA PARTIDA</h1>
+        </div>
+
+        <div class="info-box" id="boxUnico">
+            <div class="info-label" id="lblStat">AGUARDANDO</div>
+            <div class="info-value" id="valStat">0</div>
+        </div>
+    </div>
+
+    <script>
+        const painel = document.getElementById('painelEstats');
+        const boxUnico = document.getElementById('boxUnico');
+        const lblStat = document.getElementById('lblStat');
+        const valStat = document.getElementById('valStat');
+
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'vMixData' && e.newValue) {
+                const dados = JSON.parse(e.newValue);
+                
+                if (dados.eventoCard && (dados.eventoCard.tipo === 'PUBLICO' || dados.eventoCard.tipo === 'RENDA')) {
+                    
+                    if(dados.eventoCard.tipo === 'PUBLICO') {
+                        lblStat.innerText = "PÚBLICO TOTAL";
+                        boxUnico.style.borderTopColor = "#2ecc71"; // Borda verde pro Público
+                    } else {
+                        lblStat.innerText = "RENDA DO JOGO";
+                        boxUnico.style.borderTopColor = "#3498db"; // Borda azul pra Renda
+                    }
+                    
+                    valStat.innerText = dados.eventoCard.valor;
+                    
+                    // Força reiniciar a animação
+                    painel.classList.remove('visible');
+                    void painel.offsetWidth; 
+                    painel.classList.add('visible');
+                    
+                } else {
+                    painel.classList.remove('visible');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

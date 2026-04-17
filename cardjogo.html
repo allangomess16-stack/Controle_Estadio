@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Duelo Série A 2026 - Impacto Total</title>
+    <style>
+        /* RESET: Remove espaços padrões do navegador e garante que o tamanho inclua bordas */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body, html {
+            width: 100%; height: 100%; overflow: hidden;
+            font-family: 'Arial Black', sans-serif;
+            background-color: #000; /* Cor de fundo caso algo falhe */
+        }
+
+        /* ESTRUTURA: Define que os times ficam um ao lado do outro */
+        #arena-duelo {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* LADOS: Controla cada metade da tela */
+        .lado {
+            flex: 1; /* Faz cada lado ocupar 50% */
+            position: relative;
+            overflow: hidden; /* Corta sobras das bandeiras grandes */
+            display: flex;
+            justify-content: center; /* Centraliza a sigla na horizontal */
+            align-items: center;    /* Centraliza a sigla na vertical */
+            border-right: 2px solid rgba(255,255,255,0.1); /* Linha sutil no meio */
+        }
+
+        /* BANDEIRA: Configuração da imagem de fundo */
+        .bandeira-img {
+            position: absolute;
+            width: 115%;  /* Sangria: maior que a tela para não aparecer bordas no balanço */
+            height: 115%;
+            object-fit: cover; /* Ajusta a imagem sem esticar */
+            opacity: 0.5;      /* Mistura o escudo com a cor de fundo (0 a 1) */
+            animation: moveBandeira 12s ease-in-out infinite; /* Balanço suave */
+        }
+
+        /* SIGLAS: O visual principal das letras GIGANTES */
+        .sigla-duelo {
+            position: relative;
+            z-index: 5; /* Garante que fique acima da bandeira */
+            font-size: 16vw; /* Tamanho baseado na largura da tela (Responsivo) */
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: -5px; /* Junta as letras para dar aspecto de logo */
+            line-height: 1;
+            
+            /* EFEITO DE PREENCHIMENTO: Gradiente que corre dentro da letra */
+            background: linear-gradient(to right, #fff 20%, #5a5a5a 40%, #000000 60%, #fff 80%);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; /* Torna a cor sólida invisível para mostrar o gradiente */
+            
+            filter: drop-shadow(0 0 15px rgba(0,0,0,0.8)); /* Sombra para ler melhor */
+            animation: shine 3s linear infinite; /* Animação do brilho passando */
+        }
+
+        /* PULSAR: Aplica a pulsação no Time A */
+        #lado-a .sigla-duelo {
+            animation: shine 3s linear infinite, pulsar 2s ease-in-out infinite;
+        }
+
+        /* PULSAR: Aplica no Time B com 1 segundo de atraso (Intercalado) */
+        #lado-b .sigla-duelo {
+            animation: shine 3s linear infinite, pulsar 2s ease-in-out infinite;
+            animation-delay: 1s; /* Mude aqui para sincronizar ou atrasar mais */
+        }
+
+        /* VERSUS: O design do "X" central */
+        #versus-central {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%); /* Centralização perfeita */
+            z-index: 10;
+            font-size: 9rem;
+            color: #fafafa; /* Cor do X */
+            text-shadow: 0 0 20px #474747, 0 0 40px #fff;
+            font-style: italic;
+            animation: versusImpact 1s ease-out; /* Efeito de entrada */
+        }
+
+        /* LINHA DO X: A faixa neon que atravessa o centro */
+        #versus-central::after {
+            content: '';
+            position: absolute;
+            width: 400px; height: 10px;
+            background: linear-gradient(90deg, transparent, #f89f18, transparent);
+            top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
+            z-index: -1;
+        }
+
+        /* --- BLOCO DE ANIMAÇÕES (ONDE MUDAR VELOCIDADES E MOVIMENTOS) --- */
+
+        /* Brilho interno das siglas */
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        /* Pulsação: Muda escala e brilho das siglas */
+        @keyframes pulsar {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.05); filter: brightness(1.5) drop-shadow(0 0 30px #000000); }
+        }
+
+        /* Balanço da bandeira: Simula vento e profundidade */
+        @keyframes moveBandeira {
+            0%, 100% { transform: scale(1.1) rotate(0deg); }
+            33% { transform: scale(1.15) rotate(1deg) translate(-10px, 5px); }
+            66% { transform: scale(1.1) rotate(-1deg) translate(10px, -5px); }
+        }
+
+        /* Impacto do X: Começa grande e diminui na tela */
+        @keyframes versusImpact {
+            0% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        /* TOPO: Estilo da legenda superior */
+        #topo-info {
+            position: absolute;
+            top: 4%; width: 100%;
+            text-align: center;
+            z-index: 20;
+            color: #fff;
+            font-size: 1.8rem;
+            letter-spacing: 12px; /* Espaçamento entre letras (estilo TV) */
+            text-transform: uppercase;
+            text-shadow: 0 0 15px #f3a71a;
+            
+        }
+
+        /* SOMBRAS DE VENTO: Cria faixas de sombra passando na tela */
+        .dobras {
+            position: absolute;
+            width: 200%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,0,0,0.5), transparent, rgba(0,0,0,0.5), transparent);
+            z-index: 2;
+            animation: vento 5s linear infinite;
+        }
+
+        @keyframes vento {
+            from { left: -100%; }
+            to { left: 0%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="topo-info">Brasileirão Betano 2026</div>
+
+    <div id="versus-central">X</div>
+
+    <div id="arena-duelo">
+        <div class="lado" id="lado-a">
+            <div class="dobras"></div> <img src="" id="img-a" class="bandeira-img"> <span class="sigla-duelo" id="sigla-a">---</span> </div>
+
+        <div class="lado" id="lado-b">
+            <div class="dobras"></div>
+            <img src="" id="img-b" class="bandeira-img">
+            <span class="sigla-duelo" id="sigla-b">---</span>
+        </div>
+    </div>
+
+    <script>
+        /* BANCO DE DADOS: Onde você edita nomes, siglas, arquivos e cores oficiais */
+       const dadosTimes = [
+            { nome: "Athletico-PR", sigla: "CAP", arquivo: "Athletico Paranaense.png", cor: "#8b0000" },
+            { nome: "Atlético-MG", sigla: "CAM", arquivo: "Atletico Mineiro.png", cor: "#1a1a1a" },
+            { nome: "Bahia", sigla: "BAH", arquivo: "Bahia.png", cor: "#0000ff" },
+            { nome: "Botafogo", sigla: "BOT", arquivo: "Botafogo.png", cor: "#000000" },
+            { nome: "Chapecoense", sigla: "CHA", arquivo: "Chapecoense.png", cor: "#006400" },
+            { nome: "Corinthians", sigla: "COR", arquivo: "Corinthians.png", cor: "#111111" },
+            { nome: "Coritiba", sigla: "CFC", arquivo: "Coritiba.png", cor: "#005a31" },
+            { nome: "Cruzeiro", sigla: "CRU", arquivo: "Cruzeiro.png", cor: "#0033a0" },
+            { nome: "Flamengo", sigla: "FLA", arquivo: "Flamengo.png", cor: "#c40000" },
+            { nome: "Fluminense", sigla: "FLU", arquivo: "Fluminense.png", cor: "#800000" },
+            { nome: "Grêmio", sigla: "GRE", arquivo: "Grêmio.png", cor: "#00a6ef" },
+            { nome: "Internacional", sigla: "INT", arquivo: "Internacional.png", cor: "#e20e0e" },
+            { nome: "Mirassol", sigla: "MIR", arquivo: "Mirassol-SP.png", cor: "#ffdb00" },
+            { nome: "Palmeiras", sigla: "PAL", arquivo: "Palmeiras.png", cor: "#006437" },
+            { nome: "Bragantino", sigla: "RBB", arquivo: "Red Bull Bragantino.png", cor: "#ffffff" },
+            { nome: "Remo", sigla: "REM", arquivo: "Remo.png", cor: "#000033" },
+            { nome: "Santos", sigla: "SAN", arquivo: "Santos.png", cor: "#222222" },
+            { nome: "São Paulo", sigla: "SPFC", arquivo: "São Paulo.png", cor: "#ff0000" },
+            { nome: "Vasco", sigla: "VAS", arquivo: "Vasco da Gama.png", cor: "#121212" },
+            { nome: "Vitória", sigla: "VIT", arquivo: "Vitória.png", cor: "#ff0000" }
+            // Para adicionar mais times, siga o padrão acima respeitando as vírgulas.
+        ];
+
+        /* PASTA LOCAL: Caminho onde estão seus arquivos de imagem */
+        const pasta = "escudo serie a/";
+
+        /* LÓGICA DE BUSCA: Ativada quando a página termina de carregar */
+        window.onload = function() {
+            let buscaA = prompt('Time 1:');
+            let buscaB = prompt('Time 2:');
+
+            // .find: Procura o objeto dentro do array que contém o nome digitado
+            const tA = dadosTimes.find(t => t.nome.toLowerCase().includes(buscaA.toLowerCase()));
+            const tB = dadosTimes.find(t => t.nome.toLowerCase().includes(buscaB.toLowerCase()));
+
+            if (tA && tB) {
+                // Injeta as informações do Time A no HTML
+                document.getElementById('sigla-a').innerText = tA.sigla;
+                document.getElementById('img-a').src = pasta + tA.arquivo;
+                document.getElementById('lado-a').style.backgroundColor = tA.cor;
+
+                // Injeta as informações do Time B no HTML
+                document.getElementById('sigla-b').innerText = tB.sigla;
+                document.getElementById('img-b').src = pasta + tB.arquivo;
+                document.getElementById('lado-b').style.backgroundColor = tB.cor;
+            } else {
+                alert("Time não encontrado! Verifique a escrita.");
+                window.location.reload(); // Reinicia para tentar de novo
+            }
+        };
+    </script>
+</body>
+</html>

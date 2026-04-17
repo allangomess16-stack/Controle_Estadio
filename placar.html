@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;0,900;1,900&display=swap');
+
+        /* --- ESTILOS DO PLACAR --- */
+        body { 
+            margin: 0; padding: 0; overflow: hidden; 
+            background-color: #00FF00; /* Verde Chroma Key */
+            display: flex; justify-content: center; align-items: flex-start; 
+        }
+        
+        .scoreboard-wrapper { margin-top: 50px; display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.9)); z-index: 100;}
+        .main-bar { display: flex; align-items: stretch; height: 70px; background: rgba(10, 10, 10, 0.98); border-radius: 8px; overflow: visible; border-bottom: 5px solid #f1c40f; position: relative;}
+        .timer-section { background-color: #000; color: #fff; padding: 0 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; min-width: 100px; border-radius: 8px 0 0 8px;}
+        
+        #tempo { font-family: 'Courier New', monospace; font-size: 2.2rem; font-weight: bold; color: #fcfffc; }
+        #periodo { font-size: 1rem; font-weight: bold; color: #f1c40f; }
+        
+        .team-section { 
+            display: flex; align-items: center; justify-content: center; padding: 0 30px; gap: 15px;
+            color: white; font-size: 1.8rem; font-weight: 800; text-transform: uppercase; 
+            transition: background 0.5s; position: relative;
+        }
+        .escudo-placar { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); display: none; }
+        
+        .score-box { background: #ffffff; color: #000; height: 100%; display: flex; align-items: center; padding: 0 25px; font-size: 2.8rem; font-weight: 900; min-width: 50px; justify-content: center; }
+        #acrescimo-box { background-color: #ffffff; color: rgb(0, 0, 0); font-weight: bold; padding: 0 15px; font-size: 1.8rem; display: none; align-items: center; border-left: 2px solid #000; border-radius: 0 8px 8px 0;}
+        
+        .red-container { position: absolute; top: -16px; left: 0; right: 0; display: flex; gap: 5px; justify-content: center; z-index: 10; pointer-events: none;}
+        .cartao-vermelho { width: 12px; height: 18px; background-color: #e74c3c; border: 1px solid #fff; border-radius: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+
+        /* --- ESTILOS DOS CARDS GIGANTES DE TELÃO --- */
+        .cards-gigantes-wrapper {
+            position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%) translateY(150%);
+            opacity: 0; transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 80%; max-width: 1400px; display: flex; justify-content: center; z-index: 50;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .cards-gigantes-wrapper.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        .card-gol {
+            display: none; width: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(30,30,30,0.85) 100%);
+            border: 4px solid var(--cor-time, #fff); border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            padding: 30px; align-items: center; justify-content: space-between;
+        }
+        .gol-logo { width: 150px; height: 150px; object-fit: contain; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); margin-right: 40px; }
+        .gol-info { flex-grow: 1; text-align: left; border-left: 8px solid var(--cor-time, #fff); padding-left: 40px; }
+        .gol-title { font-size: 4rem; font-weight: 900; color: #f1c40f; text-transform: uppercase; letter-spacing: 5px; margin: 0; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); }
+        .gol-team-name { font-size: 5rem; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1.1; text-shadow: 4px 4px 0px var(--cor-time, #555); color: #fff;}
+
+        .card-sub {
+            display: none; width: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(20,20,20,0.9) 100%);
+            border-top: 8px solid #3498db; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            padding: 30px 40px; flex-direction: column; align-items: center;
+        }
+        .sub-header { width: 100%; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #444; padding-bottom: 20px; margin-bottom: 20px;}
+        .sub-title { font-size: 2.5rem; font-weight: 900; color: #3498db; letter-spacing: 4px; margin: 0; text-transform: uppercase; }
+        .sub-logo { width: 80px; height: 80px; object-fit: contain; }
+        .sub-players { width: 100%; display: flex; flex-direction: column; gap: 15px; }
+        .player-row { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 15px 30px; border-radius: 10px; }
+        .icon-arrow { font-size: 3rem; font-weight: 900; margin-right: 30px; width: 50px; text-align: center; }
+        .arrow-red { color: #ff4757; } .arrow-green { color: #2ecc71; }
+        .action-text { font-size: 1.5rem; color: #aaa; text-transform: uppercase; margin-right: 20px; width: 100px; font-weight: 800;}
+        .player-name { font-size: 3.5rem; font-weight: 900; text-transform: uppercase; margin: 0; color: #fff;}
+
+        .card-cartao {
+            display: none; width: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(30,30,30,0.85) 100%);
+            border-left: 15px solid var(--cor-cartao, #fff); border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            padding: 30px; align-items: center; justify-content: flex-start;
+        }
+        .cartao-logo { width: 120px; height: 120px; object-fit: contain; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); margin-right: 30px; }
+        .cartao-info { flex-grow: 1; text-align: left; }
+        .cartao-title { font-size: 2.5rem; font-weight: 900; color: var(--cor-cartao, #fff); text-transform: uppercase; letter-spacing: 4px; margin: 0 0 10px 0; }
+        .cartao-player { font-size: 4.5rem; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1; color: #fff;}
+
+        /* NOVO: Card de Estatísticas (Público/Renda) */
+        .card-estatistica {
+            display: none; width: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(20,20,20,0.9) 100%);
+            border-top: 10px solid var(--cor-stat, #3498db); border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            padding: 40px 60px; flex-direction: column; align-items: center; text-align: center;
+        }
+        .stat-title { font-size: 2.5rem; font-weight: 900; color: var(--cor-stat, #3498db); letter-spacing: 5px; margin: 0 0 10px 0; text-transform: uppercase; }
+        .stat-value { font-size: 6rem; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1; color: #fff; text-shadow: 0 10px 20px rgba(0,0,0,0.5);}
+
+        .card-gol.active, .card-sub.active, .card-cartao.active, .card-estatistica.active { display: flex; }
+    </style>
+</head>
+<body>
+    
+    <div class="scoreboard-wrapper">
+        <div class="main-bar">
+            <div class="timer-section"><span id="periodo">1T</span><span id="tempo">00:00</span></div>
+            
+            <div class="team-section" id="boxTimeA">
+                <div id="redA" class="red-container"></div>
+                <img id="escudoA" class="escudo-placar" src="">
+                <span id="timeA">TIME A</span>
+            </div>
+            
+            <div class="score-box" id="golsA">0</div>
+            <div style="width: 3px; background: rgba(255,255,255,0.3);"></div>
+            <div class="score-box" id="golsB">0</div>
+            
+            <div class="team-section" id="boxTimeB">
+                <div id="redB" class="red-container"></div>
+                <span id="timeB">TIME B</span>
+                <img id="escudoB" class="escudo-placar" src="">
+            </div>
+            
+            <div id="acrescimo-box">+<span id="extra">0</span>'</div>
+        </div>
+    </div>
+
+    <div class="cards-gigantes-wrapper" id="masterContainerCards">
+        <div class="card-gol" id="painelGol">
+            <img class="gol-logo" id="golLogo" src="" alt="Escudo">
+            <div class="gol-info">
+                <p class="gol-title">⚽ GOL DO</p>
+                <p class="gol-team-name" id="golTime">TIME</p>
+            </div>
+        </div>
+        
+        <div class="card-sub" id="painelSub">
+            <div class="sub-header">
+                <h1 class="sub-title">⇄ SUBSTITUIÇÃO</h1>
+                <img class="sub-logo" id="subLogo" src="" alt="Escudo">
+            </div>
+            <div class="sub-players">
+                <div class="player-row" style="border-left: 8px solid #ff4757;">
+                    <div class="icon-arrow arrow-red">▼</div><div class="action-text">SAI</div><div class="player-name" id="subSaiTxt">NOME SAI</div>
+                </div>
+                <div class="player-row" style="border-left: 8px solid #2ecc71;">
+                    <div class="icon-arrow arrow-green">▲</div><div class="action-text">ENTRA</div><div class="player-name" id="subEntraTxt">NOME ENTRA</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-cartao" id="painelCartao">
+            <img class="cartao-logo" id="cartaoLogo" src="" alt="Escudo">
+            <div class="cartao-info">
+                <p class="cartao-title" id="cartaoTitulo">CARTÃO AMARELO</p>
+                <p class="cartao-player" id="cartaoJogador">NOME DO JOGADOR</p>
+            </div>
+        </div>
+
+        <div class="card-estatistica" id="painelEstatistica">
+            <p class="stat-title" id="statTitulo">PÚBLICO TOTAL</p>
+            <p class="stat-value" id="statValor">0</p>
+        </div>
+    </div>
+
+    <script>
+    function renderRedCards(idContainer, qty) {
+        const container = document.getElementById(idContainer);
+        container.innerHTML = '';
+        for(let i=0; i < (qty || 0); i++) {
+            container.innerHTML += '<div class="cartao-vermelho"></div>';
+        }
+    }
+
+    function sincronizarPlacar() {
+        const dadosBrutos = localStorage.getItem('vMixData');
+        if (!dadosBrutos) return;
+        
+        const jogo = JSON.parse(dadosBrutos);
+        
+        document.getElementById('tempo').innerText = jogo.tempo;
+        document.getElementById('periodo').innerText = jogo.periodo;
+        document.getElementById('timeA').innerText = jogo.timeA;
+        document.getElementById('golsA').innerText = jogo.golsA;
+        document.getElementById('timeB').innerText = jogo.timeB;
+        document.getElementById('golsB').innerText = jogo.golsB;
+
+        document.getElementById('boxTimeA').style.backgroundColor = jogo.corA || 'transparent';
+        document.getElementById('boxTimeB').style.backgroundColor = jogo.corB || 'transparent';
+        
+        const logoA = document.getElementById('escudoA');
+        if (jogo.escudoA) { logoA.src = jogo.escudoA; logoA.style.display = 'block'; } else { logoA.style.display = 'none'; }
+        
+        const logoB = document.getElementById('escudoB');
+        if (jogo.escudoB) { logoB.src = jogo.escudoB; logoB.style.display = 'block'; } else { logoB.style.display = 'none'; }
+
+        renderRedCards('redA', jogo.redA);
+        renderRedCards('redB', jogo.redB);
+
+        const boxAcrescimo = document.getElementById('acrescimo-box');
+        if (jogo.extra && parseInt(jogo.extra) > 0) {
+            document.getElementById('extra').innerText = jogo.extra;
+            boxAcrescimo.style.display = "flex";
+        } else {
+            boxAcrescimo.style.display = "none";
+        }
+
+        const containerCards = document.getElementById('masterContainerCards');
+        const painelGol = document.getElementById('painelGol');
+        const painelSub = document.getElementById('painelSub');
+        const painelCartao = document.getElementById('painelCartao');
+        const painelEstatistica = document.getElementById('painelEstatistica');
+
+        if (!jogo.eventoCard || jogo.eventoCard.tipo === 'OCULTAR') {
+            containerCards.classList.remove('visible');
+        } 
+        else if (jogo.eventoCard.tipo === 'GOL') {
+            document.documentElement.style.setProperty('--cor-time', jogo.eventoCard.cor);
+            document.getElementById('golLogo').src = jogo.eventoCard.escudo;
+            document.getElementById('golLogo').style.display = jogo.eventoCard.escudo ? 'block' : 'none';
+            document.getElementById('golTime').innerText = jogo.eventoCard.time;
+            
+            painelSub.classList.remove('active');
+            painelCartao.classList.remove('active');
+            painelEstatistica.classList.remove('active');
+            painelGol.classList.add('active');
+            containerCards.classList.add('visible');
+        } 
+        else if (jogo.eventoCard.tipo === 'SUB') {
+            document.getElementById('subLogo').src = jogo.eventoCard.escudo;
+            document.getElementById('subLogo').style.display = jogo.eventoCard.escudo ? 'block' : 'none';
+            document.getElementById('subSaiTxt').innerText = jogo.eventoCard.sai;
+            document.getElementById('subEntraTxt').innerText = jogo.eventoCard.entra;
+            
+            painelGol.classList.remove('active');
+            painelCartao.classList.remove('active');
+            painelEstatistica.classList.remove('active');
+            painelSub.classList.add('active');
+            containerCards.classList.add('visible');
+        }
+        else if (jogo.eventoCard.tipo === 'CARTAO') {
+            document.documentElement.style.setProperty('--cor-cartao', jogo.eventoCard.corCartao);
+            document.getElementById('cartaoLogo').src = jogo.eventoCard.escudo;
+            document.getElementById('cartaoLogo').style.display = jogo.eventoCard.escudo ? 'block' : 'none';
+            document.getElementById('cartaoTitulo').innerText = jogo.eventoCard.textoCartao;
+            document.getElementById('cartaoJogador').innerText = jogo.eventoCard.jogador;
+            
+            painelGol.classList.remove('active');
+            painelSub.classList.remove('active');
+            painelEstatistica.classList.remove('active');
+            painelCartao.classList.add('active');
+            containerCards.classList.add('visible');
+        }
+        else if (jogo.eventoCard.tipo === 'ESTATISTICA') {
+            const isPublico = jogo.eventoCard.info === 'PUBLICO';
+            document.documentElement.style.setProperty('--cor-stat', isPublico ? '#2ecc71' : '#3498db');
+            
+            document.getElementById('statTitulo').innerText = isPublico ? "PÚBLICO TOTAL" : "RENDA DA PARTIDA";
+            document.getElementById('statValor').innerText = jogo.eventoCard.valor;
+
+            painelGol.classList.remove('active');
+            painelSub.classList.remove('active');
+            painelCartao.classList.remove('active');
+            painelEstatistica.classList.add('active');
+            containerCards.classList.add('visible');
+        }
+    }
+
+    window.addEventListener('storage', (e) => { if (e.key === 'vMixData') sincronizarPlacar(); });
+    window.onload = () => { sincronizarPlacar(); setInterval(sincronizarPlacar, 200); };
+    </script>
+</body>
+</html>

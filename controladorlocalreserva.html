@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Master Control vMix PRO - Allan Gomes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        :root { 
+            --primary: #f1c40f; --bg: #0a0a0a; --panel: #1a1a1a; 
+            --text: #ffffff; --yellow: #f1c40f; --red: #ff4757; 
+            --green: #2ecc71; --blue: #1e90ff; --border: #333;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); 
+            margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+        }
+
+        /* --- TELA DE SELEÇÃO DE MODO (MODAL) --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .modal-box {
+            background: #111; padding: 40px; border-radius: 12px; border: 2px solid var(--primary);
+            text-align: center; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .btn-modo {
+            padding: 20px 30px; margin: 10px; font-size: 1.2rem; font-weight: 900; 
+            cursor: pointer; border-radius: 8px; border: none; text-transform: uppercase; width: 100%;
+            transition: transform 0.2s;
+        }
+        .btn-modo:hover { transform: scale(1.05); }
+        .btn-local { background: #444; color: white; border: 2px solid #666; }
+        .btn-server { background: var(--green); color: black; box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);}
+        
+        .header-fixed {
+            background: #111; padding: 10px 20px; text-align: center;
+            border-bottom: 2px solid var(--primary); flex-shrink: 0; z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        
+        #statusConexao { font-size: 0.9rem; font-weight: bold; padding: 5px 10px; border-radius: 4px; background: #333; color: #aaa; }
+
+        .main-layout {
+            display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 20px; padding: 20px; 
+            flex-grow: 1; overflow: hidden; box-sizing: border-box;
+        }
+
+        .team-col { 
+            background: #111; border: 1px solid var(--border); border-radius: 12px; 
+            padding: 15px; display: flex; flex-direction: column; gap: 10px;
+            transition: background 0.5s; position: relative; overflow: hidden;
+        }
+
+        .team-header-fixed { flex-shrink: 0; z-index: 10; position: relative; }
+
+        .scrollable-list {
+            flex-grow: 1; overflow-y: auto; overflow-x: hidden; 
+            padding-right: 5px; position: relative; z-index: 1;
+        }
+        .scrollable-list::-webkit-scrollbar { width: 6px; }
+        .scrollable-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 4px; }
+        .scrollable-list::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        .scrollable-list::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        table { width: 100%; border-spacing: 0 4px; border-collapse: separate; }
+        .player-row { transition: all 0.2s; cursor: pointer; }
+        .player-row td { padding: 4px; background: rgba(0,0,0,0.5); border: 1px solid transparent; }
+        .player-row td:first-child { border-radius: 6px 0 0 6px; }
+        .player-row td:last-child { border-radius: 0 6px 6px 0; }
+
+        .radio-selector { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #555; display: inline-block; transition: 0.2s; margin-top: 3px; }
+
+        .player-selected td { background: rgba(241, 196, 15, 0.25) !important; border-top: 1px solid var(--primary); border-bottom: 1px solid var(--primary); }
+        .player-selected .radio-selector { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
+        .player-sub-sai td { background: rgba(255, 71, 87, 0.25) !important; border-top: 1px solid var(--red); border-bottom: 1px solid var(--red); }
+        .player-sub-sai .radio-selector { background: var(--red); border-color: var(--red); box-shadow: 0 0 10px var(--red); }
+        .player-sub-entra td { background: rgba(46, 213, 113, 0.25) !important; border-top: 1px solid var(--green); border-bottom: 1px solid var(--green); }
+        .player-sub-entra .radio-selector { background: var(--green); border-color: var(--green); box-shadow: 0 0 10px var(--green); }
+
+        .team-action-bar {
+            display: flex; gap: 5px; justify-content: center; background: rgba(0,0,0,0.7); 
+            padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        input { background: #333; border: 1px solid #444; color: white; padding: 5px; border-radius: 3px; font-size: 0.85rem; font-weight: bold; width: 100%; box-sizing: border-box; transition: 0.2s;}
+        input:focus { outline: none; border-color: var(--primary); }
+        .in-num { text-align: center; color: var(--primary); font-family: monospace; background: rgba(0,0,0,0.6); }
+        .in-name { background: rgba(0,0,0,0.6); }
+        
+        .btn-toggle-res {
+            width: 100%; background: #222; color: #fff; padding: 12px; font-size: 0.9rem; font-weight: 900; 
+            border-radius: 6px; border: 1px solid #333; cursor: pointer; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; margin-top: 15px; flex-shrink: 0;
+        }
+        .btn-toggle-res:hover { background: #333; color: var(--primary); }
+        .res-container { display: none; margin-top: 5px; border-top: 1px dashed #444; padding-top: 5px; }
+        .res-container.show { display: block; }
+
+        .center-col { display: flex; flex-direction: column; gap: 20px; overflow-y: auto; padding-right: 5px; }
+        .top-grid { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 15px; }
+        .box-time { background: #1a1a1a; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #333; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center;}
+        
+        .timer-display { font-family: monospace; font-size: 3.5rem; color: var(--green); background: #000; padding: 5px 20px; border-radius: 8px; text-shadow: 0 0 15px rgba(46, 213, 115, 0.5); border: 2px solid #222; line-height: 1; margin-bottom: 10px;}
+        .score-num { font-size: 4rem; font-weight: 900; background: #000; padding: 10px 30px; color: #fff; border-radius: 8px; border: 2px solid #333; line-height: 1;}
+
+        .action-preview { background: #111; padding: 15px; border-radius: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border: 1px solid var(--primary); }
+        .action-box h4 { margin: 0; color: var(--primary); font-size: 0.8rem; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 5px;}
+        .display-action { font-size: 1.4rem; font-weight: 900; min-height: 1.5rem; display: flex; align-items: center; justify-content: center; background: #000; border-radius: 6px; padding: 10px; margin-top: 10px;}
+
+        .btn-limpar-extra { background: var(--red) !important; color: white !important; border: none; padding: 5px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.8rem; text-transform: uppercase; }
+        .btn-limpar-extra:hover { filter: brightness(1.2); }
+        .btn-op { border: none; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 0.9rem; flex-grow: 1; }
+        
+        .footer-center { text-align: center; margin-top: auto; }
+        .btn-main { padding: 20px; background: var(--primary); color: #000; font-size: 1.3rem; font-weight: 900; border-radius: 10px; cursor: pointer; border: none; text-transform: uppercase; width: 100%; box-shadow: 0 4px 0 #b39000;}
+        .btn-main:active { transform: translateY(4px); box-shadow: none;}
+    </style>
+</head>
+<body>
+
+    <div id="modalModo" class="modal-overlay">
+        <div class="modal-box">
+            <h1 style="color: var(--primary); margin-top: 0;">PREPARAÇÃO DO SISTEMA</h1>
+            <p style="color: #ccc; font-size: 1.1rem; margin-bottom: 30px;">
+                Allan, como deseja conectar a Controladora ao vMix hoje?
+            </p>
+            <button class="btn-modo btn-local" onclick="iniciarSistema('local')">
+                🖥️ MODO LOCAL (Off-line)<br>
+                <span style="font-size: 0.8rem; font-weight: normal;">Usa apenas a memória do navegador</span>
+            </button>
+            <button class="btn-modo btn-server" onclick="iniciarSistema('server')">
+                🌐 MODO SERVIDOR (Com Redundância)<br>
+                <span style="font-size: 0.8rem; font-weight: normal;">Usa Socket.IO + Backup de Memória na mesma tela</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="header-fixed">
+        <h1 style="margin:0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px;">Master Control vMix PRO - Allan Gomes</h1>
+        <div id="statusConexao">Aguardando Seleção...</div>
+    </div>
+
+    <div class="main-layout">
+        <div class="team-col" id="col_A">
+            <img id="watermark_A" src="" style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 110%; opacity: 0.15; z-index: 0; pointer-events: none; display: none; filter: grayscale(50%);">
+            
+            <div class="team-header-fixed">
+                <div style="text-align:center;">
+                    <img id="logoA" src="" style="width:70px; height:70px; object-fit:contain; filter: drop-shadow(0 4px 5px rgba(0,0,0,0.8));" onerror="this.style.display='none'">
+                    <input type="text" id="nameA" value="BOTAFOGO" oninput="updateVisualTime('A')" style="width:90%; text-align:center; display:block; margin: 10px auto; font-size: 1.3rem; border:none; background:rgba(0,0,0,0.5); font-weight:900; text-shadow: 2px 2px 4px #000; border-radius: 8px;">
+                </div>
+                
+                <div class="team-action-bar">
+                    <button class="btn-op" style="background:#fff; color:#000;" onclick="doAction('A', 'GOL')">⚽ GOL</button>
+                    <button class="btn-op" style="background:#b33939; color:#fff;" onclick="doAction('A', 'GOL_CONTRA')">🥅 GC</button>
+                    <button class="btn-op" style="background:var(--blue); color:#fff;" onclick="doAction('A', 'SUB')">⇄ SUB</button>
+                    <button class="btn-op" style="background:var(--yellow); color:#000;" onclick="doAction('A', 'AMARELO')">🟨</button>
+                    <button class="btn-op" style="background:var(--red); color:#fff;" onclick="doAction('A', 'VERMELHO')">🟥</button>
+                </div>
+
+                <h2 style="font-size: 1rem; text-align:center; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom:5px; margin:0; text-shadow: 1px 1px 2px #000;">TITULARES</h2>
+            </div>
+
+            <div class="scrollable-list">
+                <table id="tA_tit"></table>
+                <button class="btn-toggle-res" id="btn_res_A" onclick="toggleRes('resA_container')">RESERVAS <span>▼</span></button>
+                <div id="resA_container" class="res-container"><table id="tA_res"></table></div>
+            </div>
+        </div>
+
+        <div class="center-col">
+            <div class="top-grid">
+                <div class="box-time" id="box_A">
+                    <div class="score-num" id="golsA">0</div>
+                    <div style="display:flex; gap:5px; margin-top:15px; width: 100%;">
+                        <button class="btn-op" style="background:#fff; color:#000; font-size: 1.5rem; padding: 10px;" onclick="chScore('A',1)">+</button>
+                        <button class="btn-op" style="background:rgba(0,0,0,0.6); color:#fff; border: 1px solid #555; font-size: 1.5rem; padding: 10px;" onclick="chScore('A',-1)">-</button>
+                    </div>
+                </div>
+
+                <div class="box-time" style="background: #111; border: 2px solid #333;">
+                    <div class="timer-display" id="timer">00:00</div>
+                    <div style="display:flex; justify-content:center; gap:5px; width:100%;">
+                        <button class="btn-op" style="background:var(--green); color:black; font-size: 1.1rem; padding: 10px;" onclick="startT()">START</button>
+                        <button class="btn-op" style="background:var(--red); color:white; font-size: 1.1rem; padding: 10px;" onclick="stopT()">STOP</button>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:5px; margin-top:10px; width:100%;">
+                        <button class="btn-op" onclick="setP('1T')" style="background:var(--blue); color:white;">1T</button>
+                        <button class="btn-op" onclick="setP('2T')" style="background:#333; color:white;">2T</button>
+                    </div>
+                    <div style="display:flex; justify-content:center; align-items:center; gap:5px; margin-top:10px; width:100%;">
+                        <input type="number" id="extra" placeholder="ACR." style="width:60px; text-align:center; height:35px; font-size:1.1rem;">
+                        <button class="btn-op" style="background:#555; font-size:0.9rem; height:35px; color:#fff;" onclick="resetT()">RESET TEMPO</button>
+                    </div>
+                </div>
+
+                <div class="box-time" id="box_B">
+                    <div class="score-num" id="golsB">0</div>
+                    <div style="display:flex; gap:5px; margin-top:15px; width: 100%;">
+                        <button class="btn-op" style="background:#fff; color:#000; font-size: 1.5rem; padding: 10px;" onclick="chScore('B',1)">+</button>
+                        <button class="btn-op" style="background:rgba(0,0,0,0.6); color:#fff; border: 1px solid #555; font-size: 1.5rem; padding: 10px;" onclick="chScore('B',-1)">-</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-preview">
+                <div class="action-box">
+                    <h4>SUBSTITUIÇÃO <button class="btn-limpar-extra" onclick="clearSub()">LIMPAR [X]</button></h4>
+                    <div class="display-action">
+                        <span style="color:var(--red)" id="subSai">---</span> 
+                        <span style="margin: 0 15px;">⇄</span> 
+                        <span style="color:var(--green)" id="subEntra">---</span>
+                    </div>
+                </div>
+                <div class="action-box">
+                    <h4>EVENTO ATUAL <button class="btn-limpar-extra" onclick="clearCard()">LIMPAR [X]</button></h4>
+                    <div class="display-action" id="cardEvent" style="color:var(--primary)">---</div>
+                </div>
+            </div>
+
+            <div class="footer-center">
+                <button class="btn-main" onclick="processUpdateMem()">ATUALIZAR VMIX AGORA</button>
+            </div>
+        </div>
+
+        <div class="team-col" id="col_B">
+            <img id="watermark_B" src="" style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 110%; opacity: 0.15; z-index: 0; pointer-events: none; display: none; filter: grayscale(50%);">
+            
+            <div class="team-header-fixed">
+                <div style="text-align:center;">
+                    <img id="logoB" src="" style="width:70px; height:70px; object-fit:contain; filter: drop-shadow(0 4px 5px rgba(0,0,0,0.8));" onerror="this.style.display='none'">
+                    <input type="text" id="nameB" value="INTERNACIONAL" oninput="updateVisualTime('B')" style="width:90%; text-align:center; display:block; margin: 10px auto; font-size: 1.3rem; border:none; background:rgba(0,0,0,0.5); font-weight:900; text-shadow: 2px 2px 4px #000; border-radius: 8px;">
+                </div>
+                
+                <div class="team-action-bar">
+                    <button class="btn-op" style="background:#fff; color:#000;" onclick="doAction('B', 'GOL')">⚽ GOL</button>
+                    <button class="btn-op" style="background:#b33939; color:#fff;" onclick="doAction('B', 'GOL_CONTRA')">🥅 GC</button>
+                    <button class="btn-op" style="background:var(--blue); color:#fff;" onclick="doAction('B', 'SUB')">⇄ SUB</button>
+                    <button class="btn-op" style="background:var(--yellow); color:#000;" onclick="doAction('B', 'AMARELO')">🟨</button>
+                    <button class="btn-op" style="background:var(--red); color:#fff;" onclick="doAction('B', 'VERMELHO')">🟥</button>
+                </div>
+
+                <h2 style="font-size: 1rem; text-align:center; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom:5px; margin:0; text-shadow: 1px 1px 2px #000;">TITULARES</h2>
+            </div>
+
+            <div class="scrollable-list">
+                <table id="tB_tit"></table>
+                <button class="btn-toggle-res" id="btn_res_B" onclick="toggleRes('resB_container')">RESERVAS <span>▼</span></button>
+                <div id="resB_container" class="res-container"><table id="tB_res"></table></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ========================================================
+    // URL DA PLANILHA GOOGLE APPS SCRIPT
+    // ========================================================
+    const urlGoogleScript = "https://script.google.com/macros/s/AKfycbyXhf4KZqBkvTOjArPgejjsbg6hwN3-G9GN-fKMxJo8_JgPwz3eYL3jgZdJzIaxNtJosA/exec";
+
+    // VARIÁVEIS GLOBAIS
+    let modoAtual = '';
+    let socket = null;
+    let acaoPendenteDrive = false; // Controla quando enviar pro Drive
+
+    const bancoTimes = {
+        "AMERICA-MG": { cor: "#27ae60", logo: "escudo serie a/America-MG.png", sigla: "AME" },
+        "ATHLETICO PARANAENSE": { cor: "#c0392b", logo: "escudo serie a/Athletico Paranaense.png", sigla: "CAP" },
+        "ATHLETICO-PR": { cor: "#c0392b", logo: "escudo serie a/Athletico Paranaense.png", sigla: "CAP" },
+        "ATLETICO GOIANIENSE": { cor: "#000000", logo: "escudo serie a/Atlético Goianiense.png", sigla: "ACG" },
+        "ATLETICO-GO": { cor: "#000000", logo: "escudo serie a/Atlético Goianiense.png", sigla: "ACG" },
+        "ATLETICO MINEIRO": { cor: "#000000", logo: "escudo serie a/Atlético Mineiro.png", sigla: "CAM" },
+        "ATLETICO-MG": { cor: "#000000", logo: "escudo serie a/Atlético Mineiro.png", sigla: "CAM" },
+        "BAHIA": { cor: "#2980b9", logo: "escudo serie a/Bahia.png", sigla: "BAH" },
+        "BOTAFOGO": { cor: "#000000", logo: "escudo serie a/Botafogo.png", sigla: "BOT" },
+        "BRAGANTINO": { cor: "#ffffff", logo: "escudo serie a/Red Bull Bragantino.png", sigla: "RBB" },
+        "RED BULL BRAGANTINO": { cor: "#ffffff", logo: "escudo serie a/Red Bull Bragantino.png", sigla: "RBB" },
+        "CHAPECOENSE": { cor: "#27ae60", logo: "escudo serie a/Chapecoense.png", sigla: "CHA" },
+        "CORINTHIANS": { cor: "#000000", logo: "escudo serie a/Corinthians.png", sigla: "COR" },
+        "CORITIBA": { cor: "#27ae60", logo: "escudo serie a/Coritiba.png", sigla: "CFC" },
+        "CRICIUMA": { cor: "#f1c40f", logo: "escudo serie a/Criciúma.png", sigla: "CRI" },
+        "CRUZEIRO": { cor: "#2980b9", logo: "escudo serie a/Cruzeiro.png", sigla: "CRU" },
+        "CUIABA": { cor: "#27ae60", logo: "escudo serie a/Cuiabá.png", sigla: "CUI" },
+        "FLAMENGO": { cor: "#c0392b", logo: "escudo serie a/Flamengo.png", sigla: "FLA" },
+        "FLUMINENSE": { cor: "#800000", logo: "escudo serie a/Fluminense.png", sigla: "FLU" },
+        "FORTALEZA": { cor: "#2980b9", logo: "escudo serie a/Fortaleza.png", sigla: "FOR" },
+        "GREMIO": { cor: "#3498db", logo: "escudo serie a/Grêmio.png", sigla: "GRE" },
+        "INTERNACIONAL": { cor: "#e74c3c", logo: "escudo serie a/Internacional.png", sigla: "INT" },
+        "INTER": { cor: "#e74c3c", logo: "escudo serie a/Internacional.png", sigla: "INT" },
+        "JUVENTUDE": { cor: "#27ae60", logo: "escudo serie a/Juventude.png", sigla: "JUV" },
+        "MIRASSOL": { cor: "#f1c40f", logo: "escudo serie a/Mirassol-SP.png", sigla: "MIR" },
+        "PALMEIRAS": { cor: "#27ae60", logo: "escudo serie a/Palmeiras.png", sigla: "PAL" },
+        "REMO": { cor: "#1e90ff", logo: "escudo serie a/Remo.png", sigla: "REM" },
+        "SANTOS": { cor: "#ffffff", logo: "escudo serie a/Santos.png", sigla: "SAN" },
+        "SAO PAULO": { cor: "#ff0000", logo: "escudo serie a/São Paulo.png", sigla: "SAO" },
+        "VASCO DA GAMA": { cor: "#000000", logo: "escudo serie a/Vasco da Gama.png", sigla: "VAS" },
+        "VASCO": { cor: "#000000", logo: "escudo serie a/Vasco da Gama.png", sigla: "VAS" },
+        "VITORIA": { cor: "#c0392b", logo: "escudo serie a/Vitória.png", sigla: "VIT" }
+    };
+
+    let goals = {A:0, B:0}, tSec = 0, run = false, per = "1T", timerVar;
+    let pendingSub = { saiID_Num: null, saiID_Nom: null, entID_Num: null, entID_Nom: null };
+    let selecionadoA = { numId: null, nameId: null, rowId: null };
+    let selecionadoB = { numId: null, nameId: null, rowId: null };
+
+    // ----------------------------------------------------
+    // LÓGICA DE INICIALIZAÇÃO
+    // ----------------------------------------------------
+    function iniciarSistema(modoEscolhido) {
+        modoAtual = modoEscolhido;
+        document.getElementById('modalModo').style.display = 'none';
+        const statusBox = document.getElementById('statusConexao');
+
+        if (modoAtual === 'server') {
+            try {
+                socket = io('http://localhost:3000');
+                socket.on('connect', () => {
+                    statusBox.innerHTML = "🟢 Servidor Conectado (+ Backup Local)";
+                    statusBox.style.color = "var(--green)";
+                });
+                socket.on('disconnect', () => {
+                    statusBox.innerHTML = "🔴 Servidor Desconectado (Operando no Backup)";
+                    statusBox.style.color = "var(--red)";
+                });
+            } catch(e) {
+                alert("Erro ao tentar conectar. Operando no Backup.");
+            }
+        } else {
+            statusBox.innerHTML = "🖥️ Modo Local Ativo";
+            statusBox.style.color = "var(--primary)";
+        }
+
+        updateVisualTime('A'); 
+        updateVisualTime('B');
+    }
+
+    function getTeamInfo(input) {
+        if (!input) return null;
+        let cleanInput = input.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+        if (bancoTimes[cleanInput]) return bancoTimes[cleanInput];
+        for (let key in bancoTimes) {
+            if (bancoTimes[key].sigla === cleanInput) {
+                return bancoTimes[key];
+            }
+        }
+        return null;
+    }
+
+    function selectPlayer(team, numId, nameId, rowId) {
+        let sel = team === 'A' ? selecionadoA : selecionadoB;
+        if (sel.rowId) {
+            let oldRow = document.getElementById(sel.rowId);
+            if(oldRow) oldRow.classList.remove('player-selected');
+        }
+        sel.numId = numId;
+        sel.nameId = nameId;
+        sel.rowId = rowId;
+        document.getElementById(rowId).classList.add('player-selected');
+    }
+
+    function doAction(team, action) {
+        let sel = team === 'A' ? selecionadoA : selecionadoB;
+        if (!sel.nameId) {
+            alert("Clique no nome ou número de um jogador na lista primeiro!");
+            return;
+        }
+
+        // MARCA QUE UMA AÇÃO FOI FEITA PARA ENVIAR PRO DRIVE
+        acaoPendenteDrive = true; 
+
+        if (action === 'GOL') prepGoal(sel.nameId, team);
+        if (action === 'GOL_CONTRA') prepOG(sel.nameId, team === 'A' ? 'B' : 'A');
+        if (action === 'AMARELO') prepCard(sel.nameId, '🟨');
+        if (action === 'VERMELHO') prepCard(sel.nameId, '🟥');
+        if (action === 'SUB') prepSub(sel.numId, sel.nameId);
+    }
+
+    function gen(id, count, pref) {
+        const t = document.getElementById(id);
+        const timeLetra = pref.charAt(0); 
+        for(let i=1; i<=count; i++) {
+            let r = t.insertRow();
+            let rowId = `row_${pref}_${i}`;
+            r.id = rowId;
+            r.className = 'player-row';
+            r.innerHTML = `
+                <td style="width: 25px; text-align: center;" onclick="selectPlayer('${timeLetra}', '${pref}_n_${i}', '${pref}_m_${i}', '${rowId}')">
+                    <div class="radio-selector"></div>
+                </td>
+                <td style="width: 45px;">
+                    <input type="text" class="in-num" id="${pref}_n_${i}" value="${i}" onfocus="selectPlayer('${timeLetra}', '${pref}_n_${i}', '${pref}_m_${i}', '${rowId}')">
+                </td>
+                <td>
+                    <input type="text" class="in-name" id="${pref}_m_${i}" placeholder="Jogador" onfocus="selectPlayer('${timeLetra}', '${pref}_n_${i}', '${pref}_m_${i}', '${rowId}')">
+                </td>
+            `;
+        }
+    }
+
+    gen('tA_tit', 11, 'A_t'); gen('tA_res', 10, 'A_r');
+    gen('tB_tit', 11, 'B_t'); gen('tB_res', 10, 'B_r');
+
+    function updateVisualTime(lado) {
+        const nomeInput = document.getElementById('name' + lado).value;
+        const info = getTeamInfo(nomeInput);
+        
+        const logo = document.getElementById('logo' + lado);
+        const col = document.getElementById('col_' + lado);
+        const box = document.getElementById('box_' + lado);
+        const btnRes = document.getElementById('btn_res_' + lado);
+        const watermark = document.getElementById('watermark_' + lado);
+
+        const nomeUpper = nomeInput.trim().toUpperCase();
+        if (nomeInput !== "") btnRes.innerHTML = "RESERVAS " + nomeUpper + " <span>▼</span>";
+        else btnRes.innerHTML = "RESERVAS " + lado + " <span>▼</span>";
+
+        if (info) {
+            logo.src = info.logo; logo.style.display = "block";
+            if(watermark) { watermark.src = info.logo; watermark.style.display = "block"; }
+            col.style.background = `linear-gradient(to bottom, ${info.cor}CC 0%, #111 50%)`; col.style.borderColor = info.cor; col.style.boxShadow = `inset 0 0 30px ${info.cor}88`; 
+            box.style.background = `linear-gradient(135deg, ${info.cor}99 0%, #1a1a1a 80%)`; box.style.borderColor = info.cor; box.style.boxShadow = `0 5px 20px ${info.cor}66`;
+        } else {
+            logo.src = ""; logo.style.display = "none";
+            if(watermark) watermark.style.display = "none";
+            col.style.background = "#111"; col.style.borderColor = "#333"; col.style.boxShadow = "none";
+            box.style.background = "#1a1a1a"; box.style.borderColor = "#333"; box.style.boxShadow = "none";
+        }
+        
+        if (modoAtual !== '') transmitData(); 
+    }
+
+    window.onload = () => { 
+        // Inicialização aguarda escolha
+    };
+
+    function processUpdateMem() {
+        handleSubLogic();
+        transmitData();
+    }
+
+    // ========================================================
+    // ENVIO PARA O GOOGLE DRIVE
+    // ========================================================
+    async function registrarNoGoogleSheets(dados) {
+        if (!urlGoogleScript || urlGoogleScript === "") return;
+        
+        dados.dataRegistro = new Date().toLocaleString();
+        
+        try {
+            await fetch(urlGoogleScript, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(dados)
+            });
+            console.log("Log salvo na Planilha do Drive!");
+        } catch (error) {
+            console.error("Erro ao salvar no Drive:", error);
+        }
+    }
+
+    // ========================================================
+    // O CORAÇÃO DO ESPELHAMENTO: ENVIA PARA OS DOIS CANAIS + DRIVE
+    // ========================================================
+    function transmitData() {
+        if (modoAtual === '') return;
+
+        const nomeA = document.getElementById('nameA').value;
+        const nomeB = document.getElementById('nameB').value;
+        const infoA = getTeamInfo(nomeA);
+        const infoB = getTeamInfo(nomeB);
+
+        const siglaA = infoA ? infoA.sigla : nomeA.substring(0, 3).toUpperCase().trim();
+        const siglaB = infoB ? infoB.sigla : nomeB.substring(0, 3).toUpperCase().trim();
+
+        const dados = {
+            tempo: document.getElementById('timer').innerText,
+            golsA: goals.A, golsB: goals.B,
+            placar: goals.A + "x" + goals.B, // CAMPO EXTRA PRO DRIVE
+            timeA: siglaA, timeB: siglaB,
+            extra: document.getElementById('extra').value || "0",
+            periodo: per,
+            evento: document.getElementById('cardEvent').innerText,
+            escudoA: infoA ? infoA.logo : "",
+            escudoB: infoB ? infoB.logo : "",
+            corA: infoA ? infoA.cor : "#ffffff",
+            corB: infoB ? infoB.cor : "#ffffff",
+            timestamp: Date.now()
+        };
+
+        // 1. REDUNDÂNCIA: Grava sempre na memória local (Backup Imediato)
+        localStorage.setItem('vMixData', JSON.stringify(dados));
+
+        // 2. VIA EXPRESSA: Se o Servidor estiver ativado e conectado
+        if (modoAtual === 'server' && socket) {
+            socket.emit('vMixData', dados);
+        }
+
+        // 3. ENVIO PARA PLANILHA (Apenas quando clicou num botão)
+        if (acaoPendenteDrive && dados.evento !== "---") {
+            registrarNoGoogleSheets(dados);
+            acaoPendenteDrive = false; // Reseta para não enviar de novo no próximo segundo
+        }
+
+        fetch(`http://127.0.0.1:8088/api/?Function=SetText&Value=${dados.timestamp}`, { mode: 'no-cors' }).catch(()=>{});
+    }
+
+    function startT() { if(!run){ run=true; timerVar = setInterval(()=>{ tSec++; updateClock(); transmitData(); },1000); } }
+    function stopT() { run=false; clearInterval(timerVar); transmitData(); }
+    function updateClock() { let m = Math.floor(tSec/60), s = tSec%60; document.getElementById('timer').innerText = (m<10?'0'+m:m)+":"+(s<10?'0'+s:s); }
+    function chScore(t, v) { goals[t]=Math.max(0, goals[t]+v); document.getElementById('gols'+t).innerText = goals[t]; transmitData(); }
+    function setP(p) { per=p; resetT(); }
+    function resetT() { stopT(); tSec = (per==="1T")?0:2700; updateClock(); transmitData(); }
+    function toggleRes(id) { document.getElementById(id).classList.toggle('show'); }
+    
+    function clearSub() { 
+        document.getElementById('subSai').innerText = "---"; 
+        document.getElementById('subEntra').innerText = "---"; 
+        pendingSub = { saiID_Num: null, saiID_Nom: null, entID_Num: null, entID_Nom: null }; 
+        document.querySelectorAll('.player-sub-sai, .player-sub-entra').forEach(el => {
+            el.classList.remove('player-sub-sai', 'player-sub-entra');
+        });
+    }
+    function clearCard() { document.getElementById('cardEvent').innerText = "---"; transmitData(); }
+    
+    function prepGoal(idM, t) { document.getElementById('cardEvent').innerText = "⚽ GOL: " + document.getElementById(idM).value; chScore(t, 1); }
+    function prepOG(idM, teamPontua) { document.getElementById('cardEvent').innerText = "🥅 GC: " + document.getElementById(idM).value; chScore(teamPontua, 1); }
+    function prepCard(idM, icon) { document.getElementById('cardEvent').innerText = document.getElementById(idM).value + " " + icon; transmitData(); }
+    
+    function prepSub(idN, idM) { 
+        const val = document.getElementById(idM).value;
+        const row = document.getElementById(idM).closest('tr');
+        
+        if (!pendingSub.saiID_Nom) { 
+            pendingSub.saiID_Num = idN; pendingSub.saiID_Nom = idM; 
+            document.getElementById('subSai').innerText = val; 
+            if(row) row.classList.add('player-sub-sai');
+        } else { 
+            pendingSub.entID_Num = idN; pendingSub.entID_Nom = idM; 
+            document.getElementById('subEntra').innerText = val; 
+            if(row) row.classList.add('player-sub-entra');
+            
+            // Força a anotação da substituição para ir pro Drive
+            document.getElementById('cardEvent').innerText = `SUB: Sai ${document.getElementById(pendingSub.saiID_Nom).value} Entra ${val}`;
+            transmitData();
+        }
+    }
+
+    function handleSubLogic() {
+        if (pendingSub.saiID_Nom && pendingSub.entID_Nom) {
+            const inputTitNum = document.getElementById(pendingSub.saiID_Num);
+            const inputTitNom = document.getElementById(pendingSub.saiID_Nom);
+            const inputResNum = document.getElementById(pendingSub.entID_Num);
+            const inputResNom = document.getElementById(pendingSub.entID_Nom);
+            
+            if(inputTitNum && inputTitNom && inputResNum && inputResNom) {
+                const tNumBkp = inputTitNum.value;
+                const tNomBkp = inputTitNom.value;
+                const rNumBkp = inputResNum.value;
+                const rNomBkp = inputResNom.value;
+                
+                inputTitNum.value = rNumBkp;
+                inputTitNom.value = rNomBkp + " ▶";
+                inputResNum.value = tNumBkp;
+                inputResNom.value = tNomBkp + " ⇄";
+                clearSub(); 
+                clearCard(); // Limpa o card de evento depois da sub
+            }
+        }
+    }
+    </script>
+</body>
+</html>

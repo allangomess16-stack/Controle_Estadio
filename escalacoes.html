@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Escalação - vMix</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;0,900;1,900&display=swap');
+
+        body {
+            margin: 0; padding: 0; overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background: radial-gradient(circle at center, #1b3d22 0%, #0d1e11 60%, #000000 100%);
+            display: flex; justify-content: center; align-items: center; height: 100vh;
+        }
+
+        #bg-logo {
+            position: absolute; width: 800px; height: 800px; opacity: 0.05;
+            object-fit: contain; filter: grayscale(100%); pointer-events: none;
+        }
+
+        /* --- ANIMAÇÃO DE INTRODUÇÃO GIGANTE --- */
+        .intro-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.85); z-index: 200;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+        }
+        .intro-container.show { opacity: 1; pointer-events: auto; }
+        .intro-escudo {
+            width: 450px; height: 450px; object-fit: contain;
+            transform: scale(0) rotate(-15deg); filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8));
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .intro-escudo.animate { transform: scale(1) rotate(0deg); }
+
+        .header-time {
+            position: absolute; top: 40px; left: 50px;
+            display: flex; align-items: center; gap: 20px;
+            opacity: 0; transition: opacity 1s; z-index: 10;
+        }
+        .header-time.visible { opacity: 1; }
+        .header-escudo { width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8)); }
+        .header-nome { font-size: 4rem; font-weight: 900; color: #fff; text-transform: uppercase; text-shadow: 0 5px 15px rgba(0,0,0,0.8); margin: 0; border-bottom: 5px solid var(--cor-time, #fff); line-height: 1;}
+
+        /* --- VISÃO CAMPO --- */
+        .campo-container {
+            position: absolute; width: 1200px; height: 850px;
+            background: rgba(255,255,255,0.03); border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 20px; margin-top: 50px; box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            opacity: 0; pointer-events: none; transition: opacity 0.5s;
+        }
+        .campo-container.show { opacity: 1; pointer-events: auto; }
+
+        .tec-box-campo {
+            position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.9); padding: 10px 40px; border-radius: 10px; border: 2px solid var(--cor-time, #fff);
+            text-align: center; color: #fff; font-size: 1.5rem; font-weight: 800; text-transform: uppercase; box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+        }
+
+        /* trocar a fonte do numero ou nome na escalaçao hl num e hl nome*/
+        #highlight-card {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,20,0.95));
+            border-left: 15px solid var(--cor-time, #fff); border-radius: 20px;
+            padding: 40px 80px; display: flex; align-items: center; gap: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9); z-index: 100;
+            opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #highlight-card.show { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+       .hl-num { font-size: 8rem; font-weight: 900; color: #f1c40f; line-height: 1; text-shadow: 0 5px 20px rgba(0,0,0,0.8); }
+        .hl-nome { font-size: 5rem; font-weight: 900; color: #fff; text-transform: uppercase; line-height: 1; text-shadow: 0 5px 15px rgba(0,0,0,0.8); white-space: nowrap;}
+
+        .slot-jogador {
+            position: absolute; transform: translate(-50%, -50%) scale(0);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10;
+        }
+        .slot-jogador.placed { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        
+        .slot-num {
+            width: 50px; height: 50px; background: rgba(0,0,0,0.8); border: 3px solid var(--cor-time, #fff);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 1.8rem; font-weight: 900; color: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.6); margin-bottom: 5px;
+        }
+        .slot-nome {
+            background: rgba(0,0,0,0.7); padding: 5px 15px; border-radius: 8px;
+            font-size: 1.2rem; font-weight: 800; color: #fff; text-transform: uppercase;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.5); border-bottom: 2px solid var(--cor-time, #fff);
+            white-space: nowrap; text-shadow: 1px 1px 3px #000;
+        }
+
+        /* --- VISÃO LISTA 1 COLUNA --- */
+        .lista-container {
+            position: absolute; width: 650px; height: 850px; top: 120px;
+            background: linear-gradient(180deg, rgba(10,10,10,0.95), rgba(0,0,0,0.95)); 
+            border-top: 15px solid var(--cor-time, #fff);
+            border-radius: 20px; padding: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+            opacity: 0; transform: scale(0.9); transition: all 0.5s; pointer-events: none; z-index: 20;
+            display: flex; flex-direction: column;
+        }
+        .lista-container.show { opacity: 1; transform: scale(1); pointer-events: auto; }
+        /* trocar cores da lista */
+        .lista-grid { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; justify-content: center;}
+        .lista-item { display: flex; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 20px; border-radius: 8px; border-left: 6px solid var(--cor-time, #fff);}
+        .lista-num { font-size: 2rem; font-weight: 900; color: #f1c40f; width: 60px; text-align: center; text-shadow: 0 2px 5px rgba(0,0,0,0.8);}        .lista-nome { font-size: 1.8rem; font-weight: 800; color: #fff; margin-left: 20px; text-transform: uppercase; text-shadow: 0 2px 5px rgba(0,0,0,0.8);}
+        
+        .lista-tecnico-box { margin-top: 15px; text-align: center; border-top: 2px dashed #444; padding-top: 15px; }
+        .lista-tec-label { font-size: 1.2rem; color: var(--cor-time, #fff); letter-spacing: 2px; text-transform: uppercase; font-weight: bold;}
+        .lista-tec-nome { font-size: 2.2rem; font-weight: 900; color: #fff; text-transform: uppercase; margin: 0; text-shadow: 0 5px 10px rgba(0,0,0,0.8);}
+    </style>
+</head>
+<body>
+
+    <img id="bg-logo" src="">
+
+    <div id="intro-container" class="intro-container">
+        <img id="intro-escudo" src="" class="intro-escudo">
+    </div>
+
+    <div class="header-time" id="headerTime">
+        <img class="header-escudo" id="escudoHeader" src="">
+        <h1 class="header-nome" id="nomeHeader">TIME</h1>
+    </div>
+
+    <div class="campo-container" id="campoView">
+        <div id="highlight-card">
+            <div class="hl-num" id="hl-num">10</div>
+            <div class="hl-nome" id="hl-nome">JOGADOR</div>
+        </div>
+        <div class="tec-box-campo" id="tec-box-campo">TÉC: NOME DO TÉCNICO</div>
+    </div>
+
+    <div class="lista-container" id="listaView">
+        <div class="lista-grid" id="listaJogadoresGrid">
+            </div>
+        <div class="lista-tecnico-box">
+            <div class="lista-tec-label" id="formacaoLabel">TÁTICA</div>
+            <div class="lista-tec-nome" id="tecNomeLista">TÉCNICO</div>
+        </div>
+    </div>
+
+    <script>
+        const mapaTatico = {
+            'GL': { top: '85%', left: '50%' },
+            'LD': { top: '65%', left: '85%' },
+            'LE': { top: '65%', left: '15%' },
+            'ZG-D': { top: '72%', left: '65%' },
+            'ZG-C': { top: '75%', left: '50%' },
+            'ZG-E': { top: '72%', left: '35%' },
+            'ALA-D': { top: '55%', left: '90%' },
+            'ALA-E': { top: '55%', left: '10%' },
+            'VOL-D': { top: '58%', left: '65%' },
+            'VOL-C': { top: '60%', left: '50%' },
+            'VOL-E': { top: '58%', left: '35%' },
+            'VOL 1': { top: '58%', left: '65%' },
+            'VOL 2': { top: '58%', left: '35%' },
+            'VOL 3': { top: '60%', left: '50%' },
+            'MEIA-D': { top: '42%', left: '75%' },
+            'MEIA-C': { top: '40%', left: '50%' },
+            'MEIA-E': { top: '42%', left: '25%' },
+            'PL-D': { top: '20%', left: '85%' },
+            'PL-E': { top: '20%', left: '15%' },
+            'SA-D': { top: '25%', left: '65%' },
+            'SA-C': { top: '22%', left: '50%' },
+            'SA-E': { top: '25%', left: '35%' },
+            'CT-D': { top: '15%', left: '60%' },
+            'CT-C': { top: '12%', left: '50%' },
+            'CT-E': { top: '15%', left: '40%' },
+            'CT': { top: '12%', left: '50%' }
+        };
+
+        const campoView = document.getElementById('campoView');
+        const listaView = document.getElementById('listaView');
+        const highlightCard = document.getElementById('highlight-card');
+        
+        let currentHighlightTimer = null;
+        let lastEventTimestamp = 0;
+
+        // Função que roda a animação principal antes de abrir o card final
+        function playIntroAnimation(dadosEsc, callbackFinal) {
+            // Limpa e esconde as telas antigas
+            campoView.classList.remove('show');
+            listaView.classList.remove('show');
+            document.getElementById('headerTime').classList.remove('visible');
+
+            // Prepara as cores
+            document.documentElement.style.setProperty('--cor-time', dadosEsc.cor);
+            document.getElementById('bg-logo').src = dadosEsc.escudo;
+            document.getElementById('escudoHeader').src = dadosEsc.escudo;
+            document.getElementById('nomeHeader').innerText = dadosEsc.time;
+
+            // Escudo Gigante da Intro
+            const introCont = document.getElementById('intro-container');
+            const introEscudo = document.getElementById('intro-escudo');
+            introEscudo.src = dadosEsc.escudo;
+
+            introCont.classList.add('show');
+            setTimeout(() => introEscudo.classList.add('animate'), 100);
+
+            // Tira a intro e chama a tela escolhida (Campo ou Lista)
+            setTimeout(() => {
+                introEscudo.classList.remove('animate');
+                introCont.classList.remove('show');
+                
+                setTimeout(() => {
+                    document.getElementById('headerTime').classList.add('visible');
+                    callbackFinal(); 
+                }, 500); // 0.5s de respiro pra tela aparecer
+            }, 2500); // Fica 2.5s na tela inteira
+        }
+
+        function renderEscalacao() {
+            const dadosBrutos = localStorage.getItem('vMixData');
+            if (!dadosBrutos) return;
+            const jogo = JSON.parse(dadosBrutos);
+
+            if (!jogo.eventoCard) return;
+
+            if (jogo.eventoCard.timestamp === lastEventTimestamp) return;
+            lastEventTimestamp = jogo.eventoCard.timestamp;
+
+            if (jogo.eventoCard.tipo === 'ESCALACAO_LISTA') {
+                const dadosEsc = jogo.eventoCard;
+                
+                playIntroAnimation(dadosEsc, () => {
+                    const grid = document.getElementById('listaJogadoresGrid');
+                    grid.innerHTML = '';
+                    dadosEsc.jogadores.forEach(jog => {
+                        grid.innerHTML += `<div class="lista-item"><div class="lista-num">${jog.numero}</div><div class="lista-nome">${jog.nome}</div></div>`;
+                    });
+
+                    document.getElementById('formacaoLabel').innerText = "TÁTICA: " + dadosEsc.formacao;
+                    document.getElementById('tecNomeLista').innerText = dadosEsc.tecnico || "NÃO INFORMADO";
+                    listaView.classList.add('show');
+                });
+
+            } else if (jogo.eventoCard.tipo === 'CAMPO_TODOS') {
+                const dadosEsc = jogo.eventoCard;
+
+                playIntroAnimation(dadosEsc, () => {
+                    document.getElementById('tec-box-campo').innerText = "TÉC: " + (dadosEsc.tecnico || "NÃO INFORMADO");
+                    document.querySelectorAll('.slot-jogador').forEach(el => el.remove());
+                    campoView.classList.add('show');
+                    
+                    // Loop com delay pra criar um efeito "cascata" dos jogadores entrando no gramado
+                    dadosEsc.jogadores.forEach((jog, idx) => {
+                        setTimeout(() => {
+                            criarMiniCard({ index: jog.index, posicaoTatica: jog.posicaoTatica, numero: jog.numero, jogador: jog.nome });
+                        }, idx * 150); // Entra 1 a cada 0.15s
+                    });
+                });
+
+            } else if (jogo.eventoCard.tipo === 'ESCALAR') {
+                const dadosEsc = jogo.eventoCard;
+                
+                // Esse entra direto sem Intro, pois é destaque 1 a 1.
+                document.documentElement.style.setProperty('--cor-time', dadosEsc.cor);
+                document.getElementById('bg-logo').src = dadosEsc.escudo;
+                document.getElementById('escudoHeader').src = dadosEsc.escudo;
+                document.getElementById('nomeHeader').innerText = dadosEsc.time;
+                
+                listaView.classList.remove('show');
+                document.getElementById('headerTime').classList.add('visible');
+                campoView.classList.add('show');
+
+                document.getElementById('tec-box-campo').innerText = "TÉC: " + (dadosEsc.tecnico || "NÃO INFORMADO");
+                document.getElementById('hl-num').innerText = dadosEsc.numero;
+                document.getElementById('hl-nome').innerText = dadosEsc.jogador;
+
+                highlightCard.classList.add('show');
+                
+                if(currentHighlightTimer) clearTimeout(currentHighlightTimer);
+
+                currentHighlightTimer = setTimeout(() => {
+                    highlightCard.classList.remove('show');
+                    setTimeout(() => {
+                        criarMiniCard(dadosEsc);
+                    }, 400); 
+                }, 1500);
+
+            } else if (jogo.eventoCard.tipo === 'LIMPAR_CAMPO') {
+                listaView.classList.remove('show');
+                campoView.classList.remove('show');
+                document.getElementById('headerTime').classList.remove('visible');
+                document.querySelectorAll('.slot-jogador').forEach(el => el.remove());
+                document.getElementById('bg-logo').src = "";
+            }
+        }
+
+        function criarMiniCard(dadosEsc) {
+            const idExistente = document.getElementById('slot_index_' + dadosEsc.index);
+            if(idExistente) idExistente.remove();
+
+            const coords = mapaTatico[dadosEsc.posicaoTatica] || mapaTatico['GL'];
+
+            const slot = document.createElement('div');
+            slot.className = 'slot-jogador';
+            slot.id = 'slot_index_' + dadosEsc.index; 
+            slot.style.top = coords.top;
+            slot.style.left = coords.left;
+
+            slot.innerHTML = `<div class="slot-num">${dadosEsc.numero}</div><div class="slot-nome">${dadosEsc.jogador}</div>`;
+            campoView.appendChild(slot);
+            
+            void slot.offsetWidth; 
+            slot.classList.add('placed');
+        }
+
+        window.addEventListener('storage', (e) => { if (e.key === 'vMixData') renderEscalacao(); });
+    </script>
+</body>
+</html>
