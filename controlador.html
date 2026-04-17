@@ -302,10 +302,23 @@
 
     
 
-   <script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAeWhpLh1tO_axQSDtckMVyoE-f4Egno8A",
+        authDomain: "controladoravmixestadio.firebaseapp.com",
+        projectId: "controladoravmixestadio",
+        storageBucket: "controladoravmixestadio.firebasestorage.app",
+        messagingSenderId: "381624685560",
+        appId: "1:381624685560:web:61266ebc5e5031d717bc0d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     const urlGoogleScript = "https://script.google.com/macros/s/AKfycbyXhf4KZqBkvTOjArPgejjsbg6hwN3-G9GN-fKMxJo8_JgPwz3eYL3jgZdJzIaxNtJosA/exec";
 
-    let modoAtual = ''; let socket = null; let acaoPendenteDrive = false; 
+    let modoAtual = ''; let acaoPendenteDrive = false; 
     let cardDataEnvio = null; let alertouAcrescimo = false; let alertouRenda = false;
 
     function showToast(msg, bg, color) {
@@ -346,8 +359,7 @@
             if (selPos) {
                 selPos.innerHTML = ''; 
                 todasPosicoes.forEach(pos => {
-                    let opt = document.createElement('option');
-                    opt.value = pos; opt.text = pos; selPos.appendChild(opt);
+                    let opt = document.createElement('option'); opt.value = pos; opt.text = pos; selPos.appendChild(opt);
                 });
                 selPos.value = defaults[i-1]; 
             }
@@ -357,83 +369,64 @@
     function iniciarSistema(modoEscolhido) {
         modoAtual = modoEscolhido; document.getElementById('modalModo').style.display = 'none';
         const statusBox = document.getElementById('statusConexao');
-        if (modoAtual === 'server') {
-            try {
-                socket = io('http://localhost:3000');
-                socket.on('connect', () => { statusBox.innerHTML = "🟢 Servidor Conectado"; statusBox.style.color = "var(--green)"; });
-                socket.on('disconnect', () => { statusBox.innerHTML = "🔴 Operando no Backup"; statusBox.style.color = "var(--red)"; });
-            } catch(e) { alert("Erro ao conectar. Backup ativo."); }
-        } else {
-            statusBox.innerHTML = "🖥️ Modo Local Ativo"; statusBox.style.color = "var(--primary)";
-        }
+        statusBox.innerHTML = "🔥 Conectado na Nuvem (Firebase)"; statusBox.style.color = "var(--green)";
         atualizarTimeCompleto('A'); atualizarTimeCompleto('B');
     }
 
     function getTeamInfo(input) {
         if (!input) return null; let cleanInput = input.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
         const timesBase = {
-            "AMERICA-MG": { cor: "#27ae60", logo: "escudo serie a/America-MG.png", sigla: "AME" },
-            "ATHLETICO PARANAENSE": { cor: "#c0392b", logo: "escudo serie a/Athletico Paranaense.png", sigla: "CAP" },
-            "ATHLETICO-PR": { cor: "#c0392b", logo: "escudo serie a/Athletico Paranaense.png", sigla: "CAP" },
-            "ATLETICO GOIANIENSE": { cor: "#000000", logo: "escudo serie a/Atlético Goianiense.png", sigla: "ACG" },
-            "ATLETICO-GO": { cor: "#000000", logo: "escudo serie a/Atlético Goianiense.png", sigla: "ACG" },
-            "ATLETICO MINEIRO": { cor: "#000000", logo: "escudo serie a/Atlético Mineiro.png", sigla: "CAM" },
-            "ATLETICO-MG": { cor: "#000000", logo: "escudo serie a/Atlético Mineiro.png", sigla: "CAM" },
-            "BAHIA": { cor: "#2980b9", logo: "escudo serie a/Bahia.png", sigla: "BAH" },
-            "BOTAFOGO": { cor: "#000000", logo: "escudo serie a/Botafogo.png", sigla: "BOT" },
-            "BRAGANTINO": { cor: "#ffffff", logo: "escudo serie a/Red Bull Bragantino.png", sigla: "RBB" },
-            "RED BULL BRAGANTINO": { cor: "#ffffff", logo: "escudo serie a/Red Bull Bragantino.png", sigla: "RBB" },
-            "CHAPECOENSE": { cor: "#27ae60", logo: "escudo serie a/Chapecoense.png", sigla: "CHA" },
-            "CORINTHIANS": { cor: "#000000", logo: "escudo serie a/Corinthians.png", sigla: "COR" },
-            "CORITIBA": { cor: "#27ae60", logo: "escudo serie a/Coritiba.png", sigla: "CFC" },
-            "CRICIUMA": { cor: "#f1c40f", logo: "escudo serie a/Criciúma.png", sigla: "CRI" },
-            "CRUZEIRO": { cor: "#2980b9", logo: "escudo serie a/Cruzeiro.png", sigla: "CRU" },
-            "CUIABA": { cor: "#27ae60", logo: "escudo serie a/Cuiabá.png", sigla: "CUI" },
-            "FLAMENGO": { cor: "#c0392b", logo: "escudo serie a/Flamengo.png", sigla: "FLA" },
-            "FLUMINENSE": { cor: "#800000", logo: "escudo serie a/Fluminense.png", sigla: "FLU" },
-            "FORTALEZA": { cor: "#2980b9", logo: "escudo serie a/Fortaleza.png", sigla: "FOR" },
-            "GREMIO": { cor: "#3498db", logo: "escudo serie a/Grêmio.png", sigla: "GRE" },
-            "INTERNACIONAL": { cor: "#e74c3c", logo: "escudo serie a/Internacional.png", sigla: "INT" },
-            "INTER": { cor: "#e74c3c", logo: "escudo serie a/Internacional.png", sigla: "INT" },
-            "JUVENTUDE": { cor: "#27ae60", logo: "escudo serie a/Juventude.png", sigla: "JUV" },
-            "MIRASSOL": { cor: "#f1c40f", logo: "escudo serie a/Mirassol-SP.png", sigla: "MIR" },
-            "PALMEIRAS": { cor: "#27ae60", logo: "escudo serie a/Palmeiras.png", sigla: "PAL" },
-            "REMO": { cor: "#1e90ff", logo: "escudo serie a/Remo.png", sigla: "REM" },
-            "SANTOS": { cor: "#ffffff", logo: "escudo serie a/Santos.png", sigla: "SAN" },
-            "SAO PAULO": { cor: "#ff0000", logo: "escudo serie a/São Paulo.png", sigla: "SAO" },
-            "VASCO DA GAMA": { cor: "#000000", logo: "escudo serie a/Vasco da Gama.png", sigla: "VAS" },
-            "VASCO": { cor: "#000000", logo: "escudo serie a/Vasco da Gama.png", sigla: "VAS" },
-            "VITORIA": { cor: "#c0392b", logo: "escudo serie a/Vitória.png", sigla: "VIT" }
+            "AMERICA-MG": { cor: "#27ae60", logo: "escudos/America-MG.png", sigla: "AME" },
+            "ATHLETICO PARANAENSE": { cor: "#c0392b", logo: "escudos/Athletico Paranaense.png", sigla: "CAP" },
+            "ATHLETICO-PR": { cor: "#c0392b", logo: "escudos/Athletico Paranaense.png", sigla: "CAP" },
+            "ATLETICO GOIANIENSE": { cor: "#000000", logo: "escudos/Atlético Goianiense.png", sigla: "ACG" },
+            "ATLETICO-GO": { cor: "#000000", logo: "escudos/Atlético Goianiense.png", sigla: "ACG" },
+            "ATLETICO MINEIRO": { cor: "#000000", logo: "escudos/Atlético Mineiro.png", sigla: "CAM" },
+            "ATLETICO-MG": { cor: "#000000", logo: "escudos/Atlético Mineiro.png", sigla: "CAM" },
+            "BAHIA": { cor: "#2980b9", logo: "escudos/Bahia.png", sigla: "BAH" },
+            "BOTAFOGO": { cor: "#111111", logo: "escudos/Botafogo.png", sigla: "BOT" },
+            "BRAGANTINO": { cor: "#ffffff", logo: "escudos/Red Bull Bragantino.png", sigla: "RBB" },
+            "RED BULL BRAGANTINO": { cor: "#ffffff", logo: "escudos/Red Bull Bragantino.png", sigla: "RBB" },
+            "CHAPECOENSE": { cor: "#27ae60", logo: "escudos/Chapecoense.png", sigla: "CHA" },
+            "CORINTHIANS": { cor: "#000000", logo: "escudos/Corinthians.png", sigla: "COR" },
+            "CORITIBA": { cor: "#27ae60", logo: "escudos/Coritiba.png", sigla: "CFC" },
+            "CRICIUMA": { cor: "#f1c40f", logo: "escudos/Criciúma.png", sigla: "CRI" },
+            "CRUZEIRO": { cor: "#2980b9", logo: "escudos/Cruzeiro.png", sigla: "CRU" },
+            "CUIABA": { cor: "#27ae60", logo: "escudos/Cuiabá.png", sigla: "CUI" },
+            "FLAMENGO": { cor: "#c0392b", logo: "escudos/Flamengo.png", sigla: "FLA" },
+            "FLUMINENSE": { cor: "#800000", logo: "escudos/Fluminense.png", sigla: "FLU" },
+            "FORTALEZA": { cor: "#2980b9", logo: "escudos/Fortaleza.png", sigla: "FOR" },
+            "GREMIO": { cor: "#3498db", logo: "escudos/Grêmio.png", sigla: "GRE" },
+            "INTERNACIONAL": { cor: "#e74c3c", logo: "escudos/Internacional.png", sigla: "INT" },
+            "INTER": { cor: "#e74c3c", logo: "escudos/Internacional.png", sigla: "INT" },
+            "JUVENTUDE": { cor: "#27ae60", logo: "escudos/Juventude.png", sigla: "JUV" },
+            "MIRASSOL": { cor: "#f1c40f", logo: "escudos/Mirassol-SP.png", sigla: "MIR" },
+            "PALMEIRAS": { cor: "#27ae60", logo: "escudos/Palmeiras.png", sigla: "PAL" },
+            "REMO": { cor: "#1e90ff", logo: "escudos/Remo.png", sigla: "REM" },
+            "SANTOS": { cor: "#ffffff", logo: "escudos/Santos.png", sigla: "SAN" },
+            "SAO PAULO": { cor: "#ff0000", logo: "escudos/São Paulo.png", sigla: "SAO" },
+            "VASCO DA GAMA": { cor: "#000000", logo: "escudos/Vasco da Gama.png", sigla: "VAS" },
+            "VASCO": { cor: "#000000", logo: "escudos/Vasco da Gama.png", sigla: "VAS" },
+            "VITORIA": { cor: "#c0392b", logo: "escudos/Vitória.png", sigla: "VIT" }
         };
         return timesBase[cleanInput] || null;
     }
 
     function selectPlayer(team, numId, nameId, rowId, idx) {
         let sel = team === 'A' ? selecionadoA : selecionadoB;
-        if (sel.rowId === rowId) {
-            document.getElementById(rowId).classList.remove('player-selected');
-            sel.numId = null; sel.nameId = null; sel.rowId = null; sel.indexReal = null; return;
-        }
+        if (sel.rowId === rowId) { document.getElementById(rowId).classList.remove('player-selected'); sel.numId = null; sel.nameId = null; sel.rowId = null; sel.indexReal = null; return; }
         if (sel.rowId) { let oldRow = document.getElementById(sel.rowId); if(oldRow) oldRow.classList.remove('player-selected'); }
-        sel.numId = numId; sel.nameId = nameId; sel.rowId = rowId; sel.indexReal = idx; 
-        document.getElementById(rowId).classList.add('player-selected');
+        sel.numId = numId; sel.nameId = nameId; sel.rowId = rowId; sel.indexReal = idx; document.getElementById(rowId).classList.add('player-selected');
     }
 
-    function registrarEventoNaLista(idInput, icone) {
-        if (!idInput) return;
-        const inputNome = document.getElementById(idInput);
-        if (inputNome && inputNome.value !== "") { inputNome.value = inputNome.value + " " + icone; }
-    }
+    function registrarEventoNaLista(idInput, icone) { if (!idInput) return; const inputNome = document.getElementById(idInput); if (inputNome && inputNome.value !== "") { inputNome.value = inputNome.value + " " + icone; } }
 
     function doAction(team, action) {
-        acaoPendenteDrive = true; 
-        let sel = team === 'A' ? selecionadoA : selecionadoB;
-        
+        acaoPendenteDrive = true; let sel = team === 'A' ? selecionadoA : selecionadoB;
         if (action === 'GOL') { prepGoal(team); if (sel.nameId) registrarEventoNaLista(sel.nameId, '⚽'); return; }
         if (action === 'GOL_CONTRA') { prepOG(team === 'A' ? 'B' : 'A'); return; }
-        
         if (action === 'LISTA') { prepararLista(team); return; } 
-        if (action === 'CAMPO_TODOS') { prepararCampoTodos(team); return; } // NOVO BOTÃO
+        if (action === 'CAMPO_TODOS') { prepararCampoTodos(team); return; } 
 
         if (!sel.nameId) { alert("Selecione um jogador da lista primeiro!"); return; }
         
@@ -441,18 +434,13 @@
         if (action === 'VERMELHO') { prepararCardTelao(team, sel.nameId, '🟥'); registrarEventoNaLista(sel.nameId, '🟥'); chRed(team, 1, false); }
         if (action === 'CAPITAO') { registrarEventoNaLista(sel.nameId, '©'); showToast("Capitão definido!", "var(--primary)", "black"); }
         if (action === 'SUB') prepSub(sel.numId, sel.nameId);
-        
-        if (action === 'ESCALAR') {
-            if (sel.indexReal > 11) { alert("O Campo de jogo só posiciona os 11 Titulares!"); return; }
-            prepararEscalacao(team, sel.numId, sel.nameId, sel.indexReal);
-        }
+        if (action === 'ESCALAR') { if (sel.indexReal > 11) { alert("O Campo só posiciona Titulares!"); return; } prepararEscalacao(team, sel.numId, sel.nameId, sel.indexReal); }
     }
 
     function gen(id, count, pref) {
         const t = document.getElementById(id); const timeLetra = pref.charAt(0); const isTitular = pref.includes('_t');
         for(let i=1; i<=count; i++) {
-            let r = t.insertRow(); let rowId = `row_${pref}_${i}`; r.id = rowId; r.className = 'player-row';
-            let indexTatico = isTitular ? i : (i + 11);
+            let r = t.insertRow(); let rowId = `row_${pref}_${i}`; r.id = rowId; r.className = 'player-row'; let indexTatico = isTitular ? i : (i + 11);
             let tdPos = isTitular ? `<td style="width: 50px;"><select class="sel-pos" id="${pref}_p_${i}" title="Posição no Campo"></select></td>` : `<td style="width: 50px; text-align:center; font-size:0.7rem; color:#666;">RES</td>`;
             r.innerHTML = `<td style="width: 25px; text-align: center;" onclick="selectPlayer('${timeLetra}', '${pref}_n_${i}', '${pref}_m_${i}', '${rowId}', ${indexTatico})"><div class="radio-selector"></div></td><td style="width: 40px;"><input type="text" class="in-num" id="${pref}_n_${i}" value="${i}" onfocus="selectPlayer('${timeLetra}', '${pref}_n_${i}', '${pref}_m_${i}', '${rowId}', ${indexTatico})"></td>${tdPos}<td><input type="text" class="in-name" id="${pref}_m_${i}" placeholder="Jogador" onfocus="selectPlayer('${timeLetra}', '${pref}_n_${i}', '${pref}_m_${i}', '${rowId}', ${indexTatico})"></td>`;
         }
@@ -462,10 +450,7 @@
     atualizarFormacao('A'); atualizarFormacao('B');
 
     function atualizarTimeCompleto(lado) {
-        const nomeInput = document.getElementById('name' + lado).value;
-        const info = getTeamInfo(nomeInput);
-        const timeLimpo = nomeInput.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
-        
+        const nomeInput = document.getElementById('name' + lado).value; const info = getTeamInfo(nomeInput); const timeLimpo = nomeInput.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
         const logo = document.getElementById('logo' + lado); const col = document.getElementById('col_' + lado); const box = document.getElementById('box_' + lado); const btnRes = document.getElementById('btn_res_' + lado); const watermark = document.getElementById('watermark_' + lado);
 
         if (nomeInput !== "") btnRes.innerHTML = "RESERVAS " + timeLimpo + " <span>▼</span>"; else btnRes.innerHTML = "RESERVAS " + lado + " <span>▼</span>";
@@ -493,14 +478,13 @@
         const dados = {
             tempo: document.getElementById('timer').innerText, golsA: goals.A, golsB: goals.B, placar: goals.A + "x" + goals.B, redA: redCards.A, redB: redCards.B, 
             timeA: siglaA, timeB: siglaB, extra: document.getElementById('extra').value || "0", periodo: per, eventoTextual: document.getElementById('cardEvent').innerText, 
-            escudoA: infoA ? infoA.logo : "", escudoB: infoB ? infoB.logo : "", corA: infoA ? infoA.cor : "transparent", corB: infoB ? infoB.cor : "transparent",
+            escudosA: infoA ? infoA.logo : "", escudosB: infoB ? infoB.logo : "", corA: infoA ? infoA.cor : "transparent", corB: infoB ? infoB.cor : "transparent",
             eventoCard: cardDataEnvio, timestamp: Date.now()
         };
 
-        localStorage.setItem('vMixData', JSON.stringify(dados));
-        if (modoAtual === 'server' && socket) socket.emit('vMixData', dados);
+        db.ref('transmissao/vMixData').set(dados);
+
         if (acaoPendenteDrive && dados.eventoTextual !== "---") { registrarNoGoogleSheets(dados); acaoPendenteDrive = false; }
-        fetch(`http://127.0.0.1:8088/api/?Function=SetText&Value=${dados.timestamp}`, { mode: 'no-cors' }).catch(()=>{});
     }
 
     function startT() { if(!run){ run=true; timerVar = setInterval(()=>{ tSec++; updateClock(); transmitData(); },1000); } }
@@ -525,62 +509,38 @@
     function ocultarTudo() { cardDataEnvio = { tipo: 'OCULTAR', timestamp: Date.now() }; transmitData(); showToast("Arte retirada da tela", "#333", "white"); }
     function limparCampo() { cardDataEnvio = { tipo: 'LIMPAR_CAMPO', timestamp: Date.now() }; transmitData(); showToast("Campo Limpo!", "#6c5ce7", "white"); }
     
-    function prepGoal(t) { const nomeTime = document.getElementById(t === 'A' ? 'nameA' : 'nameB').value; const info = getTeamInfo(nomeTime); document.getElementById('cardEvent').innerText = "PREPARADO: GOL " + nomeTime; chScore(t, 1, false); cardDataEnvio = { tipo: 'GOL', time: nomeTime, escudo: info ? info.logo : "", cor: info ? info.cor : "#ffffff", timestamp: Date.now() }; }
+    function prepGoal(t) { const nomeTime = document.getElementById(t === 'A' ? 'nameA' : 'nameB').value; const info = getTeamInfo(nomeTime); document.getElementById('cardEvent').innerText = "PREPARADO: GOL " + nomeTime; chScore(t, 1, false); cardDataEnvio = { tipo: 'GOL', time: nomeTime, escudos: info ? info.logo : "", cor: info ? info.cor : "#ffffff", timestamp: Date.now() }; }
     function prepOG(tPontua) { document.getElementById('cardEvent').innerText = "PREPARADO: GOL CONTRA"; chScore(tPontua, 1, false); }
     
-    function prepararCardTelao(team, idM, icon) { 
-        const playerNameClean = document.getElementById(idM).value.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); 
-        const nomeTime = document.getElementById(team === 'A' ? 'nameA' : 'nameB').value; const info = getTeamInfo(nomeTime);
-        document.getElementById('cardEvent').innerText = "PREPARADO: " + playerNameClean + " " + icon; 
-        cardDataEnvio = { tipo: 'CARTAO', corCartao: icon === '🟨' ? '#f1c40f' : '#ff4757', textoCartao: icon === '🟨' ? 'CARTÃO AMARELO' : 'CARTÃO VERMELHO', jogador: playerNameClean + " " + icon, time: nomeTime, escudo: info ? info.logo : "", cor: info ? info.cor : "#ffffff", timestamp: Date.now() }; 
-    }
+    function prepararCardTelao(team, idM, icon) { const playerNameClean = document.getElementById(idM).value.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); const nomeTime = document.getElementById(team === 'A' ? 'nameA' : 'nameB').value; const info = getTeamInfo(nomeTime); document.getElementById('cardEvent').innerText = "PREPARADO: " + playerNameClean + " " + icon; cardDataEnvio = { tipo: 'CARTAO', corCartao: icon === '🟨' ? '#f1c40f' : '#ff4757', textoCartao: icon === '🟨' ? 'CARTÃO AMARELO' : 'CARTÃO VERMELHO', jogador: playerNameClean + " " + icon, time: nomeTime, escudos: info ? info.logo : "", cor: info ? info.cor : "#ffffff", timestamp: Date.now() }; }
 
     function prepararLista(team) {
-        const nomeTime = document.getElementById('name' + team).value; const info = getTeamInfo(nomeTime);
-        const formacao = document.getElementById('formacao' + team).value; const tecnico = document.getElementById('tecnico' + team).value;
-
+        const nomeTime = document.getElementById('name' + team).value; const info = getTeamInfo(nomeTime); const formacao = document.getElementById('formacao' + team).value; const tecnico = document.getElementById('tecnico' + team).value;
         let listaJogadores = [];
-        for (let i = 1; i <= 11; i++) {
-            const num = document.getElementById(`${team}_t_n_${i}`).value; const nomeFull = document.getElementById(`${team}_t_m_${i}`).value;
-            const nomeLimpo = nomeFull.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); 
-            listaJogadores.push({ numero: num, nome: nomeLimpo });
-        }
-
-        cardDataEnvio = { tipo: 'ESCALACAO_LISTA', time: nomeTime, escudo: info ? info.logo : "", cor: info ? info.cor : "#ffffff", formacao: formacao, tecnico: tecnico, jogadores: listaJogadores, timestamp: Date.now() }; 
+        for (let i = 1; i <= 11; i++) { const num = document.getElementById(`${team}_t_n_${i}`).value; const nomeFull = document.getElementById(`${team}_t_m_${i}`).value; const nomeLimpo = nomeFull.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); listaJogadores.push({ numero: num, nome: nomeLimpo }); }
+        cardDataEnvio = { tipo: 'ESCALACAO_LISTA', time: nomeTime, escudos: info ? info.logo : "", cor: info ? info.cor : "#ffffff", formacao: formacao, tecnico: tecnico, jogadores: listaJogadores, timestamp: Date.now() }; 
         transmitData(); showToast("Lista no Ar!", "#0984e3", "white");
     }
 
-    // --- NOVA FUNÇÃO: CAMPO TODOS ---
     function prepararCampoTodos(team) {
-        const nomeTime = document.getElementById('name' + team).value; const info = getTeamInfo(nomeTime);
-        const tecnico = document.getElementById('tecnico' + team).value;
-
+        const nomeTime = document.getElementById('name' + team).value; const info = getTeamInfo(nomeTime); const tecnico = document.getElementById('tecnico' + team).value;
         let listaJogadores = [];
-        for (let i = 1; i <= 11; i++) {
-            const num = document.getElementById(`${team}_t_n_${i}`).value; const nomeFull = document.getElementById(`${team}_t_m_${i}`).value;
-            const nomeLimpo = nomeFull.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); 
-            const tagPos = document.getElementById(`${team}_t_p_${i}`).value;
-            listaJogadores.push({ index: i, numero: num, nome: nomeLimpo, posicaoTatica: tagPos });
-        }
-
-        cardDataEnvio = { tipo: 'CAMPO_TODOS', time: nomeTime, escudo: info ? info.logo : "", cor: info ? info.cor : "#ffffff", tecnico: tecnico, jogadores: listaJogadores, timestamp: Date.now() }; 
+        for (let i = 1; i <= 11; i++) { const num = document.getElementById(`${team}_t_n_${i}`).value; const nomeFull = document.getElementById(`${team}_t_m_${i}`).value; const nomeLimpo = nomeFull.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); const tagPos = document.getElementById(`${team}_t_p_${i}`).value; listaJogadores.push({ index: i, numero: num, nome: nomeLimpo, posicaoTatica: tagPos }); }
+        cardDataEnvio = { tipo: 'CAMPO_TODOS', time: nomeTime, escudos: info ? info.logo : "", cor: info ? info.cor : "#ffffff", tecnico: tecnico, jogadores: listaJogadores, timestamp: Date.now() }; 
         transmitData(); showToast("Campo Completo no Ar!", "#27ae60", "white");
     }
 
     function prepararEscalacao(team, idNum, idNom, indexRow) {
-        const numTxt = document.getElementById(idNum).value; const nomeFull = document.getElementById(idNom).value; const nomeClean = nomeFull.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); 
-        const tecnico = document.getElementById('tecnico' + team).value; const nomeTime = document.getElementById('name' + team).value; const info = getTeamInfo(nomeTime);
+        const numTxt = document.getElementById(idNum).value; const nomeFull = document.getElementById(idNom).value; const nomeClean = nomeFull.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); const tecnico = document.getElementById('tecnico' + team).value; const nomeTime = document.getElementById('name' + team).value; const info = getTeamInfo(nomeTime);
         let tagPosicao = "GL"; if (indexRow <= 11) { const selectPos = document.getElementById(team + '_t_p_' + indexRow); if (selectPos) tagPosicao = selectPos.value; }
-
-        cardDataEnvio = { tipo: 'ESCALAR', index: indexRow, posicaoTatica: tagPosicao, numero: numTxt, jogador: nomeClean, time: nomeTime, escudo: info ? info.logo : "", cor: info ? info.cor : "#ffffff", tecnico: tecnico, timestamp: Date.now() }; 
+        cardDataEnvio = { tipo: 'ESCALAR', index: indexRow, posicaoTatica: tagPosicao, numero: numTxt, jogador: nomeClean, time: nomeTime, escudos: info ? info.logo : "", cor: info ? info.cor : "#ffffff", tecnico: tecnico, timestamp: Date.now() }; 
         transmitData(); showToast(nomeClean + " na Pos: " + tagPosicao, "#6c5ce7", "white");
     }
     
     function prepSub(idN, idM) { const valFull = document.getElementById(idM).value; const valClean = valFull.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); const row = document.getElementById(idM).closest('tr'); if (!pendingSub.saiID_Nom) { pendingSub.saiID_Num = idN; pendingSub.saiID_Nom = idM; document.getElementById('subSai').innerText = valClean; if(row) row.classList.add('player-sub-sai'); } else { pendingSub.entID_Num = idN; pendingSub.entID_Nom = idM; document.getElementById('subEntra').innerText = valClean; if(row) row.classList.add('player-sub-entra'); } }
 
-    function handleSubLogic() { if (pendingSub.saiID_Nom && pendingSub.entID_Nom) { const inputTitNum = document.getElementById(pendingSub.saiID_Num); const inputTitNom = document.getElementById(pendingSub.saiID_Nom); const inputResNum = document.getElementById(pendingSub.entID_Num); const inputResNom = document.getElementById(pendingSub.entID_Nom); if(inputTitNum && inputTitNom && inputResNum && inputResNom) { const tNumBkp = inputTitNum.value; const tNomBkp = inputTitNom.value.replace(/[▶⇄]/g, '').trim(); const rNumBkp = inputResNum.value; const rNomBkp = inputResNom.value.replace(/[▶⇄]/g, '').trim(); inputTitNum.value = rNumBkp; inputTitNom.value = rNomBkp + " ▶"; inputResNum.value = tNumBkp; inputResNom.value = tNomBkp + " ⇄"; const t = pendingSub.saiID_Nom.charAt(0); const nomeTime = document.getElementById('name'+t).value; const info = getTeamInfo(nomeTime); cardDataEnvio = { tipo: 'SUB', sai: tNomBkp, entra: rNomBkp, time: nomeTime, escudo: info ? info.logo : "", cor: info ? info.cor : "#ffffff", timestamp: Date.now() }; } } }
+    function handleSubLogic() { if (pendingSub.saiID_Nom && pendingSub.entID_Nom) { const inputTitNum = document.getElementById(pendingSub.saiID_Num); const inputTitNom = document.getElementById(pendingSub.saiID_Nom); const inputResNum = document.getElementById(pendingSub.entID_Num); const inputResNom = document.getElementById(pendingSub.entID_Nom); if(inputTitNum && inputTitNom && inputResNum && inputResNom) { const tNumBkp = inputTitNum.value; const tNomBkp = inputTitNom.value.replace(/[▶⇄]/g, '').trim(); const rNumBkp = inputResNum.value; const rNomBkp = inputResNom.value.replace(/[▶⇄]/g, '').trim(); inputTitNum.value = rNumBkp; inputTitNom.value = rNomBkp + " ▶"; inputResNum.value = tNumBkp; inputResNom.value = tNomBkp + " ⇄"; const t = pendingSub.saiID_Nom.charAt(0); const nomeTime = document.getElementById('name'+t).value; const info = getTeamInfo(nomeTime); cardDataEnvio = { tipo: 'SUB', sai: tNomBkp, entra: rNomBkp, time: nomeTime, escudos: info ? info.logo : "", cor: info ? info.cor : "#ffffff", timestamp: Date.now() }; } } }
 
     function enviarEstatistica(tipoStat) { const pub = document.getElementById('inPublico').value; const ren = document.getElementById('inRenda').value; if(tipoStat === 'PUBLICO' && !pub) { alert("Preencha o Público!"); return; } if(tipoStat === 'RENDA' && !ren) { alert("Preencha a Renda!"); return; } document.getElementById('cardEvent').innerText = "PREPARADO: " + (tipoStat === 'PUBLICO' ? 'PÚBLICO' : 'RENDA'); cardDataEnvio = { tipo: 'ESTATISTICA', info: tipoStat, valor: tipoStat === 'PUBLICO' ? pub : ren, timestamp: Date.now() }; showToast(tipoStat + " PREPARADO!", "var(--blue)", "white"); }
     </script>
-</body>
 </html>
