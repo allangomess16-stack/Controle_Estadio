@@ -4,238 +4,193 @@
     <meta charset="UTF-8">
     <title>Duelo Série A 2026 - Impacto Total</title>
     <style>
-        /* RESET: Remove espaços padrões do navegador e garante que o tamanho inclua bordas */
+        /* RESET: Remove espaços padrões do navegador */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        /* BODY TRANSPARENTE: Fundamental para o vMix não ficar com fundo preto quando a arte for retirada */
         body, html {
             width: 100%; height: 100%; overflow: hidden;
             font-family: 'Arial Black', sans-serif;
-            background-color: #000; /* Cor de fundo caso algo falhe */
+            background-color: transparent; 
         }
+
+        /* ENVELOPE PRINCIPAL: Controla a visibilidade da arte (Show/Hide) */
+        #main-wrapper {
+            width: 100vw; height: 100vh; position: absolute; top: 0; left: 0;
+            opacity: 0; transition: opacity 0.5s; display: none; background-color: #000;
+        }
+        #main-wrapper.show { opacity: 1; display: block; }
 
         /* ESTRUTURA: Define que os times ficam um ao lado do outro */
         #arena-duelo {
-            display: flex;
-            width: 100vw;
-            height: 100vh;
-            position: relative;
+            display: flex; width: 100%; height: 100%; position: relative;
         }
 
         /* LADOS: Controla cada metade da tela */
         .lado {
-            flex: 1; /* Faz cada lado ocupar 50% */
-            position: relative;
-            overflow: hidden; /* Corta sobras das bandeiras grandes */
-            display: flex;
-            justify-content: center; /* Centraliza na horizontal */
-            align-items: center;    /* Centraliza na vertical */
-            border-right: 2px solid rgba(255,255,255,0.1); /* Linha sutil no meio */
+            flex: 1; position: relative; overflow: hidden; display: flex;
+            justify-content: center; align-items: center; 
+            border-right: 2px solid rgba(255,255,255,0.1);
         }
 
-        /* BANDEIRA DE FUNDO (MARCA D'ÁGUA): Imagem gigante, desfocada e escurecida */
+        /* BANDEIRA DE FUNDO (MARCA D'ÁGUA) */
         .bandeira-img {
-            position: absolute;
-            width: 130%;  /* Bem maior para dar efeito de textura */
-            height: 130%;
-            object-fit: cover;
-            opacity: 0.25;      /* Bem transparente para não roubar a atenção */
-            filter: blur(8px) grayscale(30%); /* Desfoque premium de TV */
-            animation: moveBandeira 15s ease-in-out infinite; /* Balanço suave */
-            z-index: 1;
+            position: absolute; width: 130%; height: 130%; object-fit: cover;
+            opacity: 0.25; filter: blur(8px) grayscale(30%); 
+            animation: moveBandeira 15s ease-in-out infinite; z-index: 1;
         }
 
-        /* SOMBRAS DE VENTO: Cria faixas de sombra passando na tela */
+        /* SOMBRAS DE VENTO */
         .dobras {
-            position: absolute;
-            width: 200%; height: 100%;
+            position: absolute; width: 200%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(0,0,0,0.6), transparent, rgba(0,0,0,0.6), transparent);
-            z-index: 2;
-            animation: vento 6s linear infinite;
+            z-index: 2; animation: vento 6s linear infinite;
         }
 
         /* CONTEÚDO PRINCIPAL (ESCUDO + NOME) */
         .conteudo-time {
-            position: relative;
-            z-index: 5; /* Fica acima do fundo e do vento */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px; /* Espaço entre o escudo e o nome */
+            position: relative; z-index: 5; display: flex; flex-direction: column;
+            align-items: center; gap: 20px;
         }
 
-        /* ESCUDO DE FRENTE: Nítido e com sombra 3D */
+        /* ESCUDO DE FRENTE */
         .logo-frente {
-            width: 22vw; /* Tamanho responsivo baseado na tela */
-            max-width: 350px;
-            object-fit: contain;
-            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.9)); /* Sombra forte para destacar */
-            animation: entraLogo 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, floatLogo 4s ease-in-out infinite;
-            animation-delay: 0s, 1s; /* O float começa depois da entrada */
+            width: 22vw; max-width: 350px; object-fit: contain;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.9)); opacity: 0;
+        }
+        /* A animação só roda quando a classe .show for ativada */
+        .show .logo-frente { 
+            animation: entraLogo 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, floatLogo 4s ease-in-out infinite; 
+            animation-delay: 0s, 1s; 
         }
 
         /* NOME DO TIME COMPLETO */
         .nome-time {
-            font-size: 3.5vw;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 3px 3px 15px rgba(0,0,0,1); /* Sombra preta para leitura perfeita */
-            text-align: center;
-            line-height: 1.1;
-            opacity: 0;
-            animation: entraNome 1s ease-out 0.5s forwards; /* Entra meio segundo depois do logo */
+            font-size: 3.5vw; color: #fff; text-transform: uppercase; letter-spacing: 2px;
+            text-shadow: 3px 3px 15px rgba(0,0,0,1); text-align: center; line-height: 1.1; opacity: 0;
         }
+        .show .nome-time { animation: entraNome 1s ease-out 0.5s forwards; }
 
         /* VERSUS: O design do "X" central */
         #versus-central {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            font-size: 9rem;
-            color: #fafafa;
-            text-shadow: 0 0 20px #000, 0 0 40px #fff;
-            font-style: italic;
-            animation: versusImpact 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 10; font-size: 9rem; color: #fafafa;
+            text-shadow: 0 0 20px #000, 0 0 40px #fff; font-style: italic; opacity: 0;
         }
+        .show #versus-central { animation: versusImpact 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-        /* LINHA DO X: A faixa neon que atravessa o centro */
         #versus-central::after {
-            content: '';
-            position: absolute;
-            width: 500px; height: 8px;
+            content: ''; position: absolute; width: 500px; height: 8px;
             background: linear-gradient(90deg, transparent, #f89f18, transparent);
-            top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
-            z-index: -1;
+            top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); z-index: -1;
         }
 
-        /* TOPO: Estilo da legenda superior */
+        /* TOPO */
         #topo-info {
-            position: absolute;
-            top: 4%; width: 100%;
-            text-align: center;
-            z-index: 20;
-            color: #fff;
-            font-size: 1.8rem;
-            letter-spacing: 12px;
-            text-transform: uppercase;
-            text-shadow: 0 0 15px #f3a71a, 2px 2px 5px #000;
+            position: absolute; top: 4%; width: 100%; text-align: center; z-index: 20; color: #fff;
+            font-size: 1.8rem; letter-spacing: 12px; text-transform: uppercase; text-shadow: 0 0 15px #f3a71a, 2px 2px 5px #000;
         }
 
         /* --- BLOCO DE ANIMAÇÕES --- */
-
-        /* Animação de entrada do Escudo (Efeito Zoom-in elástico) */
-        @keyframes entraLogo {
-            0% { transform: scale(0); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* Animação de flutuação suave do Escudo (Substitui aquele pulsar forte) */
-        @keyframes floatLogo {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-        }
-
-        /* Animação de entrada do Nome (Sobe e aparece) */
-        @keyframes entraNome {
-            0% { transform: translateY(30px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
-        /* Balanço da bandeira de fundo */
-        @keyframes moveBandeira {
-            0%, 100% { transform: scale(1.3) rotate(0deg); }
-            50% { transform: scale(1.35) rotate(2deg) translate(-15px, 10px); }
-        }
-
-        /* Impacto do X: Começa grande e bate na tela */
-        @keyframes versusImpact {
-            0% { transform: translate(-50%, -50%) scale(4); opacity: 0; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-
-        @keyframes vento {
-            from { left: -100%; }
-            to { left: 0%; }
-        }
+        @keyframes entraLogo { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes floatLogo { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+        @keyframes entraNome { 0% { transform: translateY(30px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        @keyframes moveBandeira { 0%, 100% { transform: scale(1.3) rotate(0deg); } 50% { transform: scale(1.35) rotate(2deg) translate(-15px, 10px); } }
+        @keyframes versusImpact { 0% { transform: translate(-50%, -50%) scale(4); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+        @keyframes vento { from { left: -100%; } to { left: 0%; } }
     </style>
 </head>
 <body>
 
-    <div id="topo-info">Brasileirão Betano 2026</div>
+    <div id="main-wrapper">
+        <div id="topo-info">Brasileirão Betano 2026</div>
+        <div id="versus-central">X</div>
 
-    <div id="versus-central">X</div>
+        <div id="arena-duelo">
+            <div class="lado" id="lado-a">
+                <div class="dobras"></div> 
+                <img src="" id="fundo-a" class="bandeira-img"> 
+                <div class="conteudo-time">
+                    <img src="" id="logo-a" class="logo-frente"> 
+                    <div class="nome-time" id="nome-a">---</div> 
+                </div>
+            </div>
 
-    <div id="arena-duelo">
-        <div class="lado" id="lado-a">
-            <div class="dobras"></div> 
-            <img src="" id="fundo-a" class="bandeira-img"> <div class="conteudo-time">
-                <img src="" id="logo-a" class="logo-frente"> <div class="nome-time" id="nome-a">---</div> </div>
-        </div>
-
-        <div class="lado" id="lado-b">
-            <div class="dobras"></div>
-            <img src="" id="fundo-b" class="bandeira-img"> <div class="conteudo-time">
-                <img src="" id="logo-b" class="logo-frente" style="animation-delay: 0s, 2s;"> 
-                <div class="nome-time" id="nome-b">---</div>
+            <div class="lado" id="lado-b">
+                <div class="dobras"></div>
+                <img src="" id="fundo-b" class="bandeira-img"> 
+                <div class="conteudo-time">
+                    <img src="" id="logo-b" class="logo-frente" style="animation-delay: 0s, 2s;"> 
+                    <div class="nome-time" id="nome-b">---</div>
+                </div>
             </div>
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
-        /* BANCO DE DADOS: Onde você edita nomes, arquivos e cores oficiais */
-        const dadosTimes = [
-            { nome: "Athletico Paranaense", busca: "CAP", arquivo: "Athletico Paranaense.png", cor: "#8b0000" },
-            { nome: "Atlético Mineiro", busca: "CAM", arquivo: "Atletico Mineiro.png", cor: "#1a1a1a" },
-            { nome: "Bahia", busca: "BAH", arquivo: "Bahia.png", cor: "#0000ff" },
-            { nome: "Botafogo", busca: "BOT", arquivo: "Botafogo.png", cor: "#000000" },
-            { nome: "Chapecoense", busca: "CHA", arquivo: "Chapecoense.png", cor: "#006400" },
-            { nome: "Corinthians", busca: "COR", arquivo: "Corinthians.png", cor: "#111111" },
-            { nome: "Coritiba", busca: "CFC", arquivo: "Coritiba.png", cor: "#005a31" },
-            { nome: "Cruzeiro", busca: "CRU", arquivo: "Cruzeiro.png", cor: "#0033a0" },
-            { nome: "Flamengo", busca: "FLA", arquivo: "Flamengo.png", cor: "#c40000" },
-            { nome: "Fluminense", busca: "FLU", arquivo: "Fluminense.png", cor: "#800000" },
-            { nome: "Grêmio", busca: "GRE", arquivo: "Grêmio.png", cor: "#00a6ef" },
-            { nome: "Internacional", busca: "INT", arquivo: "Internacional.png", cor: "#e20e0e" },
-            { nome: "Mirassol", busca: "MIR", arquivo: "Mirassol-SP.png", cor: "#ffdb00" },
-            { nome: "Palmeiras", busca: "PAL", arquivo: "Palmeiras.png", cor: "#006437" },
-            { nome: "Red Bull Bragantino", busca: "RBB", arquivo: "Red Bull Bragantino.png", cor: "#ffffff" },
-            { nome: "Remo", busca: "REM", arquivo: "Remo.png", cor: "#000033" },
-            { nome: "Santos", busca: "SAN", arquivo: "Santos.png", cor: "#222222" },
-            { nome: "São Paulo", busca: "SPFC", arquivo: "São Paulo.png", cor: "#ff0000" },
-            { nome: "Vasco da Gama", busca: "VAS", arquivo: "Vasco da Gama.png", cor: "#121212" },
-            { nome: "Vitória", busca: "VIT", arquivo: "Vitória.png", cor: "#ff0000" }
-        ];
-
-        /* PASTA LOCAL: Caminho onde estão seus arquivos de imagem */
-        const pasta = "escudos/";
-
-        /* LÓGICA DE BUSCA: Ativada quando a página termina de carregar */
-        window.onload = function() {
-            let buscaA = prompt('Time 1:');
-            let buscaB = prompt('Time 2:');
-
-            // Agora procura tanto pelo nome completo quanto pela sigla antiga que você usava
-            const tA = dadosTimes.find(t => t.nome.toLowerCase().includes(buscaA.toLowerCase()) || t.busca.toLowerCase().includes(buscaA.toLowerCase()));
-            const tB = dadosTimes.find(t => t.nome.toLowerCase().includes(buscaB.toLowerCase()) || t.busca.toLowerCase().includes(buscaB.toLowerCase()));
-
-            if (tA && tB) {
-                // Injeta as informações do Time A no HTML
-                document.getElementById('nome-a').innerText = tA.nome;
-                document.getElementById('logo-a').src = pasta + tA.arquivo;
-                document.getElementById('fundo-a').src = pasta + tA.arquivo;
-                document.getElementById('lado-a').style.backgroundColor = tA.cor;
-
-                // Injeta as informações do Time B no HTML
-                document.getElementById('nome-b').innerText = tB.nome;
-                document.getElementById('logo-b').src = pasta + tB.arquivo;
-                document.getElementById('fundo-b').src = pasta + tB.arquivo;
-                document.getElementById('lado-b').style.backgroundColor = tB.cor;
-            } else {
-                alert("Time não encontrado! Verifique a escrita.");
-                window.location.reload(); 
-            }
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeWhpLh1tO_axQSDtckMVyoE-f4Egno8A",
+            authDomain: "controladoravmixestadio.firebaseapp.com",
+            databaseURL: "https://controladoravmixestadio-default-rtdb.firebaseio.com",
+            projectId: "controladoravmixestadio",
+            storageBucket: "controladoravmixestadio.firebasestorage.app",
+            messagingSenderId: "381624685560",
+            appId: "1:381624685560:web:61266ebc5e5031d717bc0d"
         };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let lastEventTimestamp = 0;
+        const wrapper = document.getElementById('main-wrapper');
+
+        // Função que reseta e dispara as animações CSS de entrada
+        function dispararAnimacao() {
+            wrapper.classList.remove('show');
+            void wrapper.offsetWidth; // Força o navegador a recalcular a tela
+            wrapper.classList.add('show');
+        }
+
+        function renderConfronto(jogo) {
+            if (!jogo || !jogo.eventoCard) return;
+            if (jogo.eventoCard.timestamp === lastEventTimestamp) return;
+            lastEventTimestamp = jogo.eventoCard.timestamp;
+            const evento = jogo.eventoCard;
+
+            if (evento.tipo === 'CONFRONTO') {
+                // Injeta os dados que vieram da Controladora
+                document.getElementById('nome-a').innerText = evento.timeA;
+                document.getElementById('logo-a').src = evento.escudoA;
+                document.getElementById('fundo-a').src = evento.escudoA;
+                document.getElementById('lado-a').style.backgroundColor = evento.corA;
+
+                document.getElementById('nome-b').innerText = evento.timeB;
+                document.getElementById('logo-b').src = evento.escudoB;
+                document.getElementById('fundo-b').src = evento.escudoB;
+                document.getElementById('lado-b').style.backgroundColor = evento.corB;
+
+                // Traz a tela do fundo para a frente e aciona o Take
+                dispararAnimacao();
+            } else if (evento.tipo === 'OCULTAR') {
+                // Quando clicar em "RETIRAR ARTE DO TELÃO", esconde suavemente
+                wrapper.classList.remove('show');
+            }
+        }
+
+        // 1. Escuta a Internet (Modo Server - Firebase)
+        db.ref('transmissao/vMixData').on('value', (snapshot) => {
+            const dadosJogo = snapshot.val();
+            if(dadosJogo) renderConfronto(dadosJogo);
+        });
+
+        // 2. Escuta a Memória Interna (Modo Local - Off-line)
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'vMixDataLocal' && event.newValue) {
+                const dadosJogo = JSON.parse(event.newValue);
+                if(dadosJogo) renderConfronto(dadosJogo);
+            }
+        });
     </script>
 </body>
 </html>
