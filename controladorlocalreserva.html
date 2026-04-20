@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Master Control vMix PRO - Allan Gomes</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script type="text/javascript" src="bancodedados.js" defer></script>
+    
     <style>
         :root { 
             --primary: #f1c40f; --bg: #0a0a0a; --panel: #1a1a1a; 
@@ -11,55 +12,27 @@
             --green: #2ecc71; --blue: #1e90ff; --border: #333;
         }
 
-        body { 
-            font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); 
-            margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
-        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* --- TELA DE SELEÇÃO DE MODO (MODAL) --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .modal-box {
-            background: #111; padding: 40px; border-radius: 12px; border: 2px solid var(--primary);
-            text-align: center; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
-        .btn-modo {
-            padding: 20px 30px; margin: 10px; font-size: 1.2rem; font-weight: 900; 
-            cursor: pointer; border-radius: 8px; border: none; text-transform: uppercase; width: 100%;
-            transition: transform 0.2s;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .modal-box { background: #111; padding: 40px; border-radius: 12px; border: 2px solid var(--primary); text-align: center; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); position: relative; }
+        .btn-modo { padding: 20px 30px; margin: 10px; font-size: 1.2rem; font-weight: 900; cursor: pointer; border-radius: 8px; border: none; text-transform: uppercase; width: 100%; transition: transform 0.2s; }
         .btn-modo:hover { transform: scale(1.05); }
         .btn-local { background: #444; color: white; border: 2px solid #666; }
         .btn-server { background: var(--green); color: black; box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);}
         
-        .header-fixed {
-            background: #111; padding: 10px 20px; text-align: center;
-            border-bottom: 2px solid var(--primary); flex-shrink: 0; z-index: 1000;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        
-        #statusConexao { font-size: 0.9rem; font-weight: bold; padding: 5px 10px; border-radius: 4px; background: #333; color: #aaa; }
+        /* Estilos do Modal de Arbitragem */
+        .arb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left; margin-bottom: 20px; }
+        .arb-grid label { font-size: 0.8rem; font-weight: bold; color: var(--primary); text-transform: uppercase; }
+        .arb-grid input { background: #222; border: 1px solid #555; padding: 10px; font-size: 1rem; width: 100%; margin-top: 5px; }
 
-        .main-layout {
-            display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 20px; padding: 20px; 
-            flex-grow: 1; overflow: hidden; box-sizing: border-box;
-        }
+        #statusConexao { font-size: 0.9rem; font-weight: bold; padding: 5px 10px; border-radius: 4px; background: #333; color: var(--green); }
 
-        .team-col { 
-            background: #111; border: 1px solid var(--border); border-radius: 12px; 
-            padding: 15px; display: flex; flex-direction: column; gap: 10px;
-            transition: background 0.5s; position: relative; overflow: hidden;
-        }
-
+        .main-layout { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 20px; padding: 20px; flex-grow: 1; overflow: hidden; box-sizing: border-box; }
+        .team-col { background: #111; border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 10px; transition: background 0.5s; position: relative; overflow: hidden; }
         .team-header-fixed { flex-shrink: 0; z-index: 10; position: relative; }
 
-        .scrollable-list {
-            flex-grow: 1; overflow-y: auto; overflow-x: hidden; 
-            padding-right: 5px; position: relative; z-index: 1;
-        }
+        .scrollable-list { flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding-right: 5px; position: relative; z-index: 1; }
         .scrollable-list::-webkit-scrollbar { width: 6px; }
         .scrollable-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 4px; }
         .scrollable-list::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
@@ -70,7 +43,6 @@
         .player-row td { padding: 4px; background: rgba(0,0,0,0.5); border: 1px solid transparent; }
         .player-row td:first-child { border-radius: 6px 0 0 6px; }
         .player-row td:last-child { border-radius: 0 6px 6px 0; }
-
         .radio-selector { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #555; display: inline-block; transition: 0.2s; margin-top: 3px; }
 
         .player-selected td { background: rgba(241, 196, 15, 0.25) !important; border-top: 1px solid var(--primary); border-bottom: 1px solid var(--primary); }
@@ -80,20 +52,15 @@
         .player-sub-entra td { background: rgba(46, 213, 113, 0.25) !important; border-top: 1px solid var(--green); border-bottom: 1px solid var(--green); }
         .player-sub-entra .radio-selector { background: var(--green); border-color: var(--green); box-shadow: 0 0 10px var(--green); }
 
-        .team-action-bar {
-            display: flex; gap: 5px; justify-content: center; background: rgba(0,0,0,0.7); 
-            padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-
+        .team-action-bar { display: flex; gap: 5px; justify-content: center; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         input { background: #333; border: 1px solid #444; color: white; padding: 5px; border-radius: 3px; font-size: 0.85rem; font-weight: bold; width: 100%; box-sizing: border-box; transition: 0.2s;}
         input:focus { outline: none; border-color: var(--primary); }
-        .in-num { text-align: center; color: var(--primary); font-family: monospace; background: rgba(0,0,0,0.6); }
-        .in-name { background: rgba(0,0,0,0.6); }
+        .in-num { text-align: center; color: var(--primary); font-family: monospace; background: rgba(0,0,0,0.6); text-shadow: 1px 1px 2px #000; }
+        .in-name { background: rgba(0,0,0,0.6); text-shadow: 1px 1px 2px #000; }
+        .sel-pos { background: #222; color: var(--primary); border: 1px solid #444; border-radius: 4px; font-size: 0.75rem; font-weight: 900; width: 100%; padding: 4px 2px; text-align: center; cursor: pointer; outline: none; text-shadow: 1px 1px 2px #000; }
+        .sel-pos:focus { border-color: var(--primary); }
         
-        .btn-toggle-res {
-            width: 100%; background: #222; color: #fff; padding: 12px; font-size: 0.9rem; font-weight: 900; 
-            border-radius: 6px; border: 1px solid #333; cursor: pointer; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; margin-top: 15px; flex-shrink: 0;
-        }
+        .btn-toggle-res { width: 100%; background: #222; color: #fff; padding: 12px; font-size: 0.9rem; font-weight: 900; border-radius: 6px; border: 1px solid #333; cursor: pointer; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; margin-top: 15px; flex-shrink: 0; }
         .btn-toggle-res:hover { background: #333; color: var(--primary); }
         .res-container { display: none; margin-top: 5px; border-top: 1px dashed #444; padding-top: 5px; }
         .res-container.show { display: block; }
@@ -102,65 +69,163 @@
         .top-grid { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 15px; }
         .box-time { background: #1a1a1a; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #333; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center;}
         
-        .timer-display { font-family: monospace; font-size: 3.5rem; color: var(--green); background: #000; padding: 5px 20px; border-radius: 8px; text-shadow: 0 0 15px rgba(46, 213, 115, 0.5); border: 2px solid #222; line-height: 1; margin-bottom: 10px;}
-        .score-num { font-size: 4rem; font-weight: 900; background: #000; padding: 10px 30px; color: #fff; border-radius: 8px; border: 2px solid #333; line-height: 1;}
+        .timer-display { font-family: monospace; font-size: 3.5rem; color: var(--green); background: #000; padding: 5px 20px; border-radius: 8px; text-shadow: 0 0 15px rgba(46, 213, 115, 0.5), 2px 2px 0px #000; border: 2px solid #222; line-height: 1; margin-bottom: 10px;}
+        .score-num { font-size: 4rem; font-weight: 900; background: #000; padding: 10px 30px; color: #fff; border-radius: 8px; border: 2px solid #333; line-height: 1; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;}
 
-        .action-preview { background: #111; padding: 15px; border-radius: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border: 1px solid var(--primary); }
+        .action-preview { background: #111; padding: 15px; border-radius: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border: 1px solid var(--primary); margin-bottom: 10px; }
         .action-box h4 { margin: 0; color: var(--primary); font-size: 0.8rem; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 5px;}
-        .display-action { font-size: 1.4rem; font-weight: 900; min-height: 1.5rem; display: flex; align-items: center; justify-content: center; background: #000; border-radius: 6px; padding: 10px; margin-top: 10px;}
+        .display-action { font-size: 1.4rem; font-weight: 900; min-height: 1.5rem; display: flex; align-items: center; justify-content: center; background: #000; border-radius: 6px; padding: 10px; margin-top: 10px; text-shadow: 1px 1px 2px #000;}
 
         .btn-limpar-extra { background: var(--red) !important; color: white !important; border: none; padding: 5px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.8rem; text-transform: uppercase; }
         .btn-limpar-extra:hover { filter: brightness(1.2); }
         .btn-op { border: none; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 0.9rem; flex-grow: 1; }
+
+        .sticky-action-bar { background: #111; padding: 15px 20px; text-align: center; border-bottom: 2px solid var(--primary); flex-shrink: 0; z-index: 2000; position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.8); }
+        .sticky-buttons { display: flex; gap: 15px; }
+        .btn-take-topo { background: var(--green); color: #000; font-size: 1.2rem; font-weight: 900; padding: 10px 30px; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 0 #1b8a47; transition: all 0.1s; }
+        .btn-take-topo:active { transform: translateY(4px); box-shadow: none; }
+        .btn-ocultar-topo { background: #444; color: #fff; font-size: 1.2rem; font-weight: 900; padding: 10px 30px; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 0 #222; transition: all 0.1s; }
+        .btn-ocultar-topo:active { transform: translateY(4px); box-shadow: none; }
+
+        /* ALERTA GIGANTE DE TELA CHEIA E BOTÃO DE FECHAR */
+        #alerta-gigante {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 999999;
+            display: flex; justify-content: center; align-items: center;
+            pointer-events: none; 
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        #alerta-gigante.show { opacity: 1; }
         
-        .footer-center { text-align: center; margin-top: auto; }
-        .btn-main { padding: 20px; background: var(--primary); color: #000; font-size: 1.3rem; font-weight: 900; border-radius: 10px; cursor: pointer; border: none; text-transform: uppercase; width: 100%; box-shadow: 0 4px 0 #b39000;}
-        .btn-main:active { transform: translateY(4px); box-shadow: none;}
+        #alerta-texto {
+            position: relative; 
+            pointer-events: auto; 
+            background: #e67e22; color: #fff; font-size: 3.5rem; font-weight: 900;
+            padding: 50px 80px; border-radius: 20px; text-align: center;
+            box-shadow: 0 0 100px rgba(0,0,0,1); border: 8px solid #fff;
+            animation: pulseAlert 0.8s infinite alternate; text-shadow: 4px 4px 10px #000;
+        }
+        
+        #btn-fechar-alerta {
+            position: absolute; top: -20px; right: -20px;
+            background: #ff4757; color: white; border: 4px solid white;
+            border-radius: 50%; width: 50px; height: 50px;
+            font-size: 1.5rem; font-weight: bold; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8); transition: transform 0.2s;
+            display: flex; justify-content: center; align-items: center;
+        }
+        #btn-fechar-alerta:hover { transform: scale(1.1); }
+
+        @keyframes pulseAlert {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        #toast-container { position: fixed; top: 90px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { padding: 15px 25px; border-radius: 8px; font-weight: 900; font-size: 1.1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.8); transition: opacity 0.5s ease-in-out; text-transform: uppercase; }
+        
+        .select-formacao { background: #222; color: #fff; border: 1px solid #444; padding: 4px; border-radius: 4px; font-weight: bold; margin-left: 10px;}
+        .titulares-header { display: flex; justify-content: center; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom:5px; margin:0; text-shadow: 1px 1px 2px #000; }
     </style>
 </head>
-<body>
+<body onload="iniciarSistema()">
 
-    <div id="modalModo" class="modal-overlay">
-        <div class="modal-box">
-            <h1 style="color: var(--primary); margin-top: 0;">PREPARAÇÃO DO SISTEMA</h1>
-            <p style="color: #ccc; font-size: 1.1rem; margin-bottom: 30px;">
-                Allan, como deseja conectar a Controladora ao vMix hoje?
-            </p>
-            <button class="btn-modo btn-local" onclick="iniciarSistema('local')">
-                🖥️ MODO LOCAL (Off-line)<br>
-                <span style="font-size: 0.8rem; font-weight: normal;">Usa apenas a memória do navegador</span>
-            </button>
-            <button class="btn-modo btn-server" onclick="iniciarSistema('server')">
-                🌐 MODO SERVIDOR (Com Redundância)<br>
-                <span style="font-size: 0.8rem; font-weight: normal;">Usa Socket.IO + Backup de Memória na mesma tela</span>
-            </button>
+    <div id="alerta-gigante">
+        <div id="alerta-texto">
+            <button id="btn-fechar-alerta" onclick="fecharAlertaGigante()">X</button>
+            <span id="alerta-msg">⚠️ AVISO!</span>
         </div>
     </div>
 
-    <div class="header-fixed">
-        <h1 style="margin:0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px;">Master Control vMix PRO - Allan Gomes</h1>
-        <div id="statusConexao">Aguardando Seleção...</div>
+    <div id="modalArbitragem" class="modal-overlay" style="display:none;">
+        <div class="modal-box" style="max-width: 800px; width: 90%;">
+            <button id="btn-fechar-alerta" style="top:-15px; right:-15px; background:#333; border-color:#555;" onclick="fecharModalArbitragem()">X</button>
+            <h2 style="color: var(--primary); margin-top: 0; text-transform: uppercase;">Equipe de Arbitragem</h2>
+            
+            <div class="arb-grid">
+                <div>
+                    <label>Árbitro Central</label>
+                    <input type="text" id="inArbCentral" placeholder="Nome do Árbitro Principal">
+                </div>
+                <div>
+                    <label>4º Árbitro</label>
+                    <input type="text" id="inArb4to" placeholder="Nome do 4º Árbitro">
+                </div>
+                <div>
+                    <label>Assistente 1</label>
+                    <input type="text" id="inArbAss1" placeholder="Nome do Assistente 1">
+                </div>
+                <div>
+                    <label>VAR</label>
+                    <input type="text" id="inArbVar" placeholder="Nome do VAR">
+                </div>
+                <div>
+                    <label>Assistente 2</label>
+                    <input type="text" id="inArbAss2" placeholder="Nome do Assistente 2">
+                </div>
+                <div>
+                    <label>AVAR</label>
+                    <input type="text" id="inArbAvar" placeholder="Nome do Assistente do VAR (AVAR)">
+                </div>
+            </div>
+            <button class="btn-op" style="background:var(--blue); color:white; width:100%; padding:15px; font-size:1.1rem; text-transform:uppercase;" onclick="prepararArbitragem()">Preparar Arbitragem (Take)</button>
+        </div>
     </div>
 
-    <div class="main-layout">
+    <div id="toast-container"></div>
+
+    <div class="sticky-action-bar">
+        <div style="text-align: left;">
+            <h1 style="margin:0; font-size: 1.2rem; color: #fff; text-transform: uppercase; letter-spacing: 2px;">Master Control vMix PRO</h1>
+            <div id="statusConexao" style="background: transparent; padding:0; margin-top: 3px;">🔥 MODO HÍBRIDO (Rede + Local)</div>
+        </div>
+        
+        <div class="sticky-buttons">
+            <button class="btn-ocultar-topo" style="background: #6c5ce7; font-size: 0.9rem;" onclick="limparCampo()">🧹 LIMPAR CAMPO</button>
+            <button class="btn-ocultar-topo" onclick="ocultarTudo()">⬇️ RETIRAR ARTE DO TELÃO</button>
+            <button class="btn-take-topo" onclick="processUpdateMem()">▶ COLOCAR NO AR (TAKE)</button>
+        </div>
+    </div>
+
+   <div class="main-layout">
+        
         <div class="team-col" id="col_A">
             <img id="watermark_A" src="" style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 110%; opacity: 0.15; z-index: 0; pointer-events: none; display: none; filter: grayscale(50%);">
             
             <div class="team-header-fixed">
                 <div style="text-align:center;">
                     <img id="logoA" src="" style="width:70px; height:70px; object-fit:contain; filter: drop-shadow(0 4px 5px rgba(0,0,0,0.8));" onerror="this.style.display='none'">
-                    <input type="text" id="nameA" value="BOTAFOGO" oninput="updateVisualTime('A')" style="width:90%; text-align:center; display:block; margin: 10px auto; font-size: 1.3rem; border:none; background:rgba(0,0,0,0.5); font-weight:900; text-shadow: 2px 2px 4px #000; border-radius: 8px;">
+                    <input type="text" id="nameA" value="BOTAFOGO" oninput="atualizarTimeCompleto('A')" style="width:90%; text-align:center; display:block; margin: 10px auto; font-size: 1.3rem; border:none; background:rgba(0,0,0,0.5); font-weight:900; text-shadow: 2px 2px 4px #000; border-radius: 8px;">
                 </div>
                 
-                <div class="team-action-bar">
-                    <button class="btn-op" style="background:#fff; color:#000;" onclick="doAction('A', 'GOL')">⚽ GOL</button>
+                <div class="team-action-bar" style="flex-wrap: wrap;">
+                    <button class="btn-op" style="background:#fff; color:#000;" onclick="doAction('A', 'GOL')">⚽</button>
                     <button class="btn-op" style="background:#b33939; color:#fff;" onclick="doAction('A', 'GOL_CONTRA')">🥅 GC</button>
                     <button class="btn-op" style="background:var(--blue); color:#fff;" onclick="doAction('A', 'SUB')">⇄ SUB</button>
                     <button class="btn-op" style="background:var(--yellow); color:#000;" onclick="doAction('A', 'AMARELO')">🟨</button>
-                    <button class="btn-op" style="background:var(--red); color:#fff;" onclick="doAction('A', 'VERMELHO')">🟥</button>
+                    <button class="btn-op" style="background:var(--red); color:#fff;" title="Esq: Expulsa | Dir: Remove" onclick="doAction('A', 'VERMELHO')" oncontextmenu="chRed('A', -1); return false;">🟥</button>
+                    <button class="btn-op" style="background:#8e44ad; color:#fff;" title="Definir Capitão" onclick="doAction('A', 'CAPITAO')">© CAP</button>
+                    
+                    <div style="width: 100%; display: flex; gap: 5px; margin-top: 5px;">
+                        <button class="btn-op" style="background:#0984e3; color:#fff; font-size: 0.8rem;" onclick="doAction('A', 'LISTA')">📋 TITULARES</button>
+                        <button class="btn-op" style="background:#d35400; color:#fff; font-size: 0.8rem;" onclick="doAction('A', 'RESERVAS')">🪑 RESERVAS</button>
+                        <button class="btn-op" style="background:#27ae60; color:#fff; font-size: 0.8rem;" onclick="doAction('A', 'CAMPO_TODOS')">🏟️ CAMPO</button>
+                        <button class="btn-op" style="background:#6c5ce7; color:#fff; font-size: 0.8rem;" onclick="doAction('A', 'ESCALAR')">👕 DESTAQUE</button>
+                    </div>
                 </div>
 
-                <h2 style="font-size: 1rem; text-align:center; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom:5px; margin:0; text-shadow: 1px 1px 2px #000;">TITULARES</h2>
+                <div class="titulares-header" style="flex-direction: column; gap: 5px;">
+                    <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                        <h2 style="font-size: 1rem; margin:0;">TITULARES</h2>
+                        <select id="formacaoA" class="select-formacao" onchange="atualizarFormacao('A')">
+                            <option value="4-3-3">4-3-3</option>
+                            <option value="4-4-2">4-4-2</option>
+                            <option value="4-5-1">4-5-1</option>
+                            <option value="3-5-2">3-5-2</option>
+                        </select>
+                    </div>
+                    <input type="text" id="tecnicoA" placeholder="Nome do Técnico" style="background: rgba(0,0,0,0.6); border: 1px solid #444; color: var(--primary); text-align: center; font-size: 0.8rem; padding: 4px; border-radius: 4px; width: 90%;">
+                </div>
             </div>
 
             <div class="scrollable-list">
@@ -180,19 +245,25 @@
                     </div>
                 </div>
 
-                <div class="box-time" style="background: #111; border: 2px solid #333;">
-                    <div class="timer-display" id="timer">00:00</div>
+                <div class="box-time" style="background: #111; border: 2px solid #333; gap: 10px;">
+                    <div style="display:flex; justify-content:center; gap:5px; width:100%;">
+                        <button id="btn_1T" class="btn-op" onclick="setP('1T')" style="background:var(--blue); color:white;">1T</button>
+                        <button id="btn_2T" class="btn-op" onclick="setP('2T')" style="background:#333; color:white;">2T</button>
+                    </div>
+                    <div class="timer-display" id="timer" style="margin: 0; width: 100%; text-align: center; box-sizing: border-box;">00:00</div>
                     <div style="display:flex; justify-content:center; gap:5px; width:100%;">
                         <button class="btn-op" style="background:var(--green); color:black; font-size: 1.1rem; padding: 10px;" onclick="startT()">START</button>
                         <button class="btn-op" style="background:var(--red); color:white; font-size: 1.1rem; padding: 10px;" onclick="stopT()">STOP</button>
                     </div>
-                    <div style="display:flex; justify-content:center; gap:5px; margin-top:10px; width:100%;">
-                        <button class="btn-op" onclick="setP('1T')" style="background:var(--blue); color:white;">1T</button>
-                        <button class="btn-op" onclick="setP('2T')" style="background:#333; color:white;">2T</button>
+                    <div style="display:flex; justify-content:center; gap:5px; width:100%;">
+                        <button class="btn-op" style="background:#555; font-size:0.9rem; height:35px; color:#fff;" onclick="resetT()">RESET</button>
+                        <button class="btn-op" style="background:#e67e22; font-size:0.9rem; height:35px; color:#fff;" onclick="setCustomTime()">AJUSTAR ⏱️</button>
                     </div>
-                    <div style="display:flex; justify-content:center; align-items:center; gap:5px; margin-top:10px; width:100%;">
-                        <input type="number" id="extra" placeholder="ACR." style="width:60px; text-align:center; height:35px; font-size:1.1rem;">
-                        <button class="btn-op" style="background:#555; font-size:0.9rem; height:35px; color:#fff;" onclick="resetT()">RESET TEMPO</button>
+                    
+                    <div style="display:flex; justify-content:center; align-items:center; gap:5px; width:100%; background: #222; padding: 5px; border-radius: 5px; border: 1px solid #444;">
+                        <span style="font-size: 0.9rem; font-weight: bold; color: #ccc;">ACRÉS:</span>
+                        <input type="number" id="extra" value="0" min="0" style="width:50px; text-align:center; height:35px; font-size:1.2rem; color: var(--yellow); font-weight: bold;">
+                        <button class="btn-op" style="background:var(--yellow); color:black; font-size:0.8rem; height:35px;" onclick="transmitData(); showToast('Acréscimo Enviado!', 'var(--green)', 'black')">📡 ENVIAR</button>
                     </div>
                 </div>
 
@@ -205,23 +276,46 @@
                 </div>
             </div>
 
-            <div class="action-preview">
-                <div class="action-box">
-                    <h4>SUBSTITUIÇÃO <button class="btn-limpar-extra" onclick="clearSub()">LIMPAR [X]</button></h4>
-                    <div class="display-action">
-                        <span style="color:var(--red)" id="subSai">---</span> 
-                        <span style="margin: 0 15px;">⇄</span> 
-                        <span style="color:var(--green)" id="subEntra">---</span>
+            <div class="action-preview" style="grid-template-columns: 1fr; margin-bottom: 0;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: transparent; border: none; padding: 0;">
+                        <h4 style="margin: 0; color: var(--primary); font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 5px;">SUBSTITUIÇÃO <button class="btn-limpar-extra" onclick="clearSub()">LIMPAR [X]</button></h4>
+                        <div class="display-action">
+                            <span style="color:var(--red)" id="subSai">---</span> 
+                            <span style="margin: 0 15px;">⇄</span> 
+                            <span style="color:var(--green)" id="subEntra">---</span>
+                        </div>
                     </div>
-                </div>
-                <div class="action-box">
-                    <h4>EVENTO ATUAL <button class="btn-limpar-extra" onclick="clearCard()">LIMPAR [X]</button></h4>
-                    <div class="display-action" id="cardEvent" style="color:var(--primary)">---</div>
+                    <div style="background: transparent; border: none; padding: 0;">
+                        <h4 style="margin: 0; color: var(--primary); font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 5px;">EVENTO ATUAL <button class="btn-limpar-extra" onclick="clearCardPreview()">LIMPAR [X]</button></h4>
+                        <div class="display-action" id="cardEvent" style="color:var(--primary)">---</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="footer-center">
-                <button class="btn-main" onclick="processUpdateMem()">ATUALIZAR VMIX AGORA</button>
+            <div class="action-preview" style="grid-template-columns: 1fr; border-color: #f39c12; margin-top: 10px;">
+                <div style="background: transparent; border: none; padding: 0;">
+                    <h4 style="margin: 0; color: #f39c12; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 5px;">
+                        EQUIPE DE ARBITRAGEM E VAR
+                    </h4>
+                    <div style="display:flex; gap: 10px; margin-top: 10px;">
+                        <button class="btn-op" style="background:#f39c12; color:#000; font-size: 1rem;" onclick="abrirModalArbitragem()">👨‍⚖️ DEFINIR E PREPARAR ARBITRAGEM</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-preview" style="grid-template-columns: 1fr; border-color: #3498db; margin-top: 10px;">
+                <div style="background: transparent; border: none; padding: 0;">
+                    <h4 style="margin: 0; color: #3498db; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 5px;">ESTATÍSTICAS DA PARTIDA</h4>
+                    <div style="display:flex; gap: 10px; margin-top: 10px;">
+                        <input type="text" id="inPublico" placeholder="Público (Ex: 45000)" oninput="formatarPublico(this)" style="flex:1; text-align: center;">
+                        <input type="text" id="inRenda" placeholder="Renda (Ex: 150000 para R$ 1.500,00)" oninput="formatarMoeda(this)" style="flex:1; text-align: center;">
+                    </div>
+                    <div style="display:flex; gap: 10px; margin-top: 10px;">
+                        <button class="btn-op" style="background:#2ecc71; color:#fff;" onclick="enviarEstatistica('PUBLICO')">🎬 TAKE PÚBLICO</button>
+                        <button class="btn-op" style="background:#3498db; color:#fff;" onclick="enviarEstatistica('RENDA')">🎬 TAKE RENDA</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -231,18 +325,37 @@
             <div class="team-header-fixed">
                 <div style="text-align:center;">
                     <img id="logoB" src="" style="width:70px; height:70px; object-fit:contain; filter: drop-shadow(0 4px 5px rgba(0,0,0,0.8));" onerror="this.style.display='none'">
-                    <input type="text" id="nameB" value="INTERNACIONAL" oninput="updateVisualTime('B')" style="width:90%; text-align:center; display:block; margin: 10px auto; font-size: 1.3rem; border:none; background:rgba(0,0,0,0.5); font-weight:900; text-shadow: 2px 2px 4px #000; border-radius: 8px;">
+                    <input type="text" id="nameB" value="INTERNACIONAL" oninput="atualizarTimeCompleto('B')" style="width:90%; text-align:center; display:block; margin: 10px auto; font-size: 1.3rem; border:none; background:rgba(0,0,0,0.5); font-weight:900; text-shadow: 2px 2px 4px #000; border-radius: 8px;">
                 </div>
                 
-                <div class="team-action-bar">
-                    <button class="btn-op" style="background:#fff; color:#000;" onclick="doAction('B', 'GOL')">⚽ GOL</button>
+                <div class="team-action-bar" style="flex-wrap: wrap;">
+                    <button class="btn-op" style="background:#fff; color:#000;" onclick="doAction('B', 'GOL')">⚽</button>
                     <button class="btn-op" style="background:#b33939; color:#fff;" onclick="doAction('B', 'GOL_CONTRA')">🥅 GC</button>
                     <button class="btn-op" style="background:var(--blue); color:#fff;" onclick="doAction('B', 'SUB')">⇄ SUB</button>
                     <button class="btn-op" style="background:var(--yellow); color:#000;" onclick="doAction('B', 'AMARELO')">🟨</button>
-                    <button class="btn-op" style="background:var(--red); color:#fff;" onclick="doAction('B', 'VERMELHO')">🟥</button>
+                    <button class="btn-op" style="background:var(--red); color:#fff;" title="Esq: Expulsa | Dir: Remove" onclick="doAction('B', 'VERMELHO')" oncontextmenu="chRed('B', -1); return false;">🟥</button>
+                    <button class="btn-op" style="background:#8e44ad; color:#fff;" title="Definir Capitão" onclick="doAction('B', 'CAPITAO')">© CAP</button>
+                    
+                    <div style="width: 100%; display: flex; gap: 5px; margin-top: 5px;">
+                        <button class="btn-op" style="background:#0984e3; color:#fff; font-size: 0.8rem;" onclick="doAction('B', 'LISTA')">📋 TITULARES</button>
+                        <button class="btn-op" style="background:#d35400; color:#fff; font-size: 0.8rem;" onclick="doAction('B', 'RESERVAS')">🪑 RESERVAS</button>
+                        <button class="btn-op" style="background:#27ae60; color:#fff; font-size: 0.8rem;" onclick="doAction('B', 'CAMPO_TODOS')">🏟️ CAMPO</button>
+                        <button class="btn-op" style="background:#6c5ce7; color:#fff; font-size: 0.8rem;" onclick="doAction('B', 'ESCALAR')">👕 DESTAQUE</button>
+                    </div>
                 </div>
 
-                <h2 style="font-size: 1rem; text-align:center; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom:5px; margin:0; text-shadow: 1px 1px 2px #000;">TITULARES</h2>
+                <div class="titulares-header" style="flex-direction: column; gap: 5px;">
+                    <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                        <h2 style="font-size: 1rem; margin:0;">TITULARES</h2>
+                        <select id="formacaoB" class="select-formacao" onchange="atualizarFormacao('B')">
+                            <option value="4-3-3">4-3-3</option>
+                            <option value="4-4-2">4-4-2</option>
+                            <option value="4-5-1">4-5-1</option>
+                            <option value="3-5-2">3-5-2</option>
+                        </select>
+                    </div>
+                    <input type="text" id="tecnicoB" placeholder="Nome do Técnico" style="background: rgba(0,0,0,0.6); border: 1px solid #444; color: var(--primary); text-align: center; font-size: 0.8rem; padding: 4px; border-radius: 4px; width: 90%;">
+                </div>
             </div>
 
             <div class="scrollable-list">
@@ -253,320 +366,411 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
-    // ========================================================
-    // URL DA PLANILHA GOOGLE APPS SCRIPT
-    // ========================================================
-    const urlGoogleScript = "https://script.google.com/macros/s/AKfycbyXhf4KZqBkvTOjArPgejjsbg6hwN3-G9GN-fKMxJo8_JgPwz3eYL3jgZdJzIaxNtJosA/exec";
+    const firebaseConfig = {
+        apiKey: "AIzaSyAeWhpLh1tO_axQSDtckMVyoE-f4Egno8A",
+        authDomain: "controladoravmixestadio.firebaseapp.com",
+        databaseURL: "https://controladoravmixestadio-default-rtdb.firebaseio.com",
+        projectId: "controladoravmixestadio",
+        storageBucket: "controladoravmixestadio.firebasestorage.app",
+        messagingSenderId: "381624685560",
+        appId: "1:381624685560:web:61266ebc5e5031d717bc0d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    // VARIÁVEIS GLOBAIS
-    let modoAtual = '';
-    let socket = null;
-    let acaoPendenteDrive = false; // Controla quando enviar pro Drive
+    let tSec = 0;           
+    let displaySec = 0;     
+    let lastAnchor = 0;     
+    let lastTransmittedSec = -1; 
+    let run = false;
+    let per = "1T";
+    let timerVar;
 
-    const bancoTimes = {
-        "AMERICA-MG": { cor: "#27ae60", logo: "escudo serie a/America-MG.png", sigla: "AME" },
-        "ATHLETICO PARANAENSE": { cor: "#c0392b", logo: "escudo serie a/Athletico Paranaense.png", sigla: "CAP" },
-        "ATHLETICO-PR": { cor: "#c0392b", logo: "escudo serie a/Athletico Paranaense.png", sigla: "CAP" },
-        "ATLETICO GOIANIENSE": { cor: "#000000", logo: "escudo serie a/Atlético Goianiense.png", sigla: "ACG" },
-        "ATLETICO-GO": { cor: "#000000", logo: "escudo serie a/Atlético Goianiense.png", sigla: "ACG" },
-        "ATLETICO MINEIRO": { cor: "#000000", logo: "escudo serie a/Atlético Mineiro.png", sigla: "CAM" },
-        "ATLETICO-MG": { cor: "#000000", logo: "escudo serie a/Atlético Mineiro.png", sigla: "CAM" },
-        "BAHIA": { cor: "#2980b9", logo: "escudo serie a/Bahia.png", sigla: "BAH" },
-        "BOTAFOGO": { cor: "#000000", logo: "escudo serie a/Botafogo.png", sigla: "BOT" },
-        "BRAGANTINO": { cor: "#ffffff", logo: "escudo serie a/Red Bull Bragantino.png", sigla: "RBB" },
-        "RED BULL BRAGANTINO": { cor: "#ffffff", logo: "escudo serie a/Red Bull Bragantino.png", sigla: "RBB" },
-        "CHAPECOENSE": { cor: "#27ae60", logo: "escudo serie a/Chapecoense.png", sigla: "CHA" },
-        "CORINTHIANS": { cor: "#000000", logo: "escudo serie a/Corinthians.png", sigla: "COR" },
-        "CORITIBA": { cor: "#27ae60", logo: "escudo serie a/Coritiba.png", sigla: "CFC" },
-        "CRICIUMA": { cor: "#f1c40f", logo: "escudo serie a/Criciúma.png", sigla: "CRI" },
-        "CRUZEIRO": { cor: "#2980b9", logo: "escudo serie a/Cruzeiro.png", sigla: "CRU" },
-        "CUIABA": { cor: "#27ae60", logo: "escudo serie a/Cuiabá.png", sigla: "CUI" },
-        "FLAMENGO": { cor: "#c0392b", logo: "escudo serie a/Flamengo.png", sigla: "FLA" },
-        "FLUMINENSE": { cor: "#800000", logo: "escudo serie a/Fluminense.png", sigla: "FLU" },
-        "FORTALEZA": { cor: "#2980b9", logo: "escudo serie a/Fortaleza.png", sigla: "FOR" },
-        "GREMIO": { cor: "#3498db", logo: "escudo serie a/Grêmio.png", sigla: "GRE" },
-        "INTERNACIONAL": { cor: "#e74c3c", logo: "escudo serie a/Internacional.png", sigla: "INT" },
-        "INTER": { cor: "#e74c3c", logo: "escudo serie a/Internacional.png", sigla: "INT" },
-        "JUVENTUDE": { cor: "#27ae60", logo: "escudo serie a/Juventude.png", sigla: "JUV" },
-        "MIRASSOL": { cor: "#f1c40f", logo: "escudo serie a/Mirassol-SP.png", sigla: "MIR" },
-        "PALMEIRAS": { cor: "#27ae60", logo: "escudo serie a/Palmeiras.png", sigla: "PAL" },
-        "REMO": { cor: "#1e90ff", logo: "escudo serie a/Remo.png", sigla: "REM" },
-        "SANTOS": { cor: "#ffffff", logo: "escudo serie a/Santos.png", sigla: "SAN" },
-        "SAO PAULO": { cor: "#ff0000", logo: "escudo serie a/São Paulo.png", sigla: "SAO" },
-        "VASCO DA GAMA": { cor: "#000000", logo: "escudo serie a/Vasco da Gama.png", sigla: "VAS" },
-        "VASCO": { cor: "#000000", logo: "escudo serie a/Vasco da Gama.png", sigla: "VAS" },
-        "VITORIA": { cor: "#c0392b", logo: "escudo serie a/Vitória.png", sigla: "VIT" }
+    let alertouAcrescimo = false;
+    let alertouAcrescimo2T = false; 
+    let alertouRenda = false;
+    let timeoutAlerta = null; 
+
+    let acaoPendenteDrive = false; 
+    let cardDataEnvio = null;
+    let pendingSub = { saiID_Num: null, saiID_Nom: null, entID_Num: null, entID_Nom: null };
+    let selecionadoA = { numId: null, nameId: null, rowId: null, indexReal: null };
+    let selecionadoB = { numId: null, nameId: null, rowId: null, indexReal: null };
+    let goals = {A:0, B:0}, redCards = {A:0, B:0};
+
+    function dispararAlertaGigante(mensagem, cor) {
+        const alertaBox = document.getElementById('alerta-gigante');
+        const alertaMsg = document.getElementById('alerta-msg');
+        const alertaTexto = document.getElementById('alerta-texto');
+        
+        alertaMsg.innerHTML = mensagem;
+        alertaTexto.style.background = cor;
+        
+        alertaBox.classList.add('show');
+        
+        if(timeoutAlerta) clearTimeout(timeoutAlerta);
+        timeoutAlerta = setTimeout(() => { fecharAlertaGigante(); }, 6000);
+    }
+
+    function fecharAlertaGigante() {
+        document.getElementById('alerta-gigante').classList.remove('show');
+    }
+
+    function showToast(msg, bg, color) {
+        const toast = document.createElement('div'); toast.className = 'toast';
+        toast.style.background = bg; toast.style.color = color || '#fff'; toast.innerText = msg;
+        document.getElementById('toast-container').appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 500); }, 4000);
+    }
+
+    function formatarPublico(input) { 
+        let v = input.value.replace(/\D/g, ''); 
+        if(!v) { input.value = ""; return; }
+        input.value = parseInt(v).toLocaleString('pt-BR'); 
+    }
+    
+    function formatarMoeda(input) { 
+        let v = input.value.replace(/\D/g, ''); 
+        if (!v) { input.value = ""; return; } 
+        v = (parseInt(v) / 100).toFixed(2) + ''; 
+        v = v.replace(".", ","); 
+        v = v.replace(/\B(?=(\d{3})+(?!\d))/g, "."); 
+        input.value = "R$ " + v; 
+    }
+
+    const todasPosicoes = [
+        'GL', 'LD', 'LE', 'ZGD', 'ZGC', 'ZGE', 'ALD', 'ALE', 
+        'VOLD', 'VOLC', 'VOLE', 'MD', 'MEIAD', 'MEIAC', 'MEIAE', 'ME', 
+        'PD', 'PE', 'ATAD', 'ATAE', 'CA'
+    ];
+
+    const defaultsFormacao = {
+        '4-3-3': ['GL', 'LD', 'ZGD', 'ZGE', 'LE', 'VOLC', 'MEIAD', 'MEIAE', 'PD', 'CA', 'PE'],
+        '4-4-2': ['GL', 'LD', 'ZGD', 'ZGE', 'LE', 'MD', 'MEIAD', 'MEIAE', 'ME', 'ATAD', 'ATAE'],
+        '4-5-1': ['GL', 'LD', 'ZGD', 'ZGE', 'LE', 'VOLD', 'VOLE', 'MD', 'MEIAC', 'ME', 'CA'],
+        '3-5-2': ['GL', 'ZGD', 'ZGC', 'ZGE', 'ALD', 'VOLD', 'VOLE', 'ALE', 'MEIAC', 'ATAD', 'ATAE']
     };
 
-    let goals = {A:0, B:0}, tSec = 0, run = false, per = "1T", timerVar;
-    let pendingSub = { saiID_Num: null, saiID_Nom: null, entID_Num: null, entID_Nom: null };
-    let selecionadoA = { numId: null, nameId: null, rowId: null };
-    let selecionadoB = { numId: null, nameId: null, rowId: null };
-
-    // ----------------------------------------------------
-    // LÓGICA DE INICIALIZAÇÃO
-    // ----------------------------------------------------
-    function iniciarSistema(modoEscolhido) {
-        modoAtual = modoEscolhido;
-        document.getElementById('modalModo').style.display = 'none';
-        const statusBox = document.getElementById('statusConexao');
-
-        if (modoAtual === 'server') {
-            try {
-                socket = io('http://localhost:3000');
-                socket.on('connect', () => {
-                    statusBox.innerHTML = "🟢 Servidor Conectado (+ Backup Local)";
-                    statusBox.style.color = "var(--green)";
-                });
-                socket.on('disconnect', () => {
-                    statusBox.innerHTML = "🔴 Servidor Desconectado (Operando no Backup)";
-                    statusBox.style.color = "var(--red)";
-                });
-            } catch(e) {
-                alert("Erro ao tentar conectar. Operando no Backup.");
+    function atualizarFormacao(lado) {
+        const formacao = document.getElementById('formacao' + lado).value;
+        const defaults = defaultsFormacao[formacao];
+        for (let i = 1; i <= 11; i++) {
+            const selPos = document.getElementById(`${lado}_t_p_${i}`);
+            if (selPos) {
+                selPos.innerHTML = ''; 
+                todasPosicoes.forEach(pos => { let opt = document.createElement('option'); opt.value = pos; opt.text = pos; selPos.appendChild(opt); });
+                selPos.value = defaults[i-1]; 
             }
-        } else {
-            statusBox.innerHTML = "🖥️ Modo Local Ativo";
-            statusBox.style.color = "var(--primary)";
         }
+    }
 
-        updateVisualTime('A'); 
-        updateVisualTime('B');
+    function iniciarSistema() {
+        atualizarTimeCompleto('A'); atualizarTimeCompleto('B');
     }
 
     function getTeamInfo(input) {
-        if (!input) return null;
-        let cleanInput = input.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
-        if (bancoTimes[cleanInput]) return bancoTimes[cleanInput];
-        for (let key in bancoTimes) {
-            if (bancoTimes[key].sigla === cleanInput) {
-                return bancoTimes[key];
-            }
-        }
-        return null;
+        if (!input) return null; let cleanInput = input.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+        const timesBase = {
+            "AMERICA-MG": { cor: "#27ae60", logo: "escudos/America-MG.png", sigla: "AME" },
+            "ATHLETICO PARANAENSE": { cor: "#c0392b", logo: "escudos/Athletico Paranaense.png", sigla: "CAP" },
+            "ATHLETICO PR": { cor: "#c0392b", logo: "escudos/Athletico Paranaense.png", sigla: "CAP" },
+            "ATLETICO GOIANIENSE": { cor: "#000000", logo: "escudos/Atlético Goianiense.png", sigla: "ACG" },
+            "ATLETICO GO": { cor: "#000000", logo: "escudos/Atlético Goianiense.png", sigla: "ACG" },
+            "ATLETICO MINEIRO": { cor: "#000000", logo: "escudos/Atlético Mineiro.png", sigla: "CAM" },
+            "ATLETICO MG": { cor: "#000000", logo: "escudos/Atlético Mineiro.png", sigla: "CAM" },
+            "BAHIA": { cor: "#2980b9", logo: "escudos/Bahia.png", sigla: "BAH" },
+            "BOTAFOGO": { cor: "#111111", logo: "escudos/Botafogo.png", sigla: "BOT" },
+            "BRAGANTINO": { cor: "#ffffff", logo: "escudos/Red Bull Bragantino.png", sigla: "RBB" },
+            "RED BULL BRAGANTINO": { cor: "#ffffff", logo: "escudos/Red Bull Bragantino.png", sigla: "RBB" },
+            "CHAPECOENSE": { cor: "#27ae60", logo: "escudos/Chapecoense.png", sigla: "CHA" },
+            "CORINTHIANS": { cor: "#000000", logo: "escudos/Corinthians.png", sigla: "COR" },
+            "CRICIUMA": { cor: "#f1c40f", logo: "escudos/Criciúma.png", sigla: "CRI" },
+            "CRUZEIRO": { cor: "#2980b9", logo: "escudos/Cruzeiro.png", sigla: "CRU" },
+            "CUIABA": { cor: "#27ae60", logo: "escudos/Cuiabá.png", sigla: "CUI" },
+            "FLAMENGO": { cor: "#c0392b", logo: "escudos/Flamengo.png", sigla: "FLA" },
+            "FLUMINENSE": { cor: "#800000", logo: "escudos/Fluminense.png", sigla: "FLU" },
+            "FORTALEZA": { cor: "#2980b9", logo: "escudos/Fortaleza.png", sigla: "FOR" },
+            "GREMIO": { cor: "#3498db", logo: "escudos/Grêmio.png", sigla: "GRE" },
+            "INTERNACIONAL": { cor: "#e74c3c", logo: "escudos/Internacional.png", sigla: "INT" },
+            "JUVENTUDE": { cor: "#27ae60", logo: "escudos/Juventude.png", sigla: "JUV" },
+            "PALMEIRAS": { cor: "#27ae60", logo: "escudos/Palmeiras.png", sigla: "PAL" },
+            "SANTOS": { cor: "#ffffff", logo: "escudos/Santos.png", sigla: "SAN" },
+            "SAO PAULO": { cor: "#ff0000", logo: "escudos/São Paulo.png", sigla: "SAO" },
+            "VASCO DA GAMA": { cor: "#000000", logo: "escudos/Vasco da Gama.png", sigla: "VAS" },
+            "VASCO": { cor: "#000000", logo: "escudos/Vasco da Gama.png", sigla: "VAS" },
+            "VITORIA": { cor: "#c0392b", logo: "escudos/Vitória.png", sigla: "VIT" }
+        };
+        return timesBase[cleanInput] || null;
     }
 
-    function selectPlayer(team, numId, nameId, rowId) {
+    function selectPlayer(team, numId, nameId, rowId, idx) {
         let sel = team === 'A' ? selecionadoA : selecionadoB;
-        if (sel.rowId) {
-            let oldRow = document.getElementById(sel.rowId);
-            if(oldRow) oldRow.classList.remove('player-selected');
-        }
-        sel.numId = numId;
-        sel.nameId = nameId;
-        sel.rowId = rowId;
-        document.getElementById(rowId).classList.add('player-selected');
+        if (sel.rowId === rowId) { document.getElementById(rowId).classList.remove('player-selected'); sel.numId = null; sel.nameId = null; sel.rowId = null; sel.indexReal = null; return; }
+        if (sel.rowId) { let oldRow = document.getElementById(sel.rowId); if(oldRow) oldRow.classList.remove('player-selected'); }
+        sel.numId = numId; sel.nameId = nameId; sel.rowId = rowId; sel.indexReal = idx; document.getElementById(rowId).classList.add('player-selected');
     }
+
+    function registrarEventoNaLista(idInput, icone) { if (!idInput) return; const inputNome = document.getElementById(idInput); if (inputNome && inputNome.value !== "") { inputNome.value = inputNome.value + " " + icone; } }
 
     function doAction(team, action) {
-        let sel = team === 'A' ? selecionadoA : selecionadoB;
-        if (!sel.nameId) {
-            alert("Clique no nome ou número de um jogador na lista primeiro!");
-            return;
-        }
+        acaoPendenteDrive = true; let sel = team === 'A' ? selecionadoA : selecionadoB;
+        if (action === 'GOL') { prepGoal(team); if (sel.nameId) registrarEventoNaLista(sel.nameId, '⚽'); return; }
+        if (action === 'GOL_CONTRA') { prepOG(team === 'A' ? 'B' : 'A'); return; }
+        if (action === 'LISTA') { prepararLista(team); return; } 
+        if (action === 'RESERVAS') { prepararReservas(team); return; } 
+        if (action === 'CAMPO_TODOS') { prepararCampoTodos(team); return; } 
 
-        // MARCA QUE UMA AÇÃO FOI FEITA PARA ENVIAR PRO DRIVE
-        acaoPendenteDrive = true; 
-
-        if (action === 'GOL') prepGoal(sel.nameId, team);
-        if (action === 'GOL_CONTRA') prepOG(sel.nameId, team === 'A' ? 'B' : 'A');
-        if (action === 'AMARELO') prepCard(sel.nameId, '🟨');
-        if (action === 'VERMELHO') prepCard(sel.nameId, '🟥');
+        if (!sel.nameId) { alert("Selecione um jogador da lista primeiro!"); return; }
+        
+        if (action === 'AMARELO') { prepararCardTelao(team, sel.nameId, '🟨'); registrarEventoNaLista(sel.nameId, '🟨'); }
+        if (action === 'VERMELHO') { prepararCardTelao(team, sel.nameId, '🟥'); registrarEventoNaLista(sel.nameId, '🟥'); chRed(team, 1, false); }
+        if (action === 'CAPITAO') { registrarEventoNaLista(sel.nameId, '©'); showToast("Capitão definido!", "var(--primary)", "black"); }
         if (action === 'SUB') prepSub(sel.numId, sel.nameId);
+        if (action === 'ESCALAR') { if (sel.indexReal > 11) { alert("O Campo só posiciona Titulares!"); return; } prepararEscalacao(team, sel.numId, sel.nameId, sel.indexReal); }
     }
 
     function gen(id, count, pref) {
-        const t = document.getElementById(id);
-        const timeLetra = pref.charAt(0); 
+        const t = document.getElementById(id); const timeLetra = pref.charAt(0); const isTitular = pref.includes('_t');
         for(let i=1; i<=count; i++) {
-            let r = t.insertRow();
-            let rowId = `row_${pref}_${i}`;
-            r.id = rowId;
-            r.className = 'player-row';
-            r.innerHTML = `
-                <td style="width: 25px; text-align: center;" onclick="selectPlayer('${timeLetra}', '${pref}_n_${i}', '${pref}_m_${i}', '${rowId}')">
-                    <div class="radio-selector"></div>
-                </td>
-                <td style="width: 45px;">
-                    <input type="text" class="in-num" id="${pref}_n_${i}" value="${i}" onfocus="selectPlayer('${timeLetra}', '${pref}_n_${i}', '${pref}_m_${i}', '${rowId}')">
-                </td>
-                <td>
-                    <input type="text" class="in-name" id="${pref}_m_${i}" placeholder="Jogador" onfocus="selectPlayer('${timeLetra}', '${pref}_n_${i}', '${pref}_m_${i}', '${rowId}')">
-                </td>
-            `;
+            let r = t.insertRow(); let rowId = `row_${pref}_${i}`; r.id = rowId; r.className = 'player-row'; let indexTatico = isTitular ? i : (i + 11);
+            let tdPos = isTitular ? `<td style="width: 50px;"><select class="sel-pos" id="${pref}_p_${i}" title="Posição no Campo"></select></td>` : `<td style="width: 50px; text-align:center; font-size:0.7rem; color:#666;">RES</td>`;
+            r.innerHTML = `<td style="width: 25px; text-align: center;" onclick="selectPlayer('${timeLetra}', '${pref}_n_${i}', '${pref}_m_${i}', '${rowId}', ${indexTatico})"><div class="radio-selector"></div></td><td style="width: 40px;"><input type="text" class="in-num" id="${pref}_n_${i}" value="${i}" onfocus="selectPlayer('${timeLetra}', '${pref}_n_${i}', '${pref}_m_${i}', '${rowId}', ${indexTatico})"></td>${tdPos}<td><input type="text" class="in-name" id="${pref}_m_${i}" placeholder="Jogador" onfocus="selectPlayer('${timeLetra}', '${pref}_n_${i}', '${pref}_m_${i}', '${rowId}', ${indexTatico})"></td>`;
         }
     }
 
-    gen('tA_tit', 11, 'A_t'); gen('tA_res', 10, 'A_r');
-    gen('tB_tit', 11, 'B_t'); gen('tB_res', 10, 'B_r');
+    gen('tA_tit', 11, 'A_t'); gen('tA_res', 15, 'A_r'); gen('tB_tit', 11, 'B_t'); gen('tB_res', 15, 'B_r');
+    atualizarFormacao('A'); atualizarFormacao('B');
 
-    function updateVisualTime(lado) {
-        const nomeInput = document.getElementById('name' + lado).value;
-        const info = getTeamInfo(nomeInput);
+    function atualizarTimeCompleto(lado) {
+        const nomeInput = document.getElementById('name' + lado).value; const info = getTeamInfo(nomeInput); const timeLimpo = nomeInput.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+        const logo = document.getElementById('logo' + lado); const col = document.getElementById('col_' + lado); const box = document.getElementById('box_' + lado); const btnRes = document.getElementById('btn_res_' + lado); const watermark = document.getElementById('watermark_' + lado);
+
+        if (nomeInput !== "") btnRes.innerHTML = "RESERVAS " + timeLimpo + " <span>▼</span>"; else btnRes.innerHTML = "RESERVAS " + lado + " <span>▼</span>";
+        if (info) { logo.src = info.logo; logo.style.display = "block"; if(watermark) { watermark.src = info.logo; watermark.style.display = "block"; } col.style.background = `linear-gradient(to bottom, ${info.cor}CC 0%, #111 50%)`; col.style.borderColor = info.cor; col.style.boxShadow = `inset 0 0 30px ${info.cor}88`; if(box) { box.style.background = `linear-gradient(135deg, ${info.cor}99 0%, #1a1a1a 80%)`; box.style.borderColor = info.cor; box.style.boxShadow = `0 5px 20px ${info.cor}66`; }
+        } else { logo.src = ""; logo.style.display = "none"; if(watermark) watermark.style.display = "none"; col.style.background = "#111"; col.style.borderColor = "#333"; col.style.boxShadow = "none"; if(box) { box.style.background = "#1a1a1a"; box.style.borderColor = "#333"; box.style.boxShadow = "none"; } }
         
-        const logo = document.getElementById('logo' + lado);
-        const col = document.getElementById('col_' + lado);
-        const box = document.getElementById('box_' + lado);
-        const btnRes = document.getElementById('btn_res_' + lado);
-        const watermark = document.getElementById('watermark_' + lado);
-
-        const nomeUpper = nomeInput.trim().toUpperCase();
-        if (nomeInput !== "") btnRes.innerHTML = "RESERVAS " + nomeUpper + " <span>▼</span>";
-        else btnRes.innerHTML = "RESERVAS " + lado + " <span>▼</span>";
-
-        if (info) {
-            logo.src = info.logo; logo.style.display = "block";
-            if(watermark) { watermark.src = info.logo; watermark.style.display = "block"; }
-            col.style.background = `linear-gradient(to bottom, ${info.cor}CC 0%, #111 50%)`; col.style.borderColor = info.cor; col.style.boxShadow = `inset 0 0 30px ${info.cor}88`; 
-            box.style.background = `linear-gradient(135deg, ${info.cor}99 0%, #1a1a1a 80%)`; box.style.borderColor = info.cor; box.style.boxShadow = `0 5px 20px ${info.cor}66`;
+        if (typeof bancoDeElencos !== 'undefined' && bancoDeElencos[timeLimpo]) {
+            const elenco = bancoDeElencos[timeLimpo];
+            for (let i = 1; i <= 11; i++) { if (elenco[i - 1]) { document.getElementById(`${lado}_t_n_${i}`).value = elenco[i - 1].numero; document.getElementById(`${lado}_t_m_${i}`).value = elenco[i - 1].nome; } }
+            for (let i = 1; i <= 15; i++) { if (elenco[i + 10]) { document.getElementById(`${lado}_r_n_${i}`).value = elenco[i + 10].numero; document.getElementById(`${lado}_r_m_${i}`).value = elenco[i + 10].nome; } }
         } else {
-            logo.src = ""; logo.style.display = "none";
-            if(watermark) watermark.style.display = "none";
-            col.style.background = "#111"; col.style.borderColor = "#333"; col.style.boxShadow = "none";
-            box.style.background = "#1a1a1a"; box.style.borderColor = "#333"; box.style.boxShadow = "none";
+            for (let i = 1; i <= 11; i++) { document.getElementById(`${lado}_t_n_${i}`).value = i; document.getElementById(`${lado}_t_m_${i}`).value = ""; }
+            for (let i = 1; i <= 15; i++) { document.getElementById(`${lado}_r_n_${i}`).value = i+11; document.getElementById(`${lado}_r_m_${i}`).value = ""; }
         }
         
-        if (modoAtual !== '') transmitData(); 
+        transmitData(); 
     }
 
-    window.onload = () => { 
-        // Inicialização aguarda escolha
-    };
+    function processUpdateMem() { handleSubLogic(); transmitData(); document.getElementById('cardEvent').innerText = "---"; clearSub(); showToast("✓ Eventos no Ar!", "var(--green)", "black"); }
 
-    function processUpdateMem() {
-        handleSubLogic();
-        transmitData();
-    }
-
-    // ========================================================
-    // ENVIO PARA O GOOGLE DRIVE
-    // ========================================================
-    async function registrarNoGoogleSheets(dados) {
-        if (!urlGoogleScript || urlGoogleScript === "") return;
-        
-        dados.dataRegistro = new Date().toLocaleString();
-        
-        try {
-            await fetch(urlGoogleScript, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify(dados)
-            });
-            console.log("Log salvo na Planilha do Drive!");
-        } catch (error) {
-            console.error("Erro ao salvar no Drive:", error);
-        }
-    }
-
-    // ========================================================
-    // O CORAÇÃO DO ESPELHAMENTO: ENVIA PARA OS DOIS CANAIS + DRIVE
-    // ========================================================
     function transmitData() {
-        if (modoAtual === '') return;
-
-        const nomeA = document.getElementById('nameA').value;
-        const nomeB = document.getElementById('nameB').value;
-        const infoA = getTeamInfo(nomeA);
-        const infoB = getTeamInfo(nomeB);
-
-        const siglaA = infoA ? infoA.sigla : nomeA.substring(0, 3).toUpperCase().trim();
-        const siglaB = infoB ? infoB.sigla : nomeB.substring(0, 3).toUpperCase().trim();
+        const nomeA = document.getElementById('nameA').value; const nomeB = document.getElementById('nameB').value;
+        const infoA = getTeamInfo(nomeA); const infoB = getTeamInfo(nomeB);
+        const siglaA = infoA ? infoA.sigla : nomeA.substring(0, 3).toUpperCase().trim(); const siglaB = infoB ? infoB.sigla : nomeB.substring(0, 3).toUpperCase().trim();
 
         const dados = {
-            tempo: document.getElementById('timer').innerText,
-            golsA: goals.A, golsB: goals.B,
-            placar: goals.A + "x" + goals.B, // CAMPO EXTRA PRO DRIVE
-            timeA: siglaA, timeB: siglaB,
-            extra: document.getElementById('extra').value || "0",
-            periodo: per,
-            evento: document.getElementById('cardEvent').innerText,
-            escudoA: infoA ? infoA.logo : "",
-            escudoB: infoB ? infoB.logo : "",
-            corA: infoA ? infoA.cor : "#ffffff",
-            corB: infoB ? infoB.cor : "#ffffff",
-            timestamp: Date.now()
+            tempo: document.getElementById('timer').innerText, golsA: goals.A, golsB: goals.B, placar: goals.A + "x" + goals.B, redA: redCards.A, redB: redCards.B, 
+            timeA: siglaA, timeB: siglaB, extra: document.getElementById('extra').value || "0", periodo: per, eventoTextual: document.getElementById('cardEvent').innerText, 
+            escudoA: infoA ? infoA.logo : "", escudoB: infoB ? infoB.logo : "", corA: infoA ? infoA.cor : "transparent", corB: infoB ? infoB.cor : "transparent",
+            eventoCard: cardDataEnvio, timestamp: Date.now()
         };
 
-        // 1. REDUNDÂNCIA: Grava sempre na memória local (Backup Imediato)
-        localStorage.setItem('vMixData', JSON.stringify(dados));
-
-        // 2. VIA EXPRESSA: Se o Servidor estiver ativado e conectado
-        if (modoAtual === 'server' && socket) {
-            socket.emit('vMixData', dados);
-        }
-
-        // 3. ENVIO PARA PLANILHA (Apenas quando clicou num botão)
-        if (acaoPendenteDrive && dados.evento !== "---") {
-            registrarNoGoogleSheets(dados);
-            acaoPendenteDrive = false; // Reseta para não enviar de novo no próximo segundo
-        }
-
-        fetch(`http://127.0.0.1:8088/api/?Function=SetText&Value=${dados.timestamp}`, { mode: 'no-cors' }).catch(()=>{});
+        localStorage.setItem('vMixDataLocal', JSON.stringify(dados));
+        db.ref('transmissao/vMixData').set(dados);
     }
 
-    function startT() { if(!run){ run=true; timerVar = setInterval(()=>{ tSec++; updateClock(); transmitData(); },1000); } }
-    function stopT() { run=false; clearInterval(timerVar); transmitData(); }
-    function updateClock() { let m = Math.floor(tSec/60), s = tSec%60; document.getElementById('timer').innerText = (m<10?'0'+m:m)+":"+(s<10?'0'+s:s); }
-    function chScore(t, v) { goals[t]=Math.max(0, goals[t]+v); document.getElementById('gols'+t).innerText = goals[t]; transmitData(); }
-    function setP(p) { per=p; resetT(); }
-    function resetT() { stopT(); tSec = (per==="1T")?0:2700; updateClock(); transmitData(); }
-    function toggleRes(id) { document.getElementById(id).classList.toggle('show'); }
-    
-    function clearSub() { 
-        document.getElementById('subSai').innerText = "---"; 
-        document.getElementById('subEntra').innerText = "---"; 
-        pendingSub = { saiID_Num: null, saiID_Nom: null, entID_Num: null, entID_Nom: null }; 
-        document.querySelectorAll('.player-sub-sai, .player-sub-entra').forEach(el => {
-            el.classList.remove('player-sub-sai', 'player-sub-entra');
-        });
-    }
-    function clearCard() { document.getElementById('cardEvent').innerText = "---"; transmitData(); }
-    
-    function prepGoal(idM, t) { document.getElementById('cardEvent').innerText = "⚽ GOL: " + document.getElementById(idM).value; chScore(t, 1); }
-    function prepOG(idM, teamPontua) { document.getElementById('cardEvent').innerText = "🥅 GC: " + document.getElementById(idM).value; chScore(teamPontua, 1); }
-    function prepCard(idM, icon) { document.getElementById('cardEvent').innerText = document.getElementById(idM).value + " " + icon; transmitData(); }
-    
-    function prepSub(idN, idM) { 
-        const val = document.getElementById(idM).value;
-        const row = document.getElementById(idM).closest('tr');
-        
-        if (!pendingSub.saiID_Nom) { 
-            pendingSub.saiID_Num = idN; pendingSub.saiID_Nom = idM; 
-            document.getElementById('subSai').innerText = val; 
-            if(row) row.classList.add('player-sub-sai');
-        } else { 
-            pendingSub.entID_Num = idN; pendingSub.entID_Nom = idM; 
-            document.getElementById('subEntra').innerText = val; 
-            if(row) row.classList.add('player-sub-entra');
-            
-            // Força a anotação da substituição para ir pro Drive
-            document.getElementById('cardEvent').innerText = `SUB: Sai ${document.getElementById(pendingSub.saiID_Nom).value} Entra ${val}`;
-            transmitData();
-        }
-    }
-
-    function handleSubLogic() {
-        if (pendingSub.saiID_Nom && pendingSub.entID_Nom) {
-            const inputTitNum = document.getElementById(pendingSub.saiID_Num);
-            const inputTitNom = document.getElementById(pendingSub.saiID_Nom);
-            const inputResNum = document.getElementById(pendingSub.entID_Num);
-            const inputResNom = document.getElementById(pendingSub.entID_Nom);
-            
-            if(inputTitNum && inputTitNom && inputResNum && inputResNom) {
-                const tNumBkp = inputTitNum.value;
-                const tNomBkp = inputTitNom.value;
-                const rNumBkp = inputResNum.value;
-                const rNomBkp = inputResNom.value;
-                
-                inputTitNum.value = rNumBkp;
-                inputTitNom.value = rNomBkp + " ▶";
-                inputResNum.value = tNumBkp;
-                inputResNom.value = tNomBkp + " ⇄";
-                clearSub(); 
-                clearCard(); // Limpa o card de evento depois da sub
+    function checkTimerLimits() {
+        if (per === "1T" && displaySec >= 2700) { 
+            displaySec = 2700; 
+            if(run) { 
+                stopT(); 
+                dispararAlertaGigante("⚠️ FIM DO 1º TEMPO!<br>PREENCHA OS ACRÉSCIMOS", "#e67e22"); 
+            }
+        } else if (per === "2T") {
+            if (tSec >= 2700 && displaySec >= 5400) { 
+                displaySec = 5400; 
+                if(run) { 
+                    stopT(); 
+                    dispararAlertaGigante("⚠️ FIM DE JOGO!<br>PREENCHA OS ACRÉSCIMOS", "#e67e22"); 
+                }
+            } 
+            else if (tSec < 2700 && displaySec >= 2700) { 
+                displaySec = 2700; 
+                if(run) { 
+                    stopT(); 
+                    dispararAlertaGigante("⚠️ FIM DO JOGO!<br>PREENCHA OS ACRÉSCIMOS", "#e67e22"); 
+                }
             }
         }
+    }
+
+    function startT() { 
+        if(!run){ 
+            run = true; 
+            lastAnchor = Date.now();
+            
+            timerVar = setInterval(() => { 
+                displaySec = tSec + Math.floor((Date.now() - lastAnchor) / 1000);
+                checkTimerLimits(); 
+
+                if (displaySec !== lastTransmittedSec) {
+                    lastTransmittedSec = displaySec;
+                    updateClock(); 
+                    transmitData(); 
+                }
+            }, 200); 
+        } 
+    }
+    
+    function stopT() { 
+        if(run){
+            run = false; 
+            tSec = displaySec; 
+            clearInterval(timerVar); 
+            updateClock();
+            transmitData(); 
+        }
+    }
+    
+    function resetT() { 
+        run = false;
+        clearInterval(timerVar);
+        tSec = 0; displaySec = 0;
+        lastTransmittedSec = -1;
+        alertouAcrescimo = false;
+        alertouAcrescimo2T = false; 
+        alertouRenda = false;
+        updateClock(); transmitData(); 
+    }
+    
+    function setCustomTime() { 
+        let manualTime = prompt("Digite o tempo (Ex: 45:00):", document.getElementById('timer').innerText); 
+        if (manualTime && manualTime.includes(':')) { 
+            let p = manualTime.split(':'); 
+            tSec = (parseInt(p[0]) || 0) * 60 + (parseInt(p[1]) || 0); 
+            displaySec = tSec; lastTransmittedSec = displaySec;
+            
+            if(run) lastAnchor = Date.now(); 
+            
+            updateClock(); transmitData(); 
+        } 
+    }
+
+    function updateClock() { 
+        let m = Math.floor(displaySec / 60), s = displaySec % 60; 
+        document.getElementById('timer').innerText = (m < 10 ? '0' + m : m) + ":" + (s < 10 ? '0' + s : s); 
+        
+        if (per === "1T") {
+            if (m === 45 && s === 0 && !alertouAcrescimo) { 
+                dispararAlertaGigante("⚠️ ATENÇÃO!<br>PREPARE OS ACRÉSCIMOS!", "#c0392b"); 
+                alertouAcrescimo = true; 
+            }
+        }
+        else if (per === "2T") {
+            if (tSec >= 2700) {
+                if (m === 75 && s === 0 && !alertouRenda) { 
+                    dispararAlertaGigante("🏟️ ATENÇÃO!<br>INFORME O PÚBLICO E RENDA", "#3498db"); 
+                    alertouRenda = true; 
+                }
+                if (m === 87 && s === 0 && !alertouAcrescimo2T) { 
+                    dispararAlertaGigante("⚠️ ATENÇÃO!<br>PREPARE OS ACRÉSCIMOS!", "#c0392b"); 
+                    alertouAcrescimo2T = true; 
+                }
+            } 
+            else {
+                if (m === 30 && s === 0 && !alertouRenda) { 
+                    dispararAlertaGigante("🏟️ ATENÇÃO!<br>INFORME O PÚBLICO E RENDA", "#3498db"); 
+                    alertouRenda = true; 
+                }
+                if (m === 42 && s === 0 && !alertouAcrescimo2T) { 
+                    dispararAlertaGigante("⚠️ ATENÇÃO!<br>PREPARE OS ACRÉSCIMOS!", "#c0392b"); 
+                    alertouAcrescimo2T = true; 
+                }
+            }
+        }
+    }
+
+    function chScore(t, v, send = true) { goals[t]=Math.max(0, goals[t]+v); document.getElementById('gols'+t).innerText = goals[t]; if(send) transmitData(); }
+    function chRed(t, v, send = true) { redCards[t]=Math.max(0, redCards[t]+v); showToast(`Expulsões: (${redCards[t]})`, "var(--red)", "white"); if(send) transmitData(); }
+    function setP(p) { per = p; document.getElementById('btn_1T').style.background = (p === '1T') ? 'var(--blue)' : '#333'; document.getElementById('btn_2T').style.background = (p === '2T') ? 'var(--blue)' : '#333'; resetT(); }
+    
+    function toggleRes(id) { document.getElementById(id).classList.toggle('show'); }
+    function clearSub() { document.getElementById('subSai').innerText = "---"; document.getElementById('subEntra').innerText = "---"; pendingSub = { saiID_Num: null, saiID_Nom: null, entID_Num: null, entID_Nom: null }; document.querySelectorAll('.player-sub-sai, .player-sub-entra').forEach(el => el.classList.remove('player-sub-sai', 'player-sub-entra')); }
+    function clearCardPreview() { document.getElementById('cardEvent').innerText = "---"; }
+
+    function ocultarTudo() { cardDataEnvio = { tipo: 'OCULTAR', timestamp: Date.now() }; transmitData(); showToast("Arte retirada da tela", "#333", "white"); }
+    function limparCampo() { cardDataEnvio = { tipo: 'LIMPAR_CAMPO', timestamp: Date.now() }; transmitData(); showToast("Campo Limpo!", "#6c5ce7", "white"); }
+    
+    function prepGoal(t) { const nomeTime = document.getElementById(t === 'A' ? 'nameA' : 'nameB').value; const info = getTeamInfo(nomeTime); document.getElementById('cardEvent').innerText = "PREPARADO: GOL " + nomeTime; chScore(t, 1, false); cardDataEnvio = { tipo: 'GOL', time: nomeTime, escudo: info ? info.logo : "", cor: info ? info.cor : "#ffffff", timestamp: Date.now() }; }
+    function prepOG(tPontua) { document.getElementById('cardEvent').innerText = "PREPARADO: GOL CONTRA"; chScore(tPontua, 1, false); }
+    
+    function prepararCardTelao(team, idM, icon) { const playerNameClean = document.getElementById(idM).value.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); const nomeTime = document.getElementById(team === 'A' ? 'nameA' : 'nameB').value; const info = getTeamInfo(nomeTime); document.getElementById('cardEvent').innerText = "PREPARADO: " + playerNameClean + " " + icon; cardDataEnvio = { tipo: 'CARTAO', corCartao: icon === '🟨' ? '#f1c40f' : '#ff4757', textoCartao: icon === '🟨' ? 'CARTÃO AMARELO' : 'CARTÃO VERMELHO', jogador: playerNameClean + " " + icon, time: nomeTime, escudo: info ? info.logo : "", cor: info ? info.cor : "#ffffff", timestamp: Date.now() }; }
+
+    function prepararLista(team) {
+        const nomeTime = document.getElementById('name' + team).value; const info = getTeamInfo(nomeTime); const formacao = document.getElementById('formacao' + team).value; const tecnico = document.getElementById('tecnico' + team).value;
+        let listaJogadores = [];
+        for (let i = 1; i <= 11; i++) { const num = document.getElementById(`${team}_t_n_${i}`).value; const nomeFull = document.getElementById(`${team}_t_m_${i}`).value; const nomeLimpo = nomeFull.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); listaJogadores.push({ numero: num, nome: nomeLimpo }); }
+        cardDataEnvio = { tipo: 'ESCALACAO_LISTA', time: nomeTime, escudo: info ? info.logo : "", cor: info ? info.cor : "#ffffff", formacao: formacao, tecnico: tecnico, jogadores: listaJogadores, timestamp: Date.now() }; 
+        transmitData(); showToast("Titulares no Ar!", "#0984e3", "white");
+    }
+
+    function prepararReservas(team) {
+        const nomeTime = document.getElementById('name' + team).value; const info = getTeamInfo(nomeTime); const tecnico = document.getElementById('tecnico' + team).value;
+        let listaJogadores = [];
+        for (let i = 1; i <= 15; i++) { 
+            const num = document.getElementById(`${team}_r_n_${i}`).value; 
+            const nomeFull = document.getElementById(`${team}_r_m_${i}`).value; 
+            const nomeLimpo = nomeFull.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); 
+            if (nomeLimpo !== "") { listaJogadores.push({ numero: num, nome: nomeLimpo }); }
+        }
+        cardDataEnvio = { tipo: 'RESERVAS_LISTA', time: nomeTime, escudo: info ? info.logo : "", cor: info ? info.cor : "#ffffff", tecnico: tecnico, jogadores: listaJogadores, timestamp: Date.now() }; 
+        transmitData(); showToast("Reservas no Ar!", "#d35400", "white");
+    }
+
+    function prepararCampoTodos(team) {
+        const nomeTime = document.getElementById('name' + team).value; const info = getTeamInfo(nomeTime); const tecnico = document.getElementById('tecnico' + team).value;
+        let listaJogadores = [];
+        for (let i = 1; i <= 11; i++) { const num = document.getElementById(`${team}_t_n_${i}`).value; const nomeFull = document.getElementById(`${team}_t_m_${i}`).value; const nomeLimpo = nomeFull.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); const tagPos = document.getElementById(`${team}_t_p_${i}`).value; listaJogadores.push({ index: i, numero: num, nome: nomeLimpo, posicaoTatica: tagPos }); }
+        cardDataEnvio = { tipo: 'CAMPO_TODOS', time: nomeTime, escudo: info ? info.logo : "", cor: info ? info.cor : "#ffffff", tecnico: tecnico, jogadores: listaJogadores, timestamp: Date.now() }; 
+        transmitData(); showToast("Campo Completo no Ar!", "#27ae60", "white");
+    }
+
+    function prepararEscalacao(team, idNum, idNom, indexRow) {
+        const numTxt = document.getElementById(idNum).value; const nomeFull = document.getElementById(idNom).value; const nomeClean = nomeFull.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); const tecnico = document.getElementById('tecnico' + team).value; const nomeTime = document.getElementById('name' + team).value; const info = getTeamInfo(nomeTime);
+        let tagPosicao = "GL"; if (indexRow <= 11) { const selectPos = document.getElementById(team + '_t_p_' + indexRow); if (selectPos) tagPosicao = selectPos.value; }
+        cardDataEnvio = { tipo: 'ESCALAR', index: indexRow, posicaoTatica: tagPosicao, numero: numTxt, jogador: nomeClean, time: nomeTime, escudo: info ? info.logo : "", cor: info ? info.cor : "#ffffff", tecnico: tecnico, timestamp: Date.now() }; 
+        transmitData(); showToast(nomeClean + " na Pos: " + tagPosicao, "#6c5ce7", "white");
+    }
+    
+    function prepSub(idN, idM) { const valFull = document.getElementById(idM).value; const valClean = valFull.replace(/[⚽🟨🟥▶⇄]/g, '').trim(); const row = document.getElementById(idM).closest('tr'); if (!pendingSub.saiID_Nom) { pendingSub.saiID_Num = idN; pendingSub.saiID_Nom = idM; document.getElementById('subSai').innerText = valClean; if(row) row.classList.add('player-sub-sai'); } else { pendingSub.entID_Num = idN; pendingSub.entID_Nom = idM; document.getElementById('subEntra').innerText = valClean; if(row) row.classList.add('player-sub-entra'); } }
+
+    function handleSubLogic() { if (pendingSub.saiID_Nom && pendingSub.entID_Nom) { const inputTitNum = document.getElementById(pendingSub.saiID_Num); const inputTitNom = document.getElementById(pendingSub.saiID_Nom); const inputResNum = document.getElementById(pendingSub.entID_Num); const inputResNom = document.getElementById(pendingSub.entID_Nom); if(inputTitNum && inputTitNom && inputResNum && inputResNom) { const tNumBkp = inputTitNum.value; const tNomBkp = inputTitNom.value.replace(/[▶⇄]/g, '').trim(); const rNumBkp = inputResNum.value; const rNomBkp = inputResNom.value.replace(/[▶⇄]/g, '').trim(); inputTitNum.value = rNumBkp; inputTitNom.value = rNomBkp + " ▶"; inputResNum.value = tNumBkp; inputResNom.value = tNomBkp + " ⇄"; const t = pendingSub.saiID_Nom.charAt(0); const nomeTime = document.getElementById('name'+t).value; const info = getTeamInfo(nomeTime); cardDataEnvio = { tipo: 'SUB', sai: tNomBkp, entra: rNomBkp, time: nomeTime, escudo: info ? info.logo : "", cor: info ? info.cor : "#ffffff", timestamp: Date.now() }; } } }
+
+    function enviarEstatistica(tipoStat) { const pub = document.getElementById('inPublico').value; const ren = document.getElementById('inRenda').value; if(tipoStat === 'PUBLICO' && !pub) { alert("Preencha o Público!"); return; } if(tipoStat === 'RENDA' && !ren) { alert("Preencha a Renda!"); return; } document.getElementById('cardEvent').innerText = "PREPARADO: " + (tipoStat === 'PUBLICO' ? 'PÚBLICO' : 'RENDA'); cardDataEnvio = { tipo: 'ESTATISTICA', info: tipoStat, valor: tipoStat === 'PUBLICO' ? pub : ren, timestamp: Date.now() }; showToast(tipoStat + " PREPARADO!", "var(--blue)", "white"); }
+
+    // FUNÇÕES DA ARBITRAGEM
+    function abrirModalArbitragem() { document.getElementById('modalArbitragem').style.display = 'flex'; }
+    function fecharModalArbitragem() { document.getElementById('modalArbitragem').style.display = 'none'; }
+    function prepararArbitragem() {
+        const central = document.getElementById('inArbCentral').value || "Não informado";
+        const ass1 = document.getElementById('inArbAss1').value || "Não informado";
+        const ass2 = document.getElementById('inArbAss2').value || "Não informado";
+        const quarto = document.getElementById('inArb4to').value || "Não informado";
+        const var_ = document.getElementById('inArbVar').value || "Não informado";
+        const avar = document.getElementById('inArbAvar').value || "Não informado";
+
+        document.getElementById('cardEvent').innerText = "PREPARADO: ARBITRAGEM";
+        cardDataEnvio = {
+            tipo: 'ARBITRAGEM',
+            central: central, ass1: ass1, ass2: ass2,
+            quarto: quarto, var: var_, avar: avar,
+            timestamp: Date.now()
+        };
+        showToast("ARBITRAGEM PREPARADA!", "var(--primary)", "black");
+        fecharModalArbitragem();
     }
     </script>
 </body>
