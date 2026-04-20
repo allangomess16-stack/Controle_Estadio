@@ -22,10 +22,11 @@
         .team-section { 
             display: flex; align-items: center; justify-content: center; padding: 0 30px; gap: 15px;
             color: white; font-size: 1.8rem; font-weight: 800; text-transform: uppercase; 
-            transition: background 0.5s; position: relative;
+            transition: background 0.5s, color 0.5s; position: relative;
         }
         .escudo-placar { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); display: none; }
         
+        /* Ajuste: A cor do texto agora pode ser controlada por variável CSS */
         .score-box { background: #ffffff; color: #000; height: 100%; display: flex; align-items: center; padding: 0 25px; font-size: 2.8rem; font-weight: 900; min-width: 50px; justify-content: center; }
         #acrescimo-box { background-color: #ffffff; color: rgb(0, 0, 0); font-weight: bold; padding: 0 15px; font-size: 1.8rem; display: none; align-items: center; border-left: 2px solid #000; border-radius: 0 8px 8px 0;}
         
@@ -79,7 +80,6 @@
         .cartao-title { font-size: 2.5rem; font-weight: 900; color: var(--cor-cartao, #fff); text-transform: uppercase; letter-spacing: 4px; margin: 0 0 10px 0; }
         .cartao-player { font-size: 4.5rem; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1; color: #fff;}
 
-        /* NOVO: Card de Estatísticas (Público/Renda) */
         .card-estatistica {
             display: none; width: 100%;
             background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(20,20,20,0.9) 100%);
@@ -156,7 +156,21 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAeWhpLh1tO_axQSDtckMVyoE-f4Egno8A",
+        authDomain: "controladoravmixestadio.firebaseapp.com",
+        databaseURL: "https://controladoravmixestadio-default-rtdb.firebaseio.com",
+        projectId: "controladoravmixestadio",
+        storageBucket: "controladoravmixestadio.firebasestorage.app",
+        messagingSenderId: "381624685560",
+        appId: "1:381624685560:web:61266ebc5e5031d717bc0d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     function renderRedCards(idContainer, qty) {
         const container = document.getElementById(idContainer);
         container.innerHTML = '';
@@ -165,21 +179,43 @@
         }
     }
 
-    function sincronizarPlacar() {
-        const dadosBrutos = localStorage.getItem('vMixData');
-        if (!dadosBrutos) return;
+    // Função que decide se a fonte deve ser preta ou branca baseado na cor do fundo
+    function obterCorContraste(hexcolor) {
+        if (!hexcolor || hexcolor === 'transparent') return 'black';
         
-        const jogo = JSON.parse(dadosBrutos);
+        // Remove o # se houver
+        hexcolor = hexcolor.replace('#', '');
         
-        document.getElementById('tempo').innerText = jogo.tempo;
-        document.getElementById('periodo').innerText = jogo.periodo;
-        document.getElementById('timeA').innerText = jogo.timeA;
-        document.getElementById('golsA').innerText = jogo.golsA;
-        document.getElementById('timeB').innerText = jogo.timeB;
-        document.getElementById('golsB').innerText = jogo.golsB;
+        // Converte para RGB
+        var r = parseInt(hexcolor.substr(0, 2), 16);
+        var g = parseInt(hexcolor.substr(2, 2), 16);
+        var b = parseInt(hexcolor.substr(4, 2), 16);
+        
+        // Calcula a luminosidade (YIQ equation)
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        
+        // Se for claro, retorna preto. Se for escuro, retorna branco.
+        return (yiq >= 128) ? 'black' : 'white';
+    }
 
-        document.getElementById('boxTimeA').style.backgroundColor = jogo.corA || 'transparent';
-        document.getElementById('boxTimeB').style.backgroundColor = jogo.corB || 'transparent';
+    function sincronizarPlacar(jogo) {
+        if (!jogo) return;
+        
+        document.getElementById('tempo').innerText = jogo.tempo || "00:00";
+        document.getElementById('periodo').innerText = jogo.periodo || "1T";
+        document.getElementById('timeA').innerText = jogo.timeA || "";
+        document.getElementById('golsA').innerText = jogo.golsA || "0";
+        document.getElementById('timeB').innerText = jogo.timeB || "";
+        document.getElementById('golsB').innerText = jogo.golsB || "0";
+
+        // Aplica o fundo E a cor da fonte com contraste calculado
+        const boxA = document.getElementById('boxTimeA');
+        boxA.style.backgroundColor = jogo.corA || 'transparent';
+        boxA.style.color = obterCorContraste(jogo.corA);
+
+        const boxB = document.getElementById('boxTimeB');
+        boxB.style.backgroundColor = jogo.corB || 'transparent';
+        boxB.style.color = obterCorContraste(jogo.corB);
         
         const logoA = document.getElementById('escudoA');
         if (jogo.escudoA) { logoA.src = jogo.escudoA; logoA.style.display = 'block'; } else { logoA.style.display = 'none'; }
@@ -259,8 +295,10 @@
         }
     }
 
-    window.addEventListener('storage', (e) => { if (e.key === 'vMixData') sincronizarPlacar(); });
-    window.onload = () => { sincronizarPlacar(); setInterval(sincronizarPlacar, 200); };
+    db.ref('transmissao/vMixData').on('value', (snapshot) => {
+        const dadosJogo = snapshot.val();
+        if(dadosJogo) sincronizarPlacar(dadosJogo);
+    });
     </script>
 </body>
 </html>
