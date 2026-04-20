@@ -5,128 +5,169 @@
 
 const bancoDeElencos = {
     "BOTAFOGO": [
-        { numero: "1", nome: "Léo Linck" }, { numero: "4", nome: "Alexander Barboza" }, { numero: "33", nome: "Bastos" },
-        { numero: "21", nome: "Fernando Marçal" }, { numero: "22", nome: "Vitinho" }, { numero: "5", nome: "Allan" },
-        { numero: "8", nome: "Danilo" }, { numero: "10", nome: "Santiago Rodríguez" }, { numero: "11", nome: "Júnior Santos" },
-        { numero: "7", nome: "Júnior Santos" }, { numero: "9", nome: "Arthur Cabral" },
-        // Reservas (A partir do 12º)
-        { numero: "12", nome: "Neto" }, { numero: "97", nome: "Raul Steffens" }, { numero: "3", nome: "Philipe Sampaio" },
-        { numero: "13", nome: "Alex Telles" }, { numero: "20", nome: "Cristian Medina" }, { numero: "47", nome: "Jeffinho" },
-        { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "INTERNACIONAL": [
-        { numero: "1", nome: "Sergio Rochet" }, { numero: "25", nome: "Gabriel Mercado" }, { numero: "4", nome: "Félix Torres" },
-        { numero: "6", nome: "Bernabei" }, { numero: "26", nome: "Matheus Bahia" }, { numero: "29", nome: "Thiago Maia" },
-        { numero: "8", nome: "Bruno Henrique" }, { numero: "10", nome: "Alan Patrick" }, { numero: "15", nome: "Bruno Gomes" },
-        { numero: "19", nome: "Rafael Borré" }, { numero: "31", nome: "Alerrandro" },
-        // Reservas
-        { numero: "22", nome: "Ivan" }, { numero: "24", nome: "Anthoni" }, { numero: "11", nome: "Johan Carbonero" },
-        { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" },
-        { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "PALMEIRAS": [
-        { numero: "21", nome: "Weverton" }, { numero: "2", nome: "Marcos Rocha" }, { numero: "15", nome: "Gustavo Gómez" },
-        { numero: "26", nome: "Murilo" }, { numero: "22", nome: "Piquerez" }, { numero: "8", nome: "Zé Rafael" },
-        { numero: "27", nome: "Richard Ríos" }, { numero: "23", nome: "Raphael Veiga" }, { numero: "10", nome: "Rony" },
-        { numero: "7", nome: "Dudu" }, { numero: "42", nome: "Flaco López" },
-        { numero: "14", nome: "Marcelo Lomba" }, { numero: "11", nome: "Bruno Rodrigues" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "SAO PAULO": [
-        { numero: "23", nome: "Rafael" }, { numero: "13", nome: "Rafinha" }, { numero: "5", nome: "Arboleda" },
-        { numero: "4", nome: "Diego Costa" }, { numero: "6", nome: "Welington" }, { numero: "29", nome: "Pablo Maia" },
-        { numero: "25", nome: "Alisson" }, { numero: "27", nome: "Wellington Rato" }, { numero: "7", nome: "Lucas Moura" },
-        { numero: "10", nome: "Luciano" }, { numero: "9", nome: "Calleri" },
-        { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "CORINTHIANS": [
-        { numero: "1", nome: "Cássio" }, { numero: "23", nome: "Fagner" }, { numero: "3", nome: "Félix Torres" },
-        { numero: "13", nome: "Gustavo Henrique" }, { numero: "46", nome: "Hugo" }, { numero: "14", nome: "Raniele" },
-        { numero: "27", nome: "Breno Bidon" }, { numero: "10", nome: "Rodrigo Garro" }, { numero: "11", nome: "Romero" },
-        { numero: "9", nome: "Yuri Alberto" }, { numero: "20", nome: "Pedro Raul" },
-        { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "SANTOS": [
-        { numero: "1", nome: "João Paulo" }, { numero: "4", nome: "Gil" }, { numero: "6", nome: "Joaquim" },
-        { numero: "3", nome: "Hayner" }, { numero: "2", nome: "Aderlan" }, { numero: "5", nome: "João Schmidt" },
-        { numero: "8", nome: "Diego Pituca" }, { numero: "10", nome: "Giuliano" }, { numero: "11", nome: "Guilherme" },
-        { numero: "7", nome: "Pedrinho" }, { numero: "9", nome: "Furch" },
-        { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "FLAMENGO": [
-        { numero: "1", nome: "Rossi" }, { numero: "2", nome: "Varela" }, { numero: "15", nome: "Fabrício Bruno" },
-        { numero: "4", nome: "Léo Pereira" }, { numero: "6", nome: "Ayrton Lucas" }, { numero: "5", nome: "Erick Pulgar" },
-        { numero: "8", nome: "Gerson" }, { numero: "14", nome: "De Arrascaeta" }, { numero: "11", nome: "Everton Cebolinha" },
-        { numero: "27", nome: "Bruno Henrique" }, { numero: "9", nome: "Pedro" },
-        { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "FLUMINENSE": [
-        { numero: "1", nome: "Fábio" }, { numero: "2", nome: "Samuel Xavier" }, { numero: "3", Thiago: "Santos" },
-        { numero: "30", nome: "Felipe Melo" }, { numero: "12", nome: "Marcelo" }, { numero: "7", nome: "André" },
-        { numero: "8", nome: "Martinelli" }, { numero: "10", nome: "Ganso" }, { numero: "21", nome: "Arias" },
-        { numero: "11", nome: "Keno" }, { numero: "14", nome: "Cano" },
-        { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "VASCO": [
-        { numero: "1", nome: "Léo Jardim" }, { numero: "2", nome: "Puma Rodríguez" }, { numero: "4", nome: "Maicon" },
-        { numero: "3", nome: "Léo" }, { numero: "6", nome: "Lucas Piton" }, { numero: "8", nome: "Jair" },
-        { numero: "10", nome: "Payet" }, { numero: "21", nome: "Praxedes" }, { numero: "7", nome: "David" },
-        { numero: "11", nome: "Adson" }, { numero: "99", nome: "Vegetti" },
-        { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "ATLETICO-MG": [
-        { numero: "22", nome: "Everson" }, { numero: "26", nome: "Saravia" }, { numero: "3", nome: "Bruno Fuchs" },
-        { numero: "4", nome: "Mauricio Lemos" }, { numero: "13", nome: "Guilherme Arana" }, { numero: "21", nome: "Battaglia" },
-        { numero: "15", nome: "Zaracho" }, { numero: "14", nome: "Igor Gomes" }, { numero: "10", nome: "Paulinho" },
-        { numero: "7", nome: "Hulk" }, { numero: "9", nome: "Deyverson" },
-        { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "CRUZEIRO": [
-        { numero: "1", nome: "Rafael Cabral" }, { numero: "12", nome: "William" }, { numero: "3", nome: "Marlon" },
-        { numero: "5", nome: "Zé Ivaldo" }, { numero: "21", nome: "Kaiki" }, { numero: "8", nome: "Lucas Silva" },
-        { numero: "16", nome: "Lucas Romero" }, { numero: "10", nome: "Matheus Pereira" }, { numero: "11", nome: "Arthur Gomes" },
-        { numero: "30", nome: "Gabriel Veron" }, { numero: "9", nome: "Dinenno" },
-        { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "AMERICA-MG": [
-        { numero: "1", nome: "Goleiro" }, { numero: "2", nome: "Lateral Dir" }, { numero: "3", nome: "Zagueiro 1" }, { numero: "4", nome: "Zagueiro 2" }, { numero: "6", nome: "Lateral Esq" }, { numero: "5", nome: "Volante 1" }, { numero: "8", nome: "Volante 2" }, { numero: "10", nome: "Meia" }, { numero: "7", nome: "Ponta Dir" }, { numero: "11", nome: "Ponta Esq" }, { numero: "9", nome: "Centroavante" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "ATHLETICO-PR": [
-        { numero: "1", nome: "Bento" }, { numero: "2", nome: "Léo Godoy" }, { numero: "4", nome: "Thiago Heleno" }, { numero: "3", nome: "Gamarra" }, { numero: "6", nome: "Esquivel" }, { numero: "5", nome: "Fernandinho" }, { numero: "8", nome: "Erick" }, { numero: "10", nome: "Zapelli" }, { numero: "7", nome: "Cuello" }, { numero: "11", nome: "Canobbio" }, { numero: "9", nome: "Mastrialni" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "BAHIA": [
-        { numero: "22", nome: "Marcos Felipe" }, { numero: "2", nome: "Gilberto" }, { numero: "3", nome: "Kanu" }, { numero: "4", nome: "Victor Cuesta" }, { numero: "6", nome: "Luciano Juba" }, { numero: "5", nome: "Caio Alexandre" }, { numero: "8", nome: "Jean Lucas" }, { numero: "10", nome: "Everton Ribeiro" }, { numero: "7", nome: "Cauly" }, { numero: "11", nome: "Thaciano" }, { numero: "9", nome: "Everaldo" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "BRAGANTINO": [
-        { numero: "1", nome: "Cleiton" }, { numero: "2", nome: "Andrés Hurtado" }, { numero: "3", nome: "Léo Ortiz" }, { numero: "4", nome: "Luan Cândido" }, { numero: "6", nome: "Juninho Capixaba" }, { numero: "5", nome: "Jadsom" }, { numero: "8", nome: "Lucas Evangelista" }, { numero: "10", nome: "Lincoln" }, { numero: "7", nome: "Helinho" }, { numero: "11", nome: "Vitinho" }, { numero: "9", nome: "Eduardo Sasha" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "CORITIBA": [
-         { numero: "1", nome: "Goleiro" }, { numero: "2", nome: "Lateral Dir" }, { numero: "3", nome: "Zagueiro 1" }, { numero: "4", nome: "Zagueiro 2" }, { numero: "6", nome: "Lateral Esq" }, { numero: "5", nome: "Volante 1" }, { numero: "8", nome: "Volante 2" }, { numero: "10", nome: "Meia" }, { numero: "7", nome: "Ponta Dir" }, { numero: "11", nome: "Ponta Esq" }, { numero: "9", nome: "Centroavante" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "FORTALEZA": [
-        { numero: "1", nome: "João Ricardo" }, { numero: "2", nome: "Tinga" }, { numero: "3", nome: "Brítez" }, { numero: "4", nome: "Titi" }, { numero: "6", nome: "Bruno Pacheco" }, { numero: "5", nome: "Zé Welison" }, { numero: "8", nome: "Hércules" }, { numero: "10", nome: "Pochettino" }, { numero: "7", nome: "Pikachu" }, { numero: "11", nome: "Moisés" }, { numero: "9", nome: "Lucero" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "GREMIO": [
-        { numero: "1", nome: "Marchesín" }, { numero: "2", nome: "João Pedro" }, { numero: "3", nome: "Geromel" }, { numero: "4", nome: "Kannemann" }, { numero: "6", nome: "Reinaldo" }, { numero: "5", nome: "Villasanti" }, { numero: "8", nome: "Pepê" }, { numero: "10", nome: "Cristaldo" }, { numero: "7", nome: "Soteldo" }, { numero: "11", nome: "Pavón" }, { numero: "9", nome: "Diego Costa" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "VITORIA": [
-        { numero: "1", nome: "Lucas Arcanjo" }, { numero: "2", nome: "Zeca" }, { numero: "3", nome: "Camutanga" }, { numero: "4", nome: "Wagner Leonardo" }, { numero: "6", nome: "Lucas Esteves" }, { numero: "5", nome: "Willian Oliveira" }, { numero: "8", nome: "Dudu" }, { numero: "10", nome: "Matheuzinho" }, { numero: "7", nome: "Osvaldo" }, { numero: "11", nome: "Iury Castilho" }, { numero: "9", nome: "Alerrandro" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
+        // 11 TITULARES (Baseado no campinho do jogo)
+        { numero: "22", nome: "NETO" }, { numero: "2", nome: "VITINHO" }, { numero: "5", nome: "FERRARESI" },
+        { numero: "20", nome: "ALEXANDER BARBOZA" }, { numero: "13", nome: "ALEX TELLES" }, { numero: "8", nome: "DANILO" },
+        { numero: "88", nome: "EDENÍLSON" }, { numero: "25", nome: "ALLAN" }, { numero: "7", nome: "JÚNIOR SANTOS" },
+        { numero: "11", nome: "MATHEUS MARTINS" }, { numero: "19", nome: "ARTHUR CABRAL" },
+        // 15 RESERVAS
+        { numero: "24", nome: "LÉO LINCK" }, { numero: "1", nome: "RAUL" }, { numero: "15", nome: "BASTOS" },
+        { numero: "4", nome: "MATEO PONTE" }, { numero: "27", nome: "CAIO ROQUE" }, { numero: "77", nome: "VILLALBA" },
+        { numero: "28", nome: "NEWTON" }, { numero: "10", nome: "MONTORO" }, { numero: "23", nome: "SANTI RODRÍGUEZ" },
+        { numero: "14", nome: "BARRERA" }, { numero: "30", nome: "JOAQUIN CORREA" }, { numero: "37", nome: "KADIR" },
+        { numero: "9", nome: "CHRIS RAMOS" }, { numero: "16", nome: "NATHAN FERNANDES" }, { numero: "75", nome: "HUGUINHO" }
     ],
     "CHAPECOENSE": [
-        { numero: "1", nome: "Goleiro" }, { numero: "2", nome: "Lateral Dir" }, { numero: "3", nome: "Zagueiro 1" }, { numero: "4", nome: "Zagueiro 2" }, { numero: "6", nome: "Lateral Esq" }, { numero: "5", nome: "Volante 1" }, { numero: "8", nome: "Volante 2" }, { numero: "10", nome: "Meia" }, { numero: "7", nome: "Ponta Dir" }, { numero: "11", nome: "Ponta Esq" }, { numero: "9", nome: "Centroavante" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
+        // 11 TITULARES (Baseado no campinho do jogo)
+        { numero: "1", nome: "RAFAEL SANTOS" }, { numero: "2", nome: "MARCOS VINÍCIUS" }, { numero: "3", nome: "EDUARDO DOMA" },
+        { numero: "33", nome: "BRUNO LEONARDO" }, { numero: "91", nome: "BRUNO PACHECO" }, { numero: "22", nome: "HIGOR MERITÃO" },
+        { numero: "5", nome: "JOÃO VITOR" }, { numero: "20", nome: "JEAN CARLOS" }, { numero: "7", nome: "MARCINHO" },
+        { numero: "11", nome: "BOLASIE" }, { numero: "19", nome: "DAVID" },
+        // 15 RESERVAS
+        { numero: "98", nome: "ANDERSON" }, { numero: "25", nome: "VICTOR CAETANO" }, { numero: "4", nome: "JOÃO PAULO" },
+        { numero: "37", nome: "WALTER CLAR" }, { numero: "17", nome: "VINÍCIUS BALIEIRO" }, { numero: "27", nome: "CAMILO" },
+        { numero: "99", nome: "RAFAEL CARVALHEIRA" }, { numero: "77", nome: "ÍTALO" }, { numero: "31", nome: "GARCEZ" },
+        { numero: "97", nome: "ÊNIO" }, { numero: "18", nome: "NETO PESSOA" }, { numero: "70", nome: "RUBENS" },
+        { numero: "12", nome: "TIEPO" }, { numero: "8", nome: "TÁRIK" }, { numero: "9", nome: "MÁRIO SÉRGIO" }
     ],
-    "CRICIUMA": [
-        { numero: "1", nome: "Gustavo" }, { numero: "2", nome: "Claudinho" }, { numero: "3", nome: "Rodrigo" }, { numero: "4", nome: "Walisson Maia" }, { numero: "6", nome: "Marcelo Hermes" }, { numero: "5", nome: "Barreto" }, { numero: "8", nome: "Fellipe Mateus" }, { numero: "10", nome: "Marquinhos Gabriel" }, { numero: "7", nome: "Éder" }, { numero: "11", nome: "Felipe Vizeu" }, { numero: "9", nome: "Bolasie" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
+    "INTERNACIONAL": [
+        // 11 TITULARES (Exatamente como no campinho)
+        { numero: "12", nome: "ANTHONI" }, { numero: "15", nome: "B. GOMES" }, { numero: "4", nome: "F. TORRES" },
+        { numero: "35", nome: "B. AGUIRRE" }, { numero: "5", nome: "R. VILLAGRA" }, { numero: "41", nome: "V. GABRIEL" },
+        { numero: "27", nome: "PAULINHO" }, { numero: "31", nome: "ALLEX" }, { numero: "10", nome: "A. PATRICK ©" },
+        { numero: "28", nome: "VITINHO" }, { numero: "19", nome: "R. BORRÉ" },
+        
+        // RESERVAS (Exatamente a lista de substituições da imagem)
+        { numero: "7", nome: "JOHAN CARBONERO" }, { numero: "17", nome: "BRUNO TABATA" }, { numero: "9", nome: "ALERRANDRO" },
+        { numero: "29", nome: "THIAGO MAIA" }, { numero: "11", nome: "KAYKY" }, { numero: "22", nome: "KAUAN" },
+        { numero: "20", nome: "CLAYTON SAMPAIO" }, { numero: "18", nome: "JUNINHO" }, { numero: "30", nome: "ALISSON" },
+        { numero: "44", nome: "JOÃO VICTOR" }, { numero: "33", nome: "BENJAMIN ARHIN" }, { numero: "8", nome: "BRUNO HENRIQUE" }
     ],
-    "CUIABA": [
-        { numero: "1", nome: "Walter" }, { numero: "2", nome: "Matheus Alexandre" }, { numero: "3", nome: "Marllon" }, { numero: "4", nome: "Alan Empereur" }, { numero: "6", nome: "Rikelme" }, { numero: "5", nome: "Fernando Sobral" }, { numero: "8", nome: "Denilson" }, { numero: "10", nome: "Max Alves" }, { numero: "7", nome: "Jonathan Cafú" }, { numero: "11", nome: "Clayson" }, { numero: "9", nome: "Deyverson" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
-    "JUVENTUDE": [
-        { numero: "1", nome: "Gabriel" }, { numero: "2", nome: "João Lucas" }, { numero: "3", nome: "Zé Marcos" }, { numero: "4", nome: "Danilo Boza" }, { numero: "6", nome: "Alan Ruschel" }, { numero: "5", nome: "Jadson" }, { numero: "8", nome: "Mandaca" }, { numero: "10", nome: "Nenê" }, { numero: "7", nome: "Lucas Barbosa" }, { numero: "11", nome: "Erick Farias" }, { numero: "9", nome: "Gilberto" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
-    ],
+    
     "MIRASSOL": [
-        { numero: "1", nome: "Muralha" }, { numero: "2", nome: "Lucas Ramon" }, { numero: "3", nome: "Luiz Otávio" }, { numero: "4", nome: "João Victor" }, { numero: "6", nome: "Marcelo" }, { numero: "5", nome: "Danielzinho" }, { numero: "8", nome: "Gabriel" }, { numero: "10", nome: "Chico Kim" }, { numero: "7", nome: "Negueba" }, { numero: "11", nome: "Fernandinho" }, { numero: "9", nome: "Dellatorre" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
+        // 11 TITULARES (Exatamente como no campinho)
+        { numero: "22", nome: "WALTER" }, { numero: "2", nome: "L. OLIVEIRA" }, { numero: "3", nome: "W. MACHADO" },
+        { numero: "32", nome: "IGOR FORMIGA" }, { numero: "34", nome: "J. VICTOR ©" }, { numero: "7", nome: "SHAYLON" },
+        { numero: "8", nome: "DENILSON" }, { numero: "21", nome: "J. ALDO" }, { numero: "6", nome: "REINALDO" },
+        { numero: "77", nome: "ALESSON" }, { numero: "99", nome: "A. LUIS" },
+        
+        // RESERVAS (Exatamente a lista de substituições da imagem)
+        { numero: "25", nome: "NETO MOURA" }, { numero: "96", nome: "CARLOS EDUARDO" }, { numero: "95", nome: "EDSON CARIOCA" },
+        { numero: "12", nome: "VICTOR LUIS" }, { numero: "9", nome: "NATHAN FOGAÇA" }, { numero: "23", nome: "ALEX MURALHA" },
+        { numero: "20", nome: "DANIEL BORGES" }, { numero: "97", nome: "RODRIGUES" }, { numero: "27", nome: "ANTONIO GALEANO" },
+        { numero: "10", nome: "CHICO" }, { numero: "29", nome: "TIQUINHO SOARES" }, { numero: "17", nome: "EVERTON GALDINO" }
     ],
-    "REMO": [
-        { numero: "1", nome: "Marcelo Rangel" }, { numero: "2", nome: "Vidal" }, { numero: "3", nome: "Ligger" }, { numero: "4", nome: "Ícaro" }, { numero: "6", nome: "Raimar" }, { numero: "5", nome: "Jaderson" }, { numero: "8", nome: "Pavani" }, { numero: "10", nome: "Matheus Anjos" }, { numero: "7", nome: "Kelvin" }, { numero: "11", nome: "Pedro Vitor" }, { numero: "9", nome: "Ytalo" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }, { numero: "0", nome: "" }
+    "GREMIO": [
+        { numero: "1", nome: "WEVERTON" }, { numero: "7", nome: "PAVÓN" }, { numero: "6", nome: "GUSTAVO MARTINS" },
+        { numero: "44", nome: "VIERY" }, { numero: "54", nome: "PEDRO GABRIEL" }, { numero: "38", nome: "CAIO PAULISTA" },
+        { numero: "19", nome: "NORIEGA" }, { numero: "5", nome: "NARDONI" }, { numero: "8", nome: "ARTHUR MELO" },
+        { numero: "9", nome: "AMUZU" }, { numero: "37", nome: "GABRIEL MEC" },
+        { numero: "95", nome: "CARLOS VINÍCIUS" }, { numero: "22", nome: "BRAITHWAITE" }, { numero: "21", nome: "TETÊ" },
+        { numero: "99", nome: "ENAMORADO" }, { numero: "12", nome: "GABRIEL GRANDO" }, { numero: "14", nome: "MARCOS ROCHA" },
+        { numero: "2", nome: "BALBUENA" }, { numero: "4", nome: "KANNEMANN" }, { numero: "17", nome: "DODI" },
+        { numero: "33", nome: "LEONEL PÉREZ" }, { numero: "11", nome: "MONSALVE" }, { numero: "47", nome: "ROGER" }
+    ],
+    "ATHLETICO PR": [
+        { numero: "23", nome: "SANTOS" }, { numero: "2", nome: "GILBERTO" }, { numero: "33", nome: "AGUIRRE" },
+        { numero: "4", nome: "ARTHUR DIAS" }, { numero: "37", nome: "ESQUIVEL" }, { numero: "27", nome: "PORTILLA" },
+        { numero: "10", nome: "ZAPELLI" }, { numero: "14", nome: "LUIZ GUSTAVO" }, { numero: "53", nome: "DUDU" },
+        { numero: "8", nome: "JOÃO CRUZ" }, { numero: "20", nome: "JULIMAR" },
+        { numero: "48", nome: "BRUNINHO" }, { numero: "7", nome: "MENDOZA" }, { numero: "5", nome: "FELIPINHO" },
+        { numero: "9", nome: "VIVEROS" }, { numero: "70", nome: "RENAN PEIXOTO" }, { numero: "1", nome: "MYCAEL" },
+        { numero: "3", nome: "LÉO" }, { numero: "6", nome: "LÉO DERIK" }, { numero: "26", nome: "CLAUDINHO" },
+        { numero: "16", nome: "JADSON" }, { numero: "11", nome: "ISAAC" }, { numero: "21", nome: "LEOZINHO" }
+    ],
+    
+    "SANTOS": [
+        { numero: "77", nome: "GABRIEL BRAZÃO" }, { numero: "18", nome: "IGOR VINÍCIUS" }, { numero: "4", nome: "LUCAS VERÍSSIMO" },
+        { numero: "14", nome: "LUAN PERES" }, { numero: "31", nome: "ESCOBAR" }, { numero: "15", nome: "WILLIAN ARÃO" },
+        { numero: "48", nome: "GUSTAVO HENRIQUE" }, { numero: "28", nome: "OLIVA" }, { numero: "49", nome: "GABRIEL BONTEMPO" },
+        { numero: "16", nome: "THACIANO" }, { numero: "10", nome: "NEYMAR" },
+        { numero: "11", nome: "RONY" }, { numero: "21", nome: "MOISÉS" }, { numero: "9", nome: "GABRIEL" },
+        { numero: "19", nome: "LAUTARO DÍAZ" }, { numero: "1", nome: "DIÓGENES" }, { numero: "98", nome: "ADONIS FRÍAS" },
+        { numero: "38", nome: "RAFAEL GONZAGA" }, { numero: "5", nome: "JOÃO SCHMIDT" }, { numero: "6", nome: "ZÉ RAFAEL" },
+        { numero: "30", nome: "MIGUELITO" }, { numero: "32", nome: "ROLLHEISER" }, { numero: "7", nome: "ROBINHO JR." }
+    ],
+    "ATLETICO MG": [
+        { numero: "22", nome: "EVERSON" }, { numero: "2", nome: "NATANAEL" }, { numero: "11", nome: "BERNARD" },
+        { numero: "4", nome: "RUAN" }, { numero: "13", nome: "LYANCO" }, { numero: "16", nome: "RENAN LODI" },
+        { numero: "25", nome: "TOMÁS PÉREZ" }, { numero: "5", nome: "ALEXSANDER" }, { numero: "21", nome: "ALAN FRANCO" },
+        { numero: "30", nome: "VICTOR HUGO" }, { numero: "9", nome: "CASSIERRA" },
+        { numero: "7", nome: "HULK" }, { numero: "92", nome: "DUDU" }, { numero: "19", nome: "REINIER" },
+        { numero: "29", nome: "CAUÃ SOARES" }, { numero: "28", nome: "CUELLO" }, { numero: "1", nome: "GABRIEL DELFIM" },
+        { numero: "6", nome: "JUNIOR ALONSO" }, { numero: "14", nome: "VITOR HUGO" }, { numero: "8", nome: "MAYCON" },
+        { numero: "10", nome: "GUSTAVO SCARPA" }, { numero: "17", nome: "IGOR GOMES" }, { numero: "39", nome: "CISSÉ" }
+    ],
+    
+    "BAHIA": [
+        { numero: "22", nome: "LÉO VIEIRA" }, { numero: "5", nome: "ACEVEDO" }, { numero: "33", nome: "DAVID DUARTE" },
+        { numero: "21", nome: "SANTIAGO MINGO" }, { numero: "46", nome: "LUCIANO JUBA" }, { numero: "8", nome: "CAIO ALEXANDRE" },
+        { numero: "2", nome: "GILBERTO" }, { numero: "6", nome: "JEAN LUCAS" }, { numero: "10", nome: "EVERTON RIBEIRO" },
+        { numero: "11", nome: "RODRIGO NESTOR" }, { numero: "99", nome: "CRISTIAN OLIVERA" },
+        { numero: "16", nome: "ERICK PULGA" }, { numero: "7", nome: "ADEMIR" }, { numero: "23", nome: "SANABRIA" },
+        { numero: "27", nome: "EVERALDO" }, { numero: "12", nome: "WILLIAN JOSÉ" }, { numero: "34", nome: "JOÃO PAULO" },
+        { numero: "31", nome: "ROMÁN GÓMEZ" }, { numero: "3", nome: "GABRIEL XAVIER" }, { numero: "44", nome: "MARCOS VICTOR" },
+        { numero: "25", nome: "IAGO" }, { numero: "14", nome: "ERICK" }, { numero: "15", nome: "MICHEL ARAÚJO" }
+    ],
+    "CRUZEIRO": [
+        { numero: "31", nome: "MATHEUS CUNHA" }, { numero: "23", nome: "FAGNER" }, { numero: "2", nome: "KAUÃ MORAES" },
+        { numero: "15", nome: "FABRÍCIO BRUNO" }, { numero: "34", nome: "JONATHAN JESUS" }, { numero: "25", nome: "VILLALBA" },
+        { numero: "6", nome: "KAIKI BRUNO" }, { numero: "16", nome: "LUCAS SILVA" }, { numero: "8", nome: "MATHEUS HENRIQUE" },
+        { numero: "11", nome: "GERSON" }, { numero: "88", nome: "CHRISTIAN" },
+        { numero: "10", nome: "MATHEUS PEREIRA" }, { numero: "99", nome: "ARROYO" }, { numero: "94", nome: "WANDERSON" },
+        { numero: "22", nome: "VILLARREAL" }, { numero: "9", nome: "BRUNO RODRIGUES" }, { numero: "81", nome: "OTÁVIO" },
+        { numero: "12", nome: "WILLIAM" }, { numero: "43", nome: "JOÃO MARCELO" }, { numero: "36", nome: "KAUÃ PRATES" },
+        { numero: "77", nome: "JAPA" }, { numero: "70", nome: "KAIQUE KENJI" }, { numero: "91", nome: "CHICO DA COSTA" }
+    ],
+    "BRAGANTINO": [
+        { numero: "18", nome: "TIAGO VOLPI" }, { numero: "34", nome: "ANDRÉS HURTADO" }, { numero: "20", nome: "RODRIGUINHO" },
+        { numero: "4", nome: "ALIX VINICIUS" }, { numero: "16", nome: "GUSTAVO MARQUES" }, { numero: "29", nome: "JUNINHO CAPIXABA" },
+        { numero: "6", nome: "GABRIEL" }, { numero: "7", nome: "ERIC RAMIRES" }, { numero: "35", nome: "MATHEUS FERNANDES" },
+        { numero: "22", nome: "GUSTAVINHO" }, { numero: "15", nome: "IGNACIO SOSA" },
+        { numero: "52", nome: "RYAN AUGUSTO" }, { numero: "21", nome: "LUCAS BARBOSA" }, { numero: "9", nome: "ISIDRO PITTA" },
+        { numero: "17", nome: "VINICINHO" }, { numero: "67", nome: "JHUAN NUNES" }, { numero: "1", nome: "CLEITON" },
+        { numero: "56", nome: "GUSTAVO REIS" }, { numero: "14", nome: "PEDRO HENRIQUE" }, { numero: "51", nome: "CAUÊ" },
+        { numero: "5", nome: "FABINHO" }, { numero: "28", nome: "YURI LELES" }, { numero: "57", nome: "MARCELINHO" }
+    ],
+    "FLUMINENSE": [
+        { numero: "1", nome: "FÁBIO" }, { numero: "2", nome: "SAMUEL XAVIER" }, { numero: "23", nome: "GUGA" },
+        { numero: "3", nome: "JEMMES" }, { numero: "22", nome: "FREYTES" }, { numero: "6", nome: "RENÊ" },
+        { numero: "13", nome: "GUILHERME ARANA" }, { numero: "8", nome: "MARTINELLI" }, { numero: "11", nome: "SAVARINO" },
+        { numero: "35", nome: "HÉRCULES" }, { numero: "32", nome: "LUCHO ACOSTA" },
+        { numero: "10", nome: "GANSO" }, { numero: "17", nome: "CANOBBIO" }, { numero: "9", nome: "JOHN KENNEDY" },
+        { numero: "19", nome: "RODRIGO CASTILLO" }, { numero: "90", nome: "SERNA" }, { numero: "98", nome: "VITOR EUDES" },
+        { numero: "4", nome: "IGNÁCIO" }, { numero: "29", nome: "MILLÁN" }, { numero: "5", nome: "BERNAL" },
+        { numero: "25", nome: "ALISSON" }, { numero: "94", nome: "OTÁVIO" }, { numero: "34", nome: "WESLEY NATÃ" }
+    ],
+    "FLAMENGO": [
+        { numero: "1", nome: "ROSSI" }, { numero: "2", nome: "VARELA" }, { numero: "3", nome: "LÉO ORTIZ" },
+        { numero: "13", nome: "DANILO" }, { numero: "4", nome: "LÉO PEREIRA" }, { numero: "26", nome: "ALEX SANDRO" },
+        { numero: "52", nome: "EVERTTON ARAÚJO" }, { numero: "20", nome: "LUCAS PAQUETÁ" }, { numero: "10", nome: "ARRASCAETA" },
+        { numero: "18", nome: "DE LA CRUZ" }, { numero: "19", nome: "PLATA" },
+        { numero: "15", nome: "CARRASCAL" }, { numero: "9", nome: "PEDRO" }, { numero: "7", nome: "LUIZ ARAÚJO" },
+        { numero: "16", nome: "SAMUEL LINO" }, { numero: "27", nome: "BRUNO HENRIQUE" }, { numero: "42", nome: "ANDREW" },
+        { numero: "49", nome: "DYOGO ALVES" }, { numero: "22", nome: "EMERSON ROYAL" }, { numero: "44", nome: "VITÃO" },
+        { numero: "6", nome: "AYRTON LUCAS" }, { numero: "75", nome: "LUIZ FELIPE" }, { numero: "64", nome: "WALLACE YAN" },
+        { numero: "8", nome: "SAÚL" }, { numero: "11", nome: "EVERTON CEBOLINHA" }
+    ],
+    "VITORIA": [
+        { numero: "1", nome: "LUCAS ARCANJO" }, { numero: "45", nome: "NATHAN MENDES" }, { numero: "25", nome: "CACÁ" },
+        { numero: "36", nome: "LUAN CÂNDIDO" }, { numero: "13", nome: "RAMON" }, { numero: "95", nome: "CAÍQUE" },
+        { numero: "88", nome: "ZÉ VITOR" }, { numero: "44", nome: "BARALHAS" }, { numero: "8", nome: "RONALD LOPES" },
+        { numero: "6", nome: "EMMANUEL MARTÍNEZ" }, { numero: "10", nome: "MATHEUZINHO" },
+        { numero: "91", nome: "RENÊ" }, { numero: "33", nome: "ERICK" }, { numero: "79", nome: "RENATO KAYZER" },
+        { numero: "12", nome: "TARZIA" }, { numero: "22", nome: "GABRIEL" }, { numero: "5", nome: "RICCIELI" },
+        { numero: "18", nome: "KAUAN COUTINHO" }, { numero: "17", nome: "CANTALAPIEDRA" }, { numero: "11", nome: "OSVALDO" },
+        { numero: "20", nome: "LUCAS SILVA" }, { numero: "28", nome: "ANDERSON PATO" }, { numero: "31", nome: "RENZO LÓPEZ" }
+    ],
+    "SAO PAULO": [
+        { numero: "23", nome: "RAFAEL" }, { numero: "19", nome: "LUCAS RAMON" }, { numero: "28", nome: "ALAN FRANCO" },
+        { numero: "2", nome: "RAFAEL TOLÓI" }, { numero: "13", nome: "ENZO DÍAZ" }, { numero: "18", nome: "WENDELL" },
+        { numero: "94", nome: "DANIELZINHO" }, { numero: "45", nome: "LUCCA" }, { numero: "8", nome: "MARCOS ANTÔNIO" },
+        { numero: "80", nome: "CAULY" }, { numero: "21", nome: "CÉDRIC SOARES" },
+        { numero: "37", nome: "ARTUR" }, { numero: "17", nome: "ANDRÉ SILVA" }, { numero: "14", nome: "TAPIA" },
+        { numero: "11", nome: "FERREIRA" }, { numero: "34", nome: "TETÊ" }, { numero: "31", nome: "CORONEL" },
+        { numero: "56", nome: "NICOLAS" }, { numero: "54", nome: "OSORIO" }, { numero: "4", nome: "DÓRIA" },
+        { numero: "30", nome: "FELIPE NEGRUCCI" }, { numero: "33", nome: "LUAN" }, { numero: "46", nome: "PEDRO FERREIRA" }
     ]
 };
