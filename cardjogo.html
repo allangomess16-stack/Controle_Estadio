@@ -27,100 +27,86 @@
             position: relative;
             overflow: hidden; /* Corta sobras das bandeiras grandes */
             display: flex;
-            justify-content: center; /* Centraliza a sigla na horizontal */
-            align-items: center;    /* Centraliza a sigla na vertical */
+            justify-content: center; /* Centraliza na horizontal */
+            align-items: center;    /* Centraliza na vertical */
             border-right: 2px solid rgba(255,255,255,0.1); /* Linha sutil no meio */
         }
 
-        /* BANDEIRA: Configuração da imagem de fundo */
+        /* BANDEIRA DE FUNDO (MARCA D'ÁGUA): Imagem gigante, desfocada e escurecida */
         .bandeira-img {
             position: absolute;
-            width: 115%;  /* Sangria: maior que a tela para não aparecer bordas no balanço */
-            height: 115%;
-            object-fit: cover; /* Ajusta a imagem sem esticar */
-            opacity: 0.5;      /* Mistura o escudo com a cor de fundo (0 a 1) */
-            animation: moveBandeira 12s ease-in-out infinite; /* Balanço suave */
+            width: 130%;  /* Bem maior para dar efeito de textura */
+            height: 130%;
+            object-fit: cover;
+            opacity: 0.25;      /* Bem transparente para não roubar a atenção */
+            filter: blur(8px) grayscale(30%); /* Desfoque premium de TV */
+            animation: moveBandeira 15s ease-in-out infinite; /* Balanço suave */
+            z-index: 1;
         }
 
-        /* SIGLAS: O visual principal das letras GIGANTES */
-        .sigla-duelo {
+        /* SOMBRAS DE VENTO: Cria faixas de sombra passando na tela */
+        .dobras {
+            position: absolute;
+            width: 200%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,0,0,0.6), transparent, rgba(0,0,0,0.6), transparent);
+            z-index: 2;
+            animation: vento 6s linear infinite;
+        }
+
+        /* CONTEÚDO PRINCIPAL (ESCUDO + NOME) */
+        .conteudo-time {
             position: relative;
-            z-index: 5; /* Garante que fique acima da bandeira */
-            font-size: 16vw; /* Tamanho baseado na largura da tela (Responsivo) */
+            z-index: 5; /* Fica acima do fundo e do vento */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px; /* Espaço entre o escudo e o nome */
+        }
+
+        /* ESCUDO DE FRENTE: Nítido e com sombra 3D */
+        .logo-frente {
+            width: 22vw; /* Tamanho responsivo baseado na tela */
+            max-width: 350px;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.9)); /* Sombra forte para destacar */
+            animation: entraLogo 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, floatLogo 4s ease-in-out infinite;
+            animation-delay: 0s, 1s; /* O float começa depois da entrada */
+        }
+
+        /* NOME DO TIME COMPLETO */
+        .nome-time {
+            font-size: 3.5vw;
             color: #fff;
             text-transform: uppercase;
-            letter-spacing: -5px; /* Junta as letras para dar aspecto de logo */
-            line-height: 1;
-            
-            /* EFEITO DE PREENCHIMENTO: Gradiente que corre dentro da letra */
-            background: linear-gradient(to right, #fff 20%, #5a5a5a 40%, #000000 60%, #fff 80%);
-            background-size: 200% auto;
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent; /* Torna a cor sólida invisível para mostrar o gradiente */
-            
-            filter: drop-shadow(0 0 15px rgba(0,0,0,0.8)); /* Sombra para ler melhor */
-            animation: shine 3s linear infinite; /* Animação do brilho passando */
-        }
-
-        /* PULSAR: Aplica a pulsação no Time A */
-        #lado-a .sigla-duelo {
-            animation: shine 3s linear infinite, pulsar 2s ease-in-out infinite;
-        }
-
-        /* PULSAR: Aplica no Time B com 1 segundo de atraso (Intercalado) */
-        #lado-b .sigla-duelo {
-            animation: shine 3s linear infinite, pulsar 2s ease-in-out infinite;
-            animation-delay: 1s; /* Mude aqui para sincronizar ou atrasar mais */
+            letter-spacing: 2px;
+            text-shadow: 3px 3px 15px rgba(0,0,0,1); /* Sombra preta para leitura perfeita */
+            text-align: center;
+            line-height: 1.1;
+            opacity: 0;
+            animation: entraNome 1s ease-out 0.5s forwards; /* Entra meio segundo depois do logo */
         }
 
         /* VERSUS: O design do "X" central */
         #versus-central {
             position: absolute;
             top: 50%; left: 50%;
-            transform: translate(-50%, -50%); /* Centralização perfeita */
+            transform: translate(-50%, -50%);
             z-index: 10;
             font-size: 9rem;
-            color: #fafafa; /* Cor do X */
-            text-shadow: 0 0 20px #474747, 0 0 40px #fff;
+            color: #fafafa;
+            text-shadow: 0 0 20px #000, 0 0 40px #fff;
             font-style: italic;
-            animation: versusImpact 1s ease-out; /* Efeito de entrada */
+            animation: versusImpact 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         /* LINHA DO X: A faixa neon que atravessa o centro */
         #versus-central::after {
             content: '';
             position: absolute;
-            width: 400px; height: 10px;
+            width: 500px; height: 8px;
             background: linear-gradient(90deg, transparent, #f89f18, transparent);
             top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
             z-index: -1;
-        }
-
-        /* --- BLOCO DE ANIMAÇÕES (ONDE MUDAR VELOCIDADES E MOVIMENTOS) --- */
-
-        /* Brilho interno das siglas */
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        /* Pulsação: Muda escala e brilho das siglas */
-        @keyframes pulsar {
-            0%, 100% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.05); filter: brightness(1.5) drop-shadow(0 0 30px #000000); }
-        }
-
-        /* Balanço da bandeira: Simula vento e profundidade */
-        @keyframes moveBandeira {
-            0%, 100% { transform: scale(1.1) rotate(0deg); }
-            33% { transform: scale(1.15) rotate(1deg) translate(-10px, 5px); }
-            66% { transform: scale(1.1) rotate(-1deg) translate(10px, -5px); }
-        }
-
-        /* Impacto do X: Começa grande e diminui na tela */
-        @keyframes versusImpact {
-            0% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
 
         /* TOPO: Estilo da legenda superior */
@@ -131,19 +117,41 @@
             z-index: 20;
             color: #fff;
             font-size: 1.8rem;
-            letter-spacing: 12px; /* Espaçamento entre letras (estilo TV) */
+            letter-spacing: 12px;
             text-transform: uppercase;
-            text-shadow: 0 0 15px #f3a71a;
-            
+            text-shadow: 0 0 15px #f3a71a, 2px 2px 5px #000;
         }
 
-        /* SOMBRAS DE VENTO: Cria faixas de sombra passando na tela */
-        .dobras {
-            position: absolute;
-            width: 200%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0,0,0,0.5), transparent, rgba(0,0,0,0.5), transparent);
-            z-index: 2;
-            animation: vento 5s linear infinite;
+        /* --- BLOCO DE ANIMAÇÕES --- */
+
+        /* Animação de entrada do Escudo (Efeito Zoom-in elástico) */
+        @keyframes entraLogo {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Animação de flutuação suave do Escudo (Substitui aquele pulsar forte) */
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* Animação de entrada do Nome (Sobe e aparece) */
+        @keyframes entraNome {
+            0% { transform: translateY(30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Balanço da bandeira de fundo */
+        @keyframes moveBandeira {
+            0%, 100% { transform: scale(1.3) rotate(0deg); }
+            50% { transform: scale(1.35) rotate(2deg) translate(-15px, 10px); }
+        }
+
+        /* Impacto do X: Começa grande e bate na tela */
+        @keyframes versusImpact {
+            0% { transform: translate(-50%, -50%) scale(4); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
 
         @keyframes vento {
@@ -160,66 +168,72 @@
 
     <div id="arena-duelo">
         <div class="lado" id="lado-a">
-            <div class="dobras"></div> <img src="" id="img-a" class="bandeira-img"> <span class="sigla-duelo" id="sigla-a">---</span> </div>
+            <div class="dobras"></div> 
+            <img src="" id="fundo-a" class="bandeira-img"> <div class="conteudo-time">
+                <img src="" id="logo-a" class="logo-frente"> <div class="nome-time" id="nome-a">---</div> </div>
+        </div>
 
         <div class="lado" id="lado-b">
             <div class="dobras"></div>
-            <img src="" id="img-b" class="bandeira-img">
-            <span class="sigla-duelo" id="sigla-b">---</span>
+            <img src="" id="fundo-b" class="bandeira-img"> <div class="conteudo-time">
+                <img src="" id="logo-b" class="logo-frente" style="animation-delay: 0s, 2s;"> 
+                <div class="nome-time" id="nome-b">---</div>
+            </div>
         </div>
     </div>
 
     <script>
-        /* BANCO DE DADOS: Onde você edita nomes, siglas, arquivos e cores oficiais */
-       const dadosTimes = [
-            { nome: "Athletico-PR", sigla: "CAP", arquivo: "Athletico Paranaense.png", cor: "#8b0000" },
-            { nome: "Atlético-MG", sigla: "CAM", arquivo: "Atletico Mineiro.png", cor: "#1a1a1a" },
-            { nome: "Bahia", sigla: "BAH", arquivo: "Bahia.png", cor: "#0000ff" },
-            { nome: "Botafogo", sigla: "BOT", arquivo: "Botafogo.png", cor: "#000000" },
-            { nome: "Chapecoense", sigla: "CHA", arquivo: "Chapecoense.png", cor: "#006400" },
-            { nome: "Corinthians", sigla: "COR", arquivo: "Corinthians.png", cor: "#111111" },
-            { nome: "Coritiba", sigla: "CFC", arquivo: "Coritiba.png", cor: "#005a31" },
-            { nome: "Cruzeiro", sigla: "CRU", arquivo: "Cruzeiro.png", cor: "#0033a0" },
-            { nome: "Flamengo", sigla: "FLA", arquivo: "Flamengo.png", cor: "#c40000" },
-            { nome: "Fluminense", sigla: "FLU", arquivo: "Fluminense.png", cor: "#800000" },
-            { nome: "Grêmio", sigla: "GRE", arquivo: "Grêmio.png", cor: "#00a6ef" },
-            { nome: "Internacional", sigla: "INT", arquivo: "Internacional.png", cor: "#e20e0e" },
-            { nome: "Mirassol", sigla: "MIR", arquivo: "Mirassol-SP.png", cor: "#ffdb00" },
-            { nome: "Palmeiras", sigla: "PAL", arquivo: "Palmeiras.png", cor: "#006437" },
-            { nome: "Bragantino", sigla: "RBB", arquivo: "Red Bull Bragantino.png", cor: "#ffffff" },
-            { nome: "Remo", sigla: "REM", arquivo: "Remo.png", cor: "#000033" },
-            { nome: "Santos", sigla: "SAN", arquivo: "Santos.png", cor: "#222222" },
-            { nome: "São Paulo", sigla: "SPFC", arquivo: "São Paulo.png", cor: "#ff0000" },
-            { nome: "Vasco", sigla: "VAS", arquivo: "Vasco da Gama.png", cor: "#121212" },
-            { nome: "Vitória", sigla: "VIT", arquivo: "Vitória.png", cor: "#ff0000" }
-            // Para adicionar mais times, siga o padrão acima respeitando as vírgulas.
+        /* BANCO DE DADOS: Onde você edita nomes, arquivos e cores oficiais */
+        const dadosTimes = [
+            { nome: "Athletico Paranaense", busca: "CAP", arquivo: "Athletico Paranaense.png", cor: "#8b0000" },
+            { nome: "Atlético Mineiro", busca: "CAM", arquivo: "Atletico Mineiro.png", cor: "#1a1a1a" },
+            { nome: "Bahia", busca: "BAH", arquivo: "Bahia.png", cor: "#0000ff" },
+            { nome: "Botafogo", busca: "BOT", arquivo: "Botafogo.png", cor: "#000000" },
+            { nome: "Chapecoense", busca: "CHA", arquivo: "Chapecoense.png", cor: "#006400" },
+            { nome: "Corinthians", busca: "COR", arquivo: "Corinthians.png", cor: "#111111" },
+            { nome: "Coritiba", busca: "CFC", arquivo: "Coritiba.png", cor: "#005a31" },
+            { nome: "Cruzeiro", busca: "CRU", arquivo: "Cruzeiro.png", cor: "#0033a0" },
+            { nome: "Flamengo", busca: "FLA", arquivo: "Flamengo.png", cor: "#c40000" },
+            { nome: "Fluminense", busca: "FLU", arquivo: "Fluminense.png", cor: "#800000" },
+            { nome: "Grêmio", busca: "GRE", arquivo: "Grêmio.png", cor: "#00a6ef" },
+            { nome: "Internacional", busca: "INT", arquivo: "Internacional.png", cor: "#e20e0e" },
+            { nome: "Mirassol", busca: "MIR", arquivo: "Mirassol-SP.png", cor: "#ffdb00" },
+            { nome: "Palmeiras", busca: "PAL", arquivo: "Palmeiras.png", cor: "#006437" },
+            { nome: "Red Bull Bragantino", busca: "RBB", arquivo: "Red Bull Bragantino.png", cor: "#ffffff" },
+            { nome: "Remo", busca: "REM", arquivo: "Remo.png", cor: "#000033" },
+            { nome: "Santos", busca: "SAN", arquivo: "Santos.png", cor: "#222222" },
+            { nome: "São Paulo", busca: "SPFC", arquivo: "São Paulo.png", cor: "#ff0000" },
+            { nome: "Vasco da Gama", busca: "VAS", arquivo: "Vasco da Gama.png", cor: "#121212" },
+            { nome: "Vitória", busca: "VIT", arquivo: "Vitória.png", cor: "#ff0000" }
         ];
 
         /* PASTA LOCAL: Caminho onde estão seus arquivos de imagem */
-        const pasta = "escudo serie a/";
+        const pasta = "escudos/";
 
         /* LÓGICA DE BUSCA: Ativada quando a página termina de carregar */
         window.onload = function() {
             let buscaA = prompt('Time 1:');
             let buscaB = prompt('Time 2:');
 
-            // .find: Procura o objeto dentro do array que contém o nome digitado
-            const tA = dadosTimes.find(t => t.nome.toLowerCase().includes(buscaA.toLowerCase()));
-            const tB = dadosTimes.find(t => t.nome.toLowerCase().includes(buscaB.toLowerCase()));
+            // Agora procura tanto pelo nome completo quanto pela sigla antiga que você usava
+            const tA = dadosTimes.find(t => t.nome.toLowerCase().includes(buscaA.toLowerCase()) || t.busca.toLowerCase().includes(buscaA.toLowerCase()));
+            const tB = dadosTimes.find(t => t.nome.toLowerCase().includes(buscaB.toLowerCase()) || t.busca.toLowerCase().includes(buscaB.toLowerCase()));
 
             if (tA && tB) {
                 // Injeta as informações do Time A no HTML
-                document.getElementById('sigla-a').innerText = tA.sigla;
-                document.getElementById('img-a').src = pasta + tA.arquivo;
+                document.getElementById('nome-a').innerText = tA.nome;
+                document.getElementById('logo-a').src = pasta + tA.arquivo;
+                document.getElementById('fundo-a').src = pasta + tA.arquivo;
                 document.getElementById('lado-a').style.backgroundColor = tA.cor;
 
                 // Injeta as informações do Time B no HTML
-                document.getElementById('sigla-b').innerText = tB.sigla;
-                document.getElementById('img-b').src = pasta + tB.arquivo;
+                document.getElementById('nome-b').innerText = tB.nome;
+                document.getElementById('logo-b').src = pasta + tB.arquivo;
+                document.getElementById('fundo-b').src = pasta + tB.arquivo;
                 document.getElementById('lado-b').style.backgroundColor = tB.cor;
             } else {
                 alert("Time não encontrado! Verifique a escrita.");
-                window.location.reload(); // Reinicia para tentar de novo
+                window.location.reload(); 
             }
         };
     </script>
