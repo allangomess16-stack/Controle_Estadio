@@ -8,15 +8,17 @@
         
         :root {
             --cor-time: #ffffff;
+            --cor-arb: #ffd700;
+            --cor-arb-dark: #b38f00;
         }
+
+        * { box-sizing: border-box; }
 
         body { 
             margin: 0; padding: 0; overflow: hidden; 
-            background-color: #00FF00; 
+            background-color: #00FF00; /* Chroma Key */
             font-family: 'Montserrat', sans-serif; 
-            color: white;
-            width: 1920px;
-            height: 1080px;
+            color: white; width: 1920px; height: 1080px;
         }
 
         #intro-container {
@@ -39,16 +41,13 @@
             40% { transform: scale(1.03); }
             100% { transform: scale(1); opacity: 1; filter: blur(0); }
         }
-        #intro-escudo.animate { 
-            animation: fullScreenImpact 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
-        }
+        #intro-escudo.animate { animation: fullScreenImpact 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
         #headerTime {
             position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
             display: flex; align-items: center; justify-content: center;
             background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(30,30,30,0.9) 100%);
-            border-bottom: 6px solid var(--cor-time);
-            padding: 15px 60px; border-radius: 20px;
+            border-bottom: 6px solid var(--cor-time); padding: 15px 60px; border-radius: 20px;
             opacity: 0; transition: opacity 0.5s, transform 0.5s;
             box-shadow: 0 15px 40px rgba(0,0,0,0.9); z-index: 100;
         }
@@ -68,129 +67,81 @@
             display: flex; justify-content: space-between; font-weight: 900; font-size: 1.2rem;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
-        
         #listaJogadoresGrid { display: flex; flex-direction: column; gap: 8px; }
-        
         .lista-item {
             display: flex; align-items: center; background: rgba(10,10,10,0.9);
             border-left: 10px solid var(--cor-time); padding: 12px 25px; border-radius: 8px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.6);
         }
-        
-        .lista-num { 
-            font-size: 2.2rem; 
-            font-weight: 900; 
-            color: #000; 
-            width: 60px; 
-            text-align: center; 
-            text-shadow: 
-                -2px -2px 0 #fff, 2px -2px 0 #fff, 
-                -2px 2px 0 #fff, 2px 2px 0 #fff, 
-                 0 -2px 0 #fff, 0 2px 0 #fff, 
-                -2px 0 0 #fff, 2px 0 0 #fff, 
-                 3px 3px 10px rgba(0,0,0,0.8);
-        }
+        .lista-num { font-size: 2.2rem; font-weight: 900; color: #000; width: 60px; text-align: center; text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff, 0 -2px 0 #fff, 0 2px 0 #fff, -2px 0 0 #fff, 2px 0 0 #fff, 3px 3px 10px rgba(0,0,0,0.8); }
         .lista-nome { font-size: 2.2rem; font-weight: 800; margin-left: 20px; text-transform: uppercase; letter-spacing: 1px; }
         
         #campoView {
             position: absolute; top: 200px; left: 50%; transform: translateX(-50%);
-            width: 1000px; height: 800px; 
-            background: radial-gradient(circle, rgba(30,30,30,0.9) 0%, rgba(0,0,0,0.95) 100%);
+            width: 1000px; height: 800px; background: radial-gradient(circle, rgba(30,30,30,0.9) 0%, rgba(0,0,0,0.95) 100%);
             border: 5px solid var(--cor-time); border-radius: 40px;
-            opacity: 0; transition: opacity 0.5s; z-index: 50;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.9);
-            overflow: hidden;
+            opacity: 0; transition: opacity 0.5s; z-index: 50; box-shadow: 0 25px 60px rgba(0,0,0,0.9); overflow: hidden;
         }
         #campoView.show { opacity: 1; }
-        .campo-linhas {
-            position: absolute; width: 90%; height: 90%; top: 5%; left: 5%;
-            border: 3px solid rgba(255,255,255,0.15); border-radius: 15px; pointer-events: none;
-        }
-        .campo-meio {
-            position: absolute; width: 100%; height: 3px; background: rgba(255,255,255,0.15); top: 50%; left: 0;
-        }
-        .campo-circulo {
-            position: absolute; width: 180px; height: 180px; border: 3px solid rgba(255,255,255,0.15);
-            border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        }
-        
-        #tec-box-campo {
-            position: absolute; bottom: 25px; right: 25px; background: rgba(0,0,0,0.9); 
-            padding: 10px 30px; border-radius: 20px; border: 3px solid var(--cor-time); 
-            font-weight: 900; font-size: 1.2rem; text-transform: uppercase;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.8); z-index: 40;
-        }
+        .campo-linhas { position: absolute; width: 90%; height: 90%; top: 5%; left: 5%; border: 3px solid rgba(255,255,255,0.15); border-radius: 15px; pointer-events: none; }
+        .campo-meio { position: absolute; width: 100%; height: 3px; background: rgba(255,255,255,0.15); top: 50%; left: 0; }
+        .campo-circulo { position: absolute; width: 180px; height: 180px; border: 3px solid rgba(255,255,255,0.15); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        #tec-box-campo { position: absolute; bottom: 25px; right: 25px; background: rgba(0,0,0,0.9); padding: 10px 30px; border-radius: 20px; border: 3px solid var(--cor-time); font-weight: 900; font-size: 1.2rem; text-transform: uppercase; box-shadow: 0 10px 20px rgba(0,0,0,0.8); z-index: 40; }
 
-        .slot-jogador {
-            position: absolute; transform: translate(-50%, -50%) scale(0);
-            display: flex; flex-direction: column; align-items: center; z-index: 60;
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        .slot-jogador { position: absolute; transform: translate(-50%, -50%) scale(0); display: flex; flex-direction: column; align-items: center; z-index: 60; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .slot-jogador.placed { transform: translate(-50%, -50%) scale(1); }
-        
-        .slot-num {
-            background: var(--cor-time); color: #000; font-weight: 900; 
-            width: 50px; height: 50px; border-radius: 50%; 
-            display: flex; justify-content: center; align-items: center; 
-            font-size: 1.8rem; border: 4px solid #fff; margin-bottom: 6px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.8);
-            text-shadow: -1.5px -1.5px 0 #fff, 1.5px -1.5px 0 #fff, -1.5px 1.5px 0 #fff, 1.5px 1.5px 0 #fff, 0 -1.5px 0 #fff, 0 1.5px 0 #fff, -1.5px 0 0 #fff, 1.5px 0 0 #fff;
-        }
-        
-        .slot-nome {
-            background: rgba(0,0,0,0.95); padding: 6px 12px; border-radius: 10px; 
-            font-size: 1.15rem; font-weight: 900; 
-            border: 2px solid #444; text-transform: uppercase;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.8);
-            max-width: 160px; white-space: normal; line-height: 1.1; text-align: center;
-        }
-
+        .slot-num { background: var(--cor-time); color: #000; font-weight: 900; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; border: 4px solid #fff; margin-bottom: 6px; box-shadow: 0 8px 15px rgba(0,0,0,0.8); text-shadow: -1.5px -1.5px 0 #fff, 1.5px -1.5px 0 #fff, -1.5px 1.5px 0 #fff, 1.5px 1.5px 0 #fff, 0 -1.5px 0 #fff, 0 1.5px 0 #fff, -1.5px 0 0 #fff, 1.5px 0 0 #fff; }
+        .slot-nome { background: rgba(0,0,0,0.95); padding: 6px 12px; border-radius: 10px; font-size: 1.15rem; font-weight: 900; border: 2px solid #444; text-transform: uppercase; box-shadow: 0 5px 15px rgba(0,0,0,0.8); max-width: 160px; white-space: normal; line-height: 1.1; text-align: center; }
         .capitao-slot { z-index: 70; }
         .capitao-slot .slot-num { border: 4px solid #f1c40f; box-shadow: 0 8px 20px rgba(241, 196, 15, 0.8); transform: scale(1.15); }
         .capitao-slot .slot-nome { border: 2px solid #f1c40f; color: #f1c40f; text-shadow: 1px 1px 2px #000; }
 
-        #highlight-card {
-            position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(200%);
-            background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(40,40,40,0.9) 100%);
-            border: 5px solid var(--cor-time); border-radius: 25px;
-            padding: 30px 80px; display: flex; align-items: center; gap: 50px;
-            opacity: 0; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 200;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-        }
+        #highlight-card { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(200%); background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(40,40,40,0.9) 100%); border: 5px solid var(--cor-time); border-radius: 25px; padding: 30px 80px; display: flex; align-items: center; gap: 50px; opacity: 0; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 200; box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
         #highlight-card.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         #hl-num { font-size: 6rem; font-weight: 900; color: var(--cor-time); text-shadow: 3px 3px 15px rgba(0,0,0,0.9); }
         #hl-nome { font-size: 5rem; font-weight: 900; text-transform: uppercase; color: #fff; text-shadow: 3px 3px 10px rgba(0,0,0,0.8);}
 
-        /* =========================================================
-           TELA DE ARBITRAGEM
-           ========================================================= */
-        #arbitragem-card {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
-            background: linear-gradient(135deg, rgba(10,10,10,0.95), rgba(30,30,30,0.95));
-            border: 4px solid #f1c40f; border-radius: 20px;
-            padding: 50px 70px; width: 800px; opacity: 0; z-index: 250;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.9);
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none;
-        }
+        /* ARBITRAGEM */
+        #arbitragem-card { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: linear-gradient(135deg, #1f1f1f 0%, #050505 100%); border-radius: 25px; padding: 50px 60px; width: 1500px; opacity: 0; z-index: 250; border-top: 2px solid rgba(255,255,255,0.15); border-left: 2px solid rgba(255,255,255,0.1); border-bottom: 2px solid #000; border-right: 2px solid #000; box-shadow: 40px 40px 80px rgba(0,0,0,0.9), -10px -10px 30px rgba(255,255,255,0.03), inset 0 0 50px rgba(0,0,0,0.8); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
         #arbitragem-card.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        
-        .arb-titulo { 
-            text-align: center; color: #f1c40f; font-size: 3rem; font-weight: 900; 
-            margin-bottom: 40px; letter-spacing: 2px; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); 
-            border-bottom: 2px solid #333; padding-bottom: 20px;
+        .arb-titulo { text-align: center; background: linear-gradient(to bottom, var(--cor-arb), var(--cor-arb-dark)); color: #000; font-size: 2.2rem; font-weight: 900; margin: 0 auto 40px auto; letter-spacing: 4px; padding: 12px 60px; border-radius: 50px; width: fit-content; text-transform: uppercase; border: 2px solid #ffea00; border-bottom: 6px solid #806600; box-shadow: 0 15px 25px rgba(0,0,0,0.6), inset 0 3px 6px rgba(255,255,255,0.8); text-shadow: 1px 1px 0px rgba(255,255,255,0.4); }
+        .arb-grid { display: grid; gap: 25px 40px; justify-content: center; width: 100%; }
+        .arb-grid.col-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .arb-grid.col-1 { grid-template-columns: minmax(0, 1fr); max-width: 900px; margin: 0 auto; }
+        .arb-row { background: linear-gradient(to bottom, #2a2a2a, #111); border-radius: 12px; padding: 15px 25px 15px 35px; display: flex; align-items: center; gap: 25px; position: relative; border: 1px solid #000; border-top: 1px solid #444; box-shadow: 0 12px 20px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.1); width: 100%; min-width: 0; }
+        .arb-row::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 12px; background: linear-gradient(to right, var(--cor-arb), var(--cor-arb-dark)); border-right: 1px solid #000; border-radius: 12px 0 0 12px; box-shadow: inset 2px 0 5px rgba(255,255,255,0.6); }
+        .arb-emoji { font-size: 3.5rem; flex-shrink: 0; filter: drop-shadow(3px 5px 5px rgba(0,0,0,0.6)); }
+        .arb-text { display: flex; flex-direction: column; justify-content: center; flex: 1; text-align: left; min-width: 0; }
+        .arb-cargo { color: var(--cor-arb); font-size: 1.1rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .arb-nome { color: #fff; font-size: 1.7rem; font-weight: 900; text-transform: uppercase; text-shadow: 2px 2px 4px #000; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; overflow-wrap: break-word; word-wrap: break-word; }
+
+        /* =========================================================
+           STANDBY CARD (QUEDA DE SINAL / TELA DE ESPERA) - TELA CHEIA
+           ========================================================= */
+        #standby-card {
+            position: absolute; top: 0; left: 0; width: 1920px; height: 1080px;
+            background: radial-gradient(circle at center, rgba(15,15,15,0.98) 0%, rgba(0,0,0,1) 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.6s ease; z-index: 900; pointer-events: none;
         }
-        
-        .arb-row { 
-            display: flex; justify-content: space-between; 
-            border-bottom: 2px solid rgba(255,255,255,0.1); 
-            padding: 20px 0; align-items: center; 
+        #standby-card.show { opacity: 1; }
+        .stb-logo-torneio { width: 160px; height: auto; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.9)); margin-bottom: 50px; }
+        .stb-placar-box {
+            background: linear-gradient(135deg, rgba(30,30,30,0.9), rgba(10,10,10,0.9));
+            border: 4px solid var(--cor-arb); border-radius: 30px;
+            padding: 50px 80px; display: flex; align-items: center; gap: 60px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 50px rgba(255,215,0,0.1);
         }
-        .arb-row:last-child { border-bottom: none; }
-        
-        .arb-cargo { color: #aaa; font-size: 1.4rem; font-weight: 800; text-transform: uppercase; width: 35%; }
-        .arb-nome { color: #fff; font-size: 1.8rem; font-weight: 900; text-transform: uppercase; width: 65%; text-align: right; text-shadow: 2px 2px 5px rgba(0,0,0,0.8); }
-        .arb-sub { font-size: 1.2rem; color: #f1c40f; margin-right: 10px; }
+        .stb-team { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 300px;}
+        .stb-team img { width: 180px; height: 180px; object-fit: contain; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.8)); }
+        .stb-team-name { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; text-shadow: 3px 3px 10px #000; text-align: center; line-height: 1.1; color: #fff;}
+        .stb-score-area { display: flex; align-items: center; gap: 40px; }
+        .stb-score { font-size: 10rem; font-weight: 900; color: #fff; text-shadow: 0 15px 30px #000; line-height: 1; }
+        .stb-x { font-size: 5rem; font-weight: 900; color: var(--cor-arb); }
+        .stb-timer-box { margin-top: 50px; font-size: 4rem; font-weight: 900; color: #fff; background: rgba(0,0,0,0.8); padding: 15px 50px; border-radius: 20px; border-bottom: 4px solid var(--cor-arb); font-family: monospace; letter-spacing: 5px; }
+        .stb-msg { margin-top: 40px; font-size: 2rem; color: #ff4757; font-weight: 900; letter-spacing: 10px; text-transform: uppercase; animation: flash 1.5s infinite; }
+        @keyframes flash { 0%, 100% { opacity: 1; text-shadow: 0 0 20px rgba(255, 71, 87, 0.8); } 50% { opacity: 0.3; text-shadow: none; } }
+
     </style>
 </head>
 <body>
@@ -210,29 +161,36 @@
 
     <div id="highlight-card"><div id="hl-num"></div><div id="hl-nome"></div></div>
 
-    <div id="arbitragem-card">
-        <div class="arb-titulo">EQUIPE DE ARBITRAGEM</div>
-        <div class="arb-row">
-            <div class="arb-cargo">ÁRBITRO</div>
-            <div class="arb-nome" id="outArbCentral">---</div>
+    <div id="arbitragem-card"></div>
+
+    <!-- TELA DE STANDBY (QUEDA DE SINAL) -->
+    <div id="standby-card">
+        <img class="stb-logo-torneio" id="stb-torneio" src="">
+        <div class="stb-placar-box">
+            <div class="stb-team"><img id="stb-logoA" src=""><div class="stb-team-name" id="stb-nameA">CASA</div></div>
+            <div class="stb-score-area">
+                <span class="stb-score" id="stb-golsA">0</span>
+                <span class="stb-x">X</span>
+                <span class="stb-score" id="stb-golsB">0</span>
+            </div>
+            <div class="stb-team"><img id="stb-logoB" src=""><div class="stb-team-name" id="stb-nameB">FORA</div></div>
         </div>
-        <div class="arb-row">
-            <div class="arb-cargo">ASSISTENTES</div>
-            <div class="arb-nome"><span id="outArbAss1">---</span><br><span id="outArbAss2">---</span></div>
-        </div>
-        <div class="arb-row">
-            <div class="arb-cargo">4º ÁRBITRO</div>
-            <div class="arb-nome" id="outArb4to">---</div>
-        </div>
-        <div class="arb-row">
-            <div class="arb-cargo">VAR</div>
-            <div class="arb-nome"><span id="outArbVar">---</span><br><span class="arb-sub">AVAR:</span><span id="outArbAvar">---</span></div>
-        </div>
+        <div class="stb-timer-box"><span id="stb-per">1T</span> <span id="stb-tempo">00:00</span></div>
+        <div class="stb-msg">SINAL INTERROMPIDO &bull; AGUARDE</div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
+        const CAMINHO_WEB = "https://raw.githubusercontent.com/allangomess16-stack/Controle_Estadio/main/escudos/";
+        function getWebUrl(caminhoMaster) {
+            if (!caminhoMaster) return "";
+            let nomeArquivo = caminhoMaster.split('/').pop(); 
+            return CAMINHO_WEB + encodeURIComponent(nomeArquivo);
+        }
+        
+        document.getElementById('stb-torneio').src = CAMINHO_WEB + "Escudo%20torneio.png";
+
         const firebaseConfig = {
             apiKey: "AIzaSyAeWhpLh1tO_axQSDtckMVyoE-f4Egno8A",
             authDomain: "controladoravmixestadio.firebaseapp.com",
@@ -246,22 +204,20 @@
         const db = firebase.database();
 
         const mapaTatico = {
-            'GL': { top: '88%', left: '50%' }, 
-            'LD': { top: '74%', left: '88%' }, 'LE': { top: '74%', left: '12%' }, 
+            'GL': { top: '88%', left: '50%' }, 'LD': { top: '74%', left: '88%' }, 'LE': { top: '74%', left: '12%' }, 
             'ZGD': { top: '74%', left: '70%' }, 'ZGC': { top: '74%', left: '50%' }, 'ZGE': { top: '74%', left: '30%' },
-            'ALD': { top: '58%', left: '88%' }, 'ALE': { top: '58%', left: '12%' },
-            'VOLD': { top: '58%', left: '70%' }, 'VOLC': { top: '58%', left: '50%' }, 'VOLE': { top: '58%', left: '30%' }, 
-            'MD': { top: '42%', left: '88%' }, 'ME': { top: '42%', left: '12%' }, 
-            'MEIAD': { top: '42%', left: '70%' }, 'MEIAC': { top: '42%', left: '50%' }, 'MEIAE': { top: '42%', left: '30%' },
-            'PD': { top: '24%', left: '85%' }, 'PE': { top: '24%', left: '15%' },
-            'ATAD': { top: '20%', left: '65%' }, 'ATAE': { top: '20%', left: '35%' }, 
-            'CA': { top: '12%', left: '50%' }
+            'ALD': { top: '58%', left: '88%' }, 'ALE': { top: '58%', left: '12%' }, 'VOLD': { top: '58%', left: '70%' }, 
+            'VOLC': { top: '58%', left: '50%' }, 'VOLE': { top: '58%', left: '30%' }, 'MD': { top: '42%', left: '88%' }, 
+            'ME': { top: '42%', left: '12%' }, 'MEIAD': { top: '42%', left: '70%' }, 'MEIAC': { top: '42%', left: '50%' }, 
+            'MEIAE': { top: '42%', left: '30%' }, 'PD': { top: '24%', left: '85%' }, 'PE': { top: '24%', left: '15%' },
+            'ATAD': { top: '20%', left: '65%' }, 'ATAE': { top: '20%', left: '35%' }, 'CA': { top: '12%', left: '50%' }
         };
 
         const campoView = document.getElementById('campoView');
         const listaView = document.getElementById('listaView');
         const highlightCard = document.getElementById('highlight-card');
-        const arbCard = document.getElementById('arbitragem-card'); // Elemento da Arbitragem
+        const arbCard = document.getElementById('arbitragem-card');
+        const stbCard = document.getElementById('standby-card');
 
         let currentHighlightTimer = null;
         let lastEventTimestamp = 0;
@@ -271,18 +227,19 @@
             listaView.classList.remove('show');
             highlightCard.classList.remove('show');
             arbCard.classList.remove('show');
+            stbCard.classList.remove('show');
             document.getElementById('headerTime').classList.remove('visible');
         }
 
         function playIntroAnimation(dadosEsc, callbackFinal) {
             ocultarTodasAsTelas();
             document.documentElement.style.setProperty('--cor-time', dadosEsc.cor);
-            document.getElementById('escudoHeader').src = dadosEsc.escudo;
+            document.getElementById('escudoHeader').src = getWebUrl(dadosEsc.escudo);
             document.getElementById('nomeHeader').innerText = dadosEsc.time;
 
             const introCont = document.getElementById('intro-container');
             const introEscudo = document.getElementById('intro-escudo');
-            introEscudo.src = dadosEsc.escudo;
+            introEscudo.src = getWebUrl(dadosEsc.escudo);
             introCont.classList.add('show');
             
             introEscudo.classList.remove('animate');
@@ -307,9 +264,6 @@
             let cleanPos = rawPos.replace(/[-\s]/g, '').toUpperCase();
             const coords = mapaTatico[cleanPos] || mapaTatico['GL'];
             
-            const finalTop = overrideTop || coords.top;
-            const finalLeft = overrideLeft || coords.left;
-            
             const slot = document.createElement('div'); 
             slot.className = 'slot-jogador'; 
             
@@ -317,8 +271,8 @@
             if (nomeAtleta.includes('©')) { slot.classList.add('capitao-slot'); }
             
             slot.id = 'slot_index_' + dados.index; 
-            slot.style.top = finalTop; 
-            slot.style.left = finalLeft;
+            slot.style.top = overrideTop || coords.top; 
+            slot.style.left = overrideLeft || coords.left;
             slot.innerHTML = `<div class="slot-num">${dados.numero}</div><div class="slot-nome">${nomeAtleta}</div>`;
             
             campoView.appendChild(slot); 
@@ -327,125 +281,126 @@
         }
 
         function renderEscalacao(jogo) {
-            if (!jogo || !jogo.eventoCard) return;
-            if (jogo.eventoCard.timestamp === lastEventTimestamp) return;
-            lastEventTimestamp = jogo.eventoCard.timestamp;
-            const evento = jogo.eventoCard;
+            try {
+                if (!jogo || !jogo.eventoCard) return;
+                if (jogo.eventoCard.timestamp === lastEventTimestamp) return;
+                lastEventTimestamp = jogo.eventoCard.timestamp;
+                const evento = jogo.eventoCard;
 
-            if (evento.tipo === 'ESCALACAO_LISTA' || evento.tipo === 'RESERVAS_LISTA') {
-                playIntroAnimation(evento, () => {
-                    const grid = document.getElementById('listaJogadoresGrid'); 
-                    grid.innerHTML = '';
-                    
-                    if (evento.tipo === 'RESERVAS_LISTA') {
-                        grid.style.display = 'grid';
-                        grid.style.gridTemplateColumns = '1fr 1fr';
-                        grid.style.columnGap = '20px';
-                        document.getElementById('listaView').style.width = '900px';
-                        document.getElementById('formacaoLabel').innerText = "BANCO DE RESERVAS";
-                    } else {
-                        grid.style.display = 'flex';
-                        grid.style.flexDirection = 'column';
-                        document.getElementById('listaView').style.width = '700px';
-                        document.getElementById('formacaoLabel').innerText = "TÁTICA: " + evento.formacao;
-                    }
+                if (evento.tipo === 'ESCALACAO_LISTA' || evento.tipo === 'RESERVAS_LISTA') {
+                    playIntroAnimation(evento, () => {
+                        const grid = document.getElementById('listaJogadoresGrid'); 
+                        grid.innerHTML = '';
+                        
+                        if (evento.tipo === 'RESERVAS_LISTA') {
+                            grid.style.display = 'grid'; grid.style.gridTemplateColumns = '1fr 1fr'; grid.style.columnGap = '20px';
+                            document.getElementById('listaView').style.width = '900px'; document.getElementById('formacaoLabel').innerText = "BANCO DE RESERVAS";
+                        } else {
+                            grid.style.display = 'flex'; grid.style.flexDirection = 'column';
+                            document.getElementById('listaView').style.width = '700px'; document.getElementById('formacaoLabel').innerText = "TÁTICA: " + evento.formacao;
+                        }
 
-                    evento.jogadores.forEach(jog => { 
-                        grid.innerHTML += `<div class="lista-item"><div class="lista-num">${jog.numero}</div><div class="lista-nome">${jog.nome}</div></div>`; 
+                        if(evento.jogadores && Array.isArray(evento.jogadores)) {
+                            evento.jogadores.forEach(jog => { grid.innerHTML += `<div class="lista-item"><div class="lista-num">${jog.numero}</div><div class="lista-nome">${jog.nome}</div></div>`; });
+                        }
+                        
+                        document.getElementById('tecNomeLista').innerText = "TÉC: " + (evento.tecnico || "NÃO INFORMADO");
+                        listaView.classList.add('show');
                     });
-                    
-                    document.getElementById('tecNomeLista').innerText = "TÉC: " + (evento.tecnico || "NÃO INFORMADO");
-                    listaView.classList.add('show');
-                });
-            } 
-            else if (evento.tipo === 'CAMPO_TODOS') {
-                playIntroAnimation(evento, () => {
-                    document.getElementById('tec-box-campo').innerText = "TÉC: " + (evento.tecnico || "NÃO INFORMADO");
-                    document.querySelectorAll('.slot-jogador').forEach(el => el.remove());
-                    campoView.classList.add('show');
-                    
-                    const linhas = {};
-                    evento.jogadores.forEach(jog => {
-                        let rawPos = jog.posicaoTatica || 'GL';
-                        let cleanPos = rawPos.replace(/[-\s]/g, '').toUpperCase();
-                        let coords = mapaTatico[cleanPos] || mapaTatico['GL'];
-                        if (!linhas[coords.top]) linhas[coords.top] = [];
-                        linhas[coords.top].push({ dados: jog, baseLeft: parseFloat(coords.left), top: coords.top });
-                    });
+                } 
+                else if (evento.tipo === 'CAMPO_TODOS') {
+                    playIntroAnimation(evento, () => {
+                        document.getElementById('tec-box-campo').innerText = "TÉC: " + (evento.tecnico || "NÃO INFORMADO");
+                        document.querySelectorAll('.slot-jogador').forEach(el => el.remove());
+                        campoView.classList.add('show');
+                        
+                        const linhas = {};
+                        if(evento.jogadores && Array.isArray(evento.jogadores)) {
+                            evento.jogadores.forEach(jog => {
+                                let rawPos = jog.posicaoTatica || 'GL';
+                                let cleanPos = rawPos.replace(/[-\s]/g, '').toUpperCase();
+                                let coords = mapaTatico[cleanPos] || mapaTatico['GL'];
+                                if (!linhas[coords.top]) linhas[coords.top] = [];
+                                linhas[coords.top].push({ dados: jog, baseLeft: parseFloat(coords.left), top: coords.top });
+                            });
+                        }
 
-                    const distribuicao = {
-                        1: ['50%'], 2: ['33%', '67%'], 3: ['22%', '50%', '78%'],
-                        4: ['16%', '38.6%', '61.3%', '84%'], 5: ['10%', '30%', '50%', '70%', '90%']
-                    };
+                        const distribuicao = { 1: ['50%'], 2: ['33%', '67%'], 3: ['22%', '50%', '78%'], 4: ['16%', '38.6%', '61.3%', '84%'], 5: ['10%', '30%', '50%', '70%', '90%'] };
 
-                    let delayGlobal = 0;
-                    Object.keys(linhas).forEach(topVal => {
-                        let jogadoresLinha = linhas[topVal];
-                        jogadoresLinha.sort((a, b) => a.baseLeft - b.baseLeft); 
-                        let count = jogadoresLinha.length;
-                        let percentuais = distribuicao[count] || distribuicao[5]; 
+                        let delayGlobal = 0;
+                        Object.keys(linhas).forEach(topVal => {
+                            let jogadoresLinha = linhas[topVal];
+                            jogadoresLinha.sort((a, b) => a.baseLeft - b.baseLeft); 
+                            let count = jogadoresLinha.length;
+                            let percentuais = distribuicao[count] || distribuicao[5]; 
 
-                        jogadoresLinha.forEach((item, index) => {
-                            let calcLeft = percentuais[index] || '50%';
-                            setTimeout(() => { criarMiniCard(item.dados, item.top, calcLeft); }, delayGlobal * 150); 
-                            delayGlobal++;
+                            jogadoresLinha.forEach((item, index) => {
+                                let calcLeft = percentuais[index] || '50%';
+                                setTimeout(() => { criarMiniCard(item.dados, item.top, calcLeft); }, delayGlobal * 150); 
+                                delayGlobal++;
+                            });
                         });
                     });
-                });
-            } 
-            else if (evento.tipo === 'ESCALAR') {
-                ocultarTodasAsTelas();
-                document.documentElement.style.setProperty('--cor-time', evento.cor);
-                document.getElementById('escudoHeader').src = evento.escudo; 
-                document.getElementById('nomeHeader').innerText = evento.time;
-                
-                document.getElementById('headerTime').classList.add('visible'); 
-                campoView.classList.add('show');
-                document.getElementById('tec-box-campo').innerText = "TÉC: " + (evento.tecnico || "NÃO INFORMADO");
-                
-                document.getElementById('hl-num').innerText = evento.numero; 
-                document.getElementById('hl-nome').innerText = evento.jogador;
-                highlightCard.classList.add('show');
-                
-                if(currentHighlightTimer) clearTimeout(currentHighlightTimer);
-                currentHighlightTimer = setTimeout(() => { 
-                    highlightCard.classList.remove('show'); 
-                    setTimeout(() => { criarMiniCard(evento); }, 400); 
-                }, 1500);
-            } 
-            else if (evento.tipo === 'ARBITRAGEM') {
-                ocultarTodasAsTelas();
-                // Preenche o card e mostra no meio da tela
-                document.getElementById('outArbCentral').innerText = evento.central;
-                document.getElementById('outArbAss1').innerText = evento.ass1;
-                document.getElementById('outArbAss2').innerText = evento.ass2;
-                document.getElementById('outArb4to').innerText = evento.quarto;
-                document.getElementById('outArbVar').innerText = evento.var;
-                document.getElementById('outArbAvar').innerText = evento.avar;
-                arbCard.classList.add('show');
-            }
-            else if (evento.tipo === 'LIMPAR_CAMPO') {
-                ocultarTodasAsTelas();
-                document.querySelectorAll('.slot-jogador').forEach(el => el.remove()); 
-            }
-            else if (evento.tipo === 'OCULTAR') {
-                ocultarTodasAsTelas();
-            }
+                } 
+                else if (evento.tipo === 'ESCALAR') {
+                    ocultarTodasAsTelas();
+                    document.documentElement.style.setProperty('--cor-time', evento.cor);
+                    document.getElementById('escudoHeader').src = getWebUrl(evento.escudo); 
+                    document.getElementById('nomeHeader').innerText = evento.time;
+                    
+                    document.getElementById('headerTime').classList.add('visible'); 
+                    campoView.classList.add('show');
+                    document.getElementById('tec-box-campo').innerText = "TÉC: " + (evento.tecnico || "NÃO INFORMADO");
+                    
+                    document.getElementById('hl-num').innerText = evento.numero; 
+                    document.getElementById('hl-nome').innerText = evento.jogador;
+                    highlightCard.classList.add('show');
+                    
+                    if(currentHighlightTimer) clearTimeout(currentHighlightTimer);
+                    currentHighlightTimer = setTimeout(() => { highlightCard.classList.remove('show'); setTimeout(() => { criarMiniCard(evento); }, 400); }, 1500);
+                } 
+                else if (evento.tipo === 'ARBITRAGEM_DINAMICA' || evento.tipo === 'ARBITRAGEM') {
+                    ocultarTodasAsTelas();
+                    arbCard.innerHTML = '<div class="arb-titulo">👨‍⚖️ EQUIPE DE ARBITRAGEM</div>';
+                    
+                    if (evento.oficiais && Array.isArray(evento.oficiais)) {
+                        const gridClass = evento.oficiais.length <= 4 ? 'arb-grid col-1' : 'arb-grid col-2';
+                        let htmlGrid = `<div class="${gridClass}">`;
+                        
+                        evento.oficiais.forEach(oficial => {
+                            let fUpper = (oficial.funcao || 'OFICIAL').toUpperCase();
+                            let nLimpo = oficial.nome || '---';
+                            let emoji = "📢"; 
+                            if(fUpper.includes("CENTRAL") || fUpper === "ÁRBITRO") emoji = "👨‍⚖️";
+                            else if(fUpper.includes("ASSISTENTE") || fUpper.includes("BANDEIRA")) emoji = "🚩";
+                            else if(fUpper.includes("VAR")) emoji = "🖥️";
+                            else if(fUpper.includes("DELEGADO") || fUpper.includes("AVALIADOR")) emoji = "📋";
+
+                            htmlGrid += `<div class="arb-row"><div class="arb-emoji">${emoji}</div><div class="arb-text"><div class="arb-cargo">${fUpper}</div><div class="arb-nome">${nLimpo}</div></div></div>`;
+                        });
+                        htmlGrid += `</div>`;
+                        arbCard.innerHTML += htmlGrid;
+                    }
+                    arbCard.classList.add('show');
+                }
+                else if (evento.tipo === 'PLACAR_ESPERA') {
+                    ocultarTodasAsTelas();
+                    if(evento.escudoA) document.getElementById('stb-logoA').src = getWebUrl(evento.escudoA);
+                    if(evento.escudoB) document.getElementById('stb-logoB').src = getWebUrl(evento.escudoB);
+                    document.getElementById('stb-nameA').innerText = evento.timeA;
+                    document.getElementById('stb-nameB').innerText = evento.timeB;
+                    document.getElementById('stb-golsA').innerText = evento.golsA;
+                    document.getElementById('stb-golsB').innerText = evento.golsB;
+                    document.getElementById('stb-per').innerText = evento.periodo;
+                    document.getElementById('stb-tempo').innerText = evento.tempo;
+                    stbCard.classList.add('show');
+                }
+                else if (evento.tipo === 'LIMPAR_CAMPO') { ocultarTodasAsTelas(); document.querySelectorAll('.slot-jogador').forEach(el => el.remove()); }
+                else if (evento.tipo === 'OCULTAR') { ocultarTodasAsTelas(); }
+            } catch (error) { console.error("Erro na escalação:", error); }
         }
 
-        // Modo Firebase
-        db.ref('transmissao/vMixData').on('value', (snapshot) => {
-            const dadosJogo = snapshot.val();
-            if(dadosJogo) renderEscalacao(dadosJogo);
-        });
-
-        // Modo Local (Off-line)
-        window.addEventListener('storage', (event) => {
-            if (event.key === 'vMixDataLocal' && event.newValue) {
-                const dadosJogo = JSON.parse(event.newValue);
-                if(dadosJogo) renderEscalacao(dadosJogo);
-            }
-        });
+        db.ref('transmissao/vMixData').on('value', (snapshot) => { const dadosJogo = snapshot.val(); if(dadosJogo) renderEscalacao(dadosJogo); });
     </script>
 </body>
 </html>
