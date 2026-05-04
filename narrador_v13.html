@@ -67,7 +67,7 @@
             flex: 1; padding: 40px; display: flex; flex-direction: column;
             justify-content: center; align-items: center; text-align: center;
             background: radial-gradient(circle at center, rgba(241, 196, 15, 0.1) 0%, transparent 70%);
-            font-size: 2rem; /* Escala o HTML que vem do GC */
+            font-size: 2rem; 
         }
 
         /* PAINEL DIREITO: PGM (NO AR) */
@@ -84,7 +84,6 @@
 
         .idle-text { color: #555; font-size: 3rem; font-weight: bold; text-transform: uppercase; }
         
-        /* ESTILOS PARA OS CARDS DO PGM */
         .card-title { font-size: 3.5rem; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; }
         .card-main-text { font-size: 4.5rem; font-weight: 900; color: #fff; text-shadow: 2px 2px 10px #000; margin-bottom: 10px; }
         .card-sub-text { font-size: 2.5rem; color: #aaa; font-weight: bold; }
@@ -122,26 +121,26 @@
     </div>
 
     <script>
-        // LIGAR AO MESMO BANCO DE DADOS DA CONTROLADORA
+        // CONFIGURAÇÃO ATUALIZADA PARA O NOVO PROJETO
         const firebaseConfig = {
-            apiKey: "AIzaSyAeWhpLh1tO_axQSDtckMVyoE-f4Egno8A",
-            authDomain: "controladoravmixestadio.firebaseapp.com",
-            databaseURL: "https://controladoravmixestadio-default-rtdb.firebaseio.com",
-            projectId: "controladoravmixestadio",
-            storageBucket: "controladoravmixestadio.firebasestorage.app",
-            messagingSenderId: "381624685560",
-            appId: "1:381624685560:web:61266ebc5e5031d717bc0d"
+            apiKey: "AIzaSyCJzbXFhkPKEMa17YuEGjJtIhAysE1_HrI",
+            authDomain: "licenciamento-72391.firebaseapp.com",
+            databaseURL: "https://licenciamento-72391-default-rtdb.firebaseio.com",
+            projectId: "licenciamento-72391",
+            storageBucket: "licenciamento-72391.firebasestorage.app",
+            messagingSenderId: "569680385303",
+            appId: "1:569680385303:web:50c9e3a1cee0fcf987d352",
+            measurementId: "G-LBHK8F648S"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 1. ESCUTAR A PRÉVIA (O QUE VOCÊ CLICA ANTES DE DAR O TAKE)
+        // 1. ESCUTAR A PRÉVIA
         db.ref('transmissao/vMixPreview').on('value', (snapshot) => {
             const val = snapshot.val();
             const boxPreview = document.getElementById('box-preview');
             
             if(val && val.html) {
-                // Injeta exatamente o HTML que você vê no seu ecrã, mas ampliado
                 boxPreview.innerHTML = `
                     <div style="font-size: 2rem; color: #f1c40f; font-weight: 900; margin-bottom: 20px;">${val.title}</div>
                     <div style="background: rgba(0,0,0,0.8); padding: 30px; border-radius: 12px; border: 2px solid #f1c40f; width: 90%;">
@@ -153,32 +152,28 @@
             }
         });
 
-        // 2. ESCUTAR O PGM (O QUE ESTÁ NO AR + TEMPO/PLACAR)
+        // 2. ESCUTAR O PGM
         db.ref('transmissao/vMixData').on('value', (snapshot) => {
             const val = snapshot.val();
             if(val) {
-                // Atualiza o cabeçalho
                 document.getElementById('nar-timeA').innerText = val.timeA || 'CASA';
                 document.getElementById('nar-timeB').innerText = val.timeB || 'FORA';
                 document.getElementById('nar-golsA').innerText = val.golsA || '0';
                 document.getElementById('nar-golsB').innerText = val.golsB || '0';
                 document.getElementById('nar-tempo').innerText = val.tempo || '00:00';
 
-                // Lógica de visualização do que está no ar
                 const boxPgm = document.getElementById('box-pgm');
                 const card = val.eventoCard;
 
-                // Se retirou do ar ou limpou a tela
                 if(!card || card.tipo === 'OCULTAR' || card.tipo === 'LIMPAR_CAMPO') {
                     boxPgm.innerHTML = '<div class="idle-text">Câmera Aberta<br><span style="font-size: 2rem;">(Sem Gráficos)</span></div>';
                     return;
                 }
 
-                // Renderização inteligente para o Narrador ler facilmente
                 let html = '';
                 
                 if (card.tipo === 'GOL') {
-                    html = `<div class="card-title" style="color: #2ecc71;">⚽ GOL DA EQUIPA: ${card.time}</div>`;
+                    html = `<div class="card-title" style="color: #2ecc71;">⚽ GOL DA EQUIPE: ${card.time}</div>`;
                 } 
                 else if (card.tipo === 'CARTAO') {
                     let cor = card.textoCartao.includes('AMARELO') ? '#f1c40f' : '#ff4757';
@@ -186,21 +181,14 @@
                             <div class="card-main-text">${card.numero ? card.numero + ' - ' : ''}${card.jogador}</div>
                             <div class="card-sub-text">${card.time}</div>`;
                 } 
-                else if (card.tipo === 'SUB') {
-                    html = `<div class="card-title" style="color: #1e90ff;">⇄ SUBSTITUIÇÃO - ${card.time}</div>
-                            <div class="card-main-text" style="color: #ff4757; font-size: 3.5rem;">SAI: ${card.sai}</div>
-                            <div class="card-main-text" style="color: #2ecc71; font-size: 3.5rem; margin-top:20px;">ENTRA: ${card.entra}</div>`;
-                } 
-                else if (card.tipo === 'SUB_MULTIPLA') {
+                else if (card.tipo === 'SUB' || card.tipo === 'SUB_MULTIPLA') {
                     html = `<div class="card-title" style="color: #1e90ff;">⇄ SUBSTITUIÇÕES - ${card.time}</div>
                             <div style="width: 100%; max-width: 800px;">`;
-                    card.subs.forEach(s => {
-                        // A sua controladora já manda formatado: "Sai: X-Nome | Entra: Y-Nome"
-                        html += `<div class="sub-row">
-                                    <span style="color:#ff4757;">${s.split('|')[0]}</span> | 
-                                    <span style="color:#2ecc71;">${s.split('|')[1]}</span>
-                                 </div>`;
-                    });
+                    if (card.subs) {
+                        card.subs.forEach(s => {
+                            html += `<div class="sub-row">${s}</div>`;
+                        });
+                    }
                     html += `</div>`;
                 } 
                 else if (card.tipo === 'VAR') {
@@ -211,10 +199,6 @@
                     html = `<div class="card-title" style="color: #9b59b6;">👤 DESTAQUE - ${card.time}</div>
                             <div class="card-main-text">${card.numero} - ${card.jogador}</div>
                             <div class="card-sub-text">Posição: ${card.posicaoTatica}</div>`;
-                } 
-                else if (card.tipo === 'CONFRONTO') {
-                    html = `<div class="card-title" style="color: #f1c40f;">🥊 CONFRONTO</div>
-                            <div class="card-main-text">${card.timeA} X ${card.timeB}</div>`;
                 } 
                 else if (card.tipo === 'PLACAR_ESPERA') {
                     html = `<div class="card-title" style="color: #ff4757; font-size:5rem;">⚠️ TELA DE ESPERA ATIVA</div>

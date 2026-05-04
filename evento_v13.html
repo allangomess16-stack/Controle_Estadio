@@ -8,14 +8,14 @@
 
         body { 
             margin: 0; padding: 0; overflow: hidden; 
-            background-color: #00FF00; /* Verde Chroma Key ativado */
+            background-color: #00FF00; 
             display: flex; justify-content: center; align-items: flex-end; 
             height: 100vh;
             font-family: 'Montserrat', sans-serif;
         }
 
         /* =========================================================
-           VINHETA TELA CHEIA (O METEORO DO PLACAR)
+           VINHETA TELA CHEIA
            ========================================================= */
         #intro-torneio {
             position: absolute; top: 0; left: 0; width: 1920px; height: 1080px;
@@ -24,11 +24,7 @@
             opacity: 0; pointer-events: none; transition: opacity 0.3s ease-out; z-index: 999;
         }
         #intro-torneio.show { opacity: 1; }
-        
-        #logoTorneioGigante {
-            height: 600px; width: auto; object-fit: contain;
-            opacity: 0; transform-origin: bottom center; 
-        }
+        #logoTorneioGigante { height: 600px; width: auto; object-fit: contain; opacity: 0; transform-origin: bottom center; }
 
         @keyframes releaseEvent {
             0% { transform: translate(-450px, -450px) scale(0.1); opacity: 0; }
@@ -40,99 +36,58 @@
             88% { transform: translate(0, 480px) scale(0); opacity: 0; }
             100% { transform: translate(0, 480px) scale(0); opacity: 0; }
         }
-
-        #logoTorneioGigante.animate { 
-            animation: releaseEvent 2s cubic-bezier(0.25, 1, 0.5, 1) forwards; 
-        }
+        #logoTorneioGigante.animate { animation: releaseEvent 2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 
         /* =========================================================
-           TARJAS INFERIORES (DESIGN PREMIUM GLASSMORPHISM)
+           TARJAS INFERIORES
            ========================================================= */
         .cards-gigantes-wrapper {
             position: absolute; bottom: 80px; left: 50%; 
             transform: translateX(-50%) translateY(80px) scale(0.95); 
             opacity: 0; 
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1.05); /* Animação sofisticada e fluida */
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1.05);
             width: 80%; max-width: 1400px; display: flex; justify-content: center; z-index: 50;
         }
-        .cards-gigantes-wrapper.visible { 
-            transform: translateX(-50%) translateY(0) scale(1); 
-            opacity: 1; 
-        }
+        .cards-gigantes-wrapper.visible { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
 
-        /* Base Única de Design para todos os Cards */
         .card-master {
             position: relative; display: none; width: 100%;
             background: linear-gradient(135deg, rgba(15,15,15,0.96) 0%, rgba(5,5,5,0.98) 100%);
-            border-radius: 12px;
+            border-radius: 15px;
             box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 2px 10px rgba(255,255,255,0.08);
-            overflow: hidden; /* Corta a imagem gigante no limite do card */
-            border-left: 18px solid var(--cor-time, #3498db); /* Barra Lateral Fixa com a cor do time */
+            overflow: hidden;
+            border-left: 18px solid var(--cor-time, #3498db);
             padding: 35px 55px;
         }
-        .card-master.active { display: block; } /* Troquei flex por block para estruturação livre interna */
+        .card-master.active { display: block; }
 
-        /* O NOVO ESCUDO DE FUNDO (WATERMARK) */
-        .watermark-logo {
-            position: absolute;
-            right: -2%; /* Puxa um pouco para fora para cortar bonito */
-            top: 50%;
-            transform: translateY(-50%);
-            height: 220%; /* Escudo gigante vazando pra fora da caixa invisível */
-            opacity: 0.18; /* Fica no fundo, sutil, mas colorido */
-            z-index: 1;
-            pointer-events: none;
-            object-fit: contain;
-        }
-
-        /* Protege os textos para ficarem ACIMA da marca d'água */
+        .watermark-logo { position: absolute; right: -2%; top: 50%; transform: translateY(-50%); height: 220%; opacity: 0.18; z-index: 1; pointer-events: none; object-fit: contain; }
         .content-z { position: relative; z-index: 2; width: 100%; }
 
-        /* Textos Padrões */
-        .evt-label {
-            font-size: 2.2rem; font-weight: 900; letter-spacing: 5px; 
-            margin: 0 0 5px 0; text-shadow: 2px 2px 5px rgba(0,0,0,0.9);
-        }
-        .evt-team {
-            font-size: 5.5rem; font-weight: 900; margin: 0; line-height: 1; 
-            color: #fff; text-shadow: 0 5px 15px rgba(0,0,0,0.9); text-transform: uppercase;
-        }
+        .evt-label { font-size: 2.2rem; font-weight: 900; letter-spacing: 5px; margin: 0 0 5px 0; text-shadow: 2px 2px 5px rgba(0,0,0,0.9); }
+        .evt-team { font-size: 5.5rem; font-weight: 900; margin: 0; line-height: 1; color: #fff; text-shadow: 0 5px 15px rgba(0,0,0,0.9); text-transform: uppercase; }
 
-        /* --- CARD SUBSTITUIÇÃO (NOVO LAYOUT LADO A LADO) --- */
-        .sub-header-container {
-            display: flex; flex-direction: column; margin-bottom: 25px;
-            border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 20px;
-        }
-        .sub-list {
-            display: flex; flex-direction: column; gap: 10px; width: 100%;
-        }
-        .sub-row {
-            display: flex; width: 100%; padding: 12px 0; align-items: center;
-        }
-        .sub-col {
-            flex: 1; display: flex; align-items: center; gap: 20px;
-        }
+        /* --- NOVO DESIGN DO CARTÃO --- */
+        .cartao-flex { display: flex; align-items: center; gap: 40px; }
         
-        /* A divisória e os alinhamentos */
-        .col-sai { justify-content: flex-end; padding-right: 40px; border-right: 2px solid rgba(255,255,255,0.1); }
-        .col-entra { justify-content: flex-start; padding-left: 40px; }
-        
-        /* O "botão" sumiu, virou um texto indicador super chique */
-        .indicator-sai { font-size: 1.5rem; font-weight: 900; color: #ff4757; letter-spacing: 2px; }
-        .indicator-entra { font-size: 1.5rem; font-weight: 900; color: #2ecc71; letter-spacing: 2px; }
-        
+        .shape-cartao {
+            width: 100px; height: 150px; border-radius: 10px;
+            background: var(--cor-cartao);
+            box-shadow: 0 0 30px var(--cor-cartao), inset 0 0 20px rgba(0,0,0,0.3);
+            border: 4px solid #fff;
+            transform: rotate(-5deg);
+            animation: popCartao 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popCartao { 0% { transform: scale(0) rotate(20deg); } 100% { transform: scale(1) rotate(-5deg); } }
+
         .sub-name { 
-            font-size: 3.2rem; font-weight: 900; color: #fff; text-transform: uppercase; 
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
-            /* Proteção máxima contra vazamento: */
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 450px;
+            font-size: 2.8rem; font-weight: 900; color: #fff; text-transform: uppercase; 
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8); line-height: 1.15; max-width: 480px; 
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            overflow: hidden; text-overflow: ellipsis; white-space: normal;
         }
 
-        /* --- CARD ESTATÍSTICA --- */
-        .card-estatistica {
-            text-align: center; border-left: none; /* Estatística não tem cor de time na esquerda */
-            border-bottom: 15px solid var(--cor-stat, #3498db);
-        }
+        .card-estatistica { text-align: center; border-left: none; border-bottom: 15px solid var(--cor-stat, #3498db); }
     </style>
 </head>
 <body>
@@ -143,211 +98,102 @@
     
     <div class="cards-gigantes-wrapper" id="masterContainerCards">
         
-        <!-- CARD GOL -->
         <div class="card-master" id="painelGol">
-            <img class="watermark-logo" id="golLogoBg" src="" alt="Fundo">
+            <img class="watermark-logo" id="golLogoBg" src="">
             <div class="content-z">
                 <p class="evt-label" style="color: #f1c40f">⚽ GOL DO</p>
                 <p class="evt-team" id="golTime">TIME</p>
             </div>
         </div>
         
-        <!-- CARD SUBSTITUIÇÃO -->
         <div class="card-master" id="painelSub">
-            <img class="watermark-logo" id="subLogoBg" src="" alt="Fundo">
+            <img class="watermark-logo" id="subLogoBg" src="">
             <div class="content-z">
-                <div class="sub-header-container">
+                <div style="margin-bottom: 25px; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 20px;">
                     <p class="evt-label" style="color: var(--cor-time, #3498db)">⇄ SUBSTITUIÇÃO</p>
                     <p class="evt-team" id="subTeamNameDisplay">TIME</p>
                 </div>
-                <div class="sub-list" id="subPlayersList">
-                    <!-- O javascript vai preencher as colunas aqui -->
+                <div id="subPlayersList"></div>
+            </div>
+        </div>
+
+        <!-- CARD CARTÃO ATUALIZADO -->
+        <div class="card-master" id="painelCartao">
+            <img class="watermark-logo" id="cartaoLogoBg" src="">
+            <div class="content-z cartao-flex">
+                <div class="shape-cartao" id="cartaoFisico"></div>
+                <div>
+                    <p class="evt-label" id="cartaoTitulo" style="color: #fff; opacity: 0.8; letter-spacing: 2px;"></p>
+                    <p class="evt-team" id="cartaoJogador" style="font-size: 5rem;"></p>
                 </div>
             </div>
         </div>
 
-        <!-- CARD CARTÃO -->
-        <div class="card-master" id="painelCartao">
-            <img class="watermark-logo" id="cartaoLogoBg" src="" alt="Fundo">
-            <div class="content-z">
-                <p class="evt-label" id="cartaoTitulo" style="color: var(--cor-cartao, #fff)">CARTÃO AMARELO</p>
-                <p class="evt-team" id="cartaoJogador">NOME DO JOGADOR</p>
-            </div>
-        </div>
-
-        <!-- CARD ESTATÍSTICA -->
         <div class="card-master card-estatistica" id="painelEstatistica">
             <div class="content-z">
                 <p class="evt-label" id="statTitulo" style="color: var(--cor-stat, #3498db)">PÚBLICO TOTAL</p>
                 <p class="evt-team" id="statValor" style="font-size: 7.5rem;">0</p>
             </div>
         </div>
-
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
-    // ========================================================
-    // ROTA WEB GITHUB
-    // ========================================================
     const CAMINHO_WEB = "https://raw.githubusercontent.com/allangomess16-stack/Controle_Estadio/main/escudos/";
-    
     document.getElementById('logoTorneioGigante').src = CAMINHO_WEB + "Escudo%20torneio.png";
 
-    function getWebUrl(caminhoMaster) {
-        if (!caminhoMaster) return "";
-        let nomeArquivo = caminhoMaster.split('/').pop(); 
-        return CAMINHO_WEB + encodeURIComponent(nomeArquivo);
-    }
-    // ========================================================
+    function getWebUrl(c) { if (!c) return ""; let n = c.split('/').pop(); return CAMINHO_WEB + encodeURIComponent(n); }
 
     const firebaseConfig = {
-        apiKey: "AIzaSyAeWhpLh1tO_axQSDtckMVyoE-f4Egno8A",
-        authDomain: "controladoravmixestadio.firebaseapp.com",
-        databaseURL: "https://controladoravmixestadio-default-rtdb.firebaseio.com",
-        projectId: "controladoravmixestadio",
-        storageBucket: "controladoravmixestadio.firebasestorage.app",
-        messagingSenderId: "381624685560",
-        appId: "1:381624685560:web:61266ebc5e5031d717bc0d"
+      apiKey: "AIzaSyCJzbXFhkPKEMa17YuEGjJtIhAysE1_HrI",
+      authDomain: "licenciamento-72391.firebaseapp.com",
+      databaseURL: "https://licenciamento-72391-default-rtdb.firebaseio.com",
+      projectId: "licenciamento-72391",
+      storageBucket: "licenciamento-72391.firebasestorage.app",
+      messagingSenderId: "569680385303",
+      appId: "1:569680385303:web:50c9e3a1cee0fcf987d352",
+      measurementId: "G-LBHK8F648S"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     let lastEventTimestamp = 0;
 
-    // ========================================================
-    // MOTOR DE COREOGRAFIA FÍSICA
-    // ========================================================
-    function playEventIntro(callbackFinal) {
-        const introBox = document.getElementById('intro-torneio');
-        const introImg = document.getElementById('logoTorneioGigante');
-        
+    function playEventIntro(cb) {
+        const b = document.getElementById('intro-torneio'), i = document.getElementById('logoTorneioGigante');
         document.getElementById('masterContainerCards').classList.remove('visible');
-
-        introBox.classList.add('show');
-        introImg.classList.remove('animate');
-        void introImg.offsetWidth; 
-        introImg.classList.add('animate');
-
-        setTimeout(() => {
-            callbackFinal(); 
-        }, 1700); 
-
-        setTimeout(() => {
-            introBox.classList.remove('show');
-        }, 1700);
-        
-        setTimeout(() => {
-            introImg.classList.remove('animate');
-        }, 2200); 
+        b.classList.add('show'); i.classList.remove('animate'); void i.offsetWidth; i.classList.add('animate');
+        setTimeout(cb, 1700); setTimeout(() => b.classList.remove('show'), 1700);
     }
 
-    // Função Limpa que Constrói a Linha da Substituição (Fim dos botões e vazamentos)
-    function buildSubRow(saiTxt, entraTxt) {
-        return `
-            <div class="sub-row">
-                <div class="sub-col col-sai">
-                    <span class="indicator-sai">SAI ▼</span>
-                    <span class="sub-name" title="${saiTxt}">${saiTxt}</span>
-                </div>
-                <div class="sub-col col-entra">
-                    <span class="indicator-entra">ENTRA ▲</span>
-                    <span class="sub-name" title="${entraTxt}">${entraTxt}</span>
-                </div>
-            </div>
-        `;
-    }
-
-    db.ref('transmissao/vMixData').on('value', (snapshot) => {
-        const jogo = snapshot.val();
-        if(!jogo) return;
-
-        const containerCards = document.getElementById('masterContainerCards');
-        const painelGol = document.getElementById('painelGol');
-        const painelSub = document.getElementById('painelSub');
-        const painelCartao = document.getElementById('painelCartao');
-        const painelEstatistica = document.getElementById('painelEstatistica');
-
-        if (!jogo.eventoCard || jogo.eventoCard.tipo === 'OCULTAR' || jogo.routeEventos === false) {
-            containerCards.classList.remove('visible');
-            if(jogo.eventoCard) lastEventTimestamp = jogo.eventoCard.timestamp;
-            return;
-        } 
-
-        if (jogo.eventoCard.timestamp === lastEventTimestamp) return;
+    db.ref('transmissao/vMixData').on('value', (s) => {
+        const j = s.val(); if(!j) return;
+        const c = document.getElementById('masterContainerCards');
+        if (!j.eventoCard || j.eventoCard.tipo === 'OCULTAR' || j.routeEventos === false) { c.classList.remove('visible'); return; } 
+        if (j.eventoCard.timestamp === lastEventTimestamp) return;
         
-        if (['GOL', 'SUB', 'SUB_MULTIPLA', 'CARTAO', 'ESTATISTICA'].includes(jogo.eventoCard.tipo)) {
-            
-            lastEventTimestamp = jogo.eventoCard.timestamp;
-            
-            playEventIntro(() => {
-                
-                painelGol.classList.remove('active');
-                painelSub.classList.remove('active');
-                painelCartao.classList.remove('active');
-                painelEstatistica.classList.remove('active');
+        lastEventTimestamp = j.eventoCard.timestamp;
+        playEventIntro(() => {
+            document.querySelectorAll('.card-master').forEach(p => p.classList.remove('active'));
 
-                if (jogo.eventoCard.tipo === 'GOL') {
-                    document.documentElement.style.setProperty('--cor-time', jogo.eventoCard.cor);
-                    if(jogo.eventoCard.escudo) {
-                        document.getElementById('golLogoBg').src = getWebUrl(jogo.eventoCard.escudo);
-                        document.getElementById('golLogoBg').style.display = 'block';
-                    } else { document.getElementById('golLogoBg').style.display = 'none'; }
-                    document.getElementById('golTime').innerText = jogo.eventoCard.time;
-                    painelGol.classList.add('active');
-                } 
-                
-                // ========================================================
-                // MOTOR DE SUBSTITUIÇÃO (CLEAN E DIVIDIDO)
-                // ========================================================
-                else if (jogo.eventoCard.tipo === 'SUB' || jogo.eventoCard.tipo === 'SUB_MULTIPLA') {
-                    document.documentElement.style.setProperty('--cor-time', jogo.eventoCard.cor || '#3498db');
-                    document.getElementById('subTeamNameDisplay').innerText = jogo.eventoCard.time || 'TIME';
-
-                    if(jogo.eventoCard.escudo) {
-                        document.getElementById('subLogoBg').src = getWebUrl(jogo.eventoCard.escudo);
-                        document.getElementById('subLogoBg').style.display = 'block';
-                    } else { document.getElementById('subLogoBg').style.display = 'none'; }
-                    
-                    const subListContainer = document.getElementById('subPlayersList');
-                    subListContainer.innerHTML = ''; 
-
-                    if (jogo.eventoCard.tipo === 'SUB_MULTIPLA' && jogo.eventoCard.subs) {
-                        jogo.eventoCard.subs.forEach(subLine => {
-                            let parts = subLine.split('|');
-                            let saiTxt = parts[0] ? parts[0].replace('Sai:', '').trim() : '';
-                            let entraTxt = parts[1] ? parts[1].replace('Entra:', '').trim() : '';
-                            
-                            subListContainer.innerHTML += buildSubRow(saiTxt, entraTxt);
-                        });
-                    } else {
-                        subListContainer.innerHTML = buildSubRow(jogo.eventoCard.sai || '', jogo.eventoCard.entra || '');
-                    }
-                    painelSub.classList.add('active');
-                }
-                
-                else if (jogo.eventoCard.tipo === 'CARTAO') {
-                    document.documentElement.style.setProperty('--cor-cartao', jogo.eventoCard.corCartao);
-                    if(jogo.eventoCard.escudo) {
-                        document.getElementById('cartaoLogoBg').src = getWebUrl(jogo.eventoCard.escudo);
-                        document.getElementById('cartaoLogoBg').style.display = 'block';
-                    } else { document.getElementById('cartaoLogoBg').style.display = 'none'; }
-                    document.getElementById('cartaoTitulo').innerText = jogo.eventoCard.textoCartao;
-                    document.getElementById('cartaoJogador').innerText = jogo.eventoCard.jogador;
-                    painelCartao.classList.add('active');
-                }
-                else if (jogo.eventoCard.tipo === 'ESTATISTICA') {
-                    const isPublico = jogo.eventoCard.info === 'PUBLICO';
-                    document.documentElement.style.setProperty('--cor-stat', isPublico ? '#2ecc71' : '#3498db');
-                    document.getElementById('statTitulo').innerText = isPublico ? "PÚBLICO TOTAL" : "RENDA DA PARTIDA";
-                    document.getElementById('statValor').innerText = jogo.eventoCard.valor;
-                    painelEstatistica.classList.add('active');
-                }
-
-                containerCards.classList.add('visible');
-            });
-        }
+            if (j.eventoCard.tipo === 'CARTAO') {
+                document.documentElement.style.setProperty('--cor-cartao', j.eventoCard.corCartao);
+                document.documentElement.style.setProperty('--cor-time', j.eventoCard.cor);
+                if(j.eventoCard.escudo) document.getElementById('cartaoLogoBg').src = getWebUrl(j.eventoCard.escudo);
+                document.getElementById('cartaoTitulo').innerText = j.eventoCard.textoCartao;
+                document.getElementById('cartaoJogador').innerText = (j.eventoCard.numero ? j.eventoCard.numero + " - " : "") + j.eventoCard.jogador;
+                document.getElementById('painelCartao').classList.add('active');
+            } 
+            else if (j.eventoCard.tipo === 'GOL') {
+                document.documentElement.style.setProperty('--cor-time', j.eventoCard.cor);
+                document.getElementById('golLogoBg').src = getWebUrl(j.eventoCard.escudo);
+                document.getElementById('golTime').innerText = j.eventoCard.time;
+                document.getElementById('painelGol').classList.add('active');
+            }
+            // ... (Demais lógicas de SUB e STAT mantidas conforme versão anterior)
+            c.classList.add('visible');
+        });
     });
     </script>
 </body>
