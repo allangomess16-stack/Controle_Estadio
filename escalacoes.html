@@ -113,7 +113,7 @@
         .arb-emoji { font-size: 3.5rem; flex-shrink: 0; filter: drop-shadow(3px 5px 5px rgba(0,0,0,0.6)); }
         .arb-text { display: flex; flex-direction: column; justify-content: center; flex: 1; text-align: left; min-width: 0; }
         .arb-cargo { color: var(--cor-arb); font-size: 1.1rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .arb-nome { color: #fff; font-size: 1.7rem; font-weight: 900; text-transform: uppercase; text-shadow: 2px 2px 4px #000; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; overflow-wrap: break-word; word-wrap: break-word; }
+            .arb-nome { color: #fff; font-size: 1.7rem; font-weight: 900; text-transform: uppercase; text-shadow: 2px 2px 4px #000; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; overflow-wrap: break-word; word-wrap: break-word; }
 
         /* =========================================================
            STANDBY CARD (QUEDA DE SINAL / TELA DE ESPERA) - TELA CHEIA
@@ -191,17 +191,20 @@
         
         document.getElementById('stb-torneio').src = CAMINHO_WEB + "Escudo%20torneio.png";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAeWhpLh1tO_axQSDtckMVyoE-f4Egno8A",
-            authDomain: "controladoravmixestadio.firebaseapp.com",
-            databaseURL: "https://controladoravmixestadio-default-rtdb.firebaseio.com",
-            projectId: "controladoravmixestadio",
-            storageBucket: "controladoravmixestadio.firebasestorage.app",
-            messagingSenderId: "381624685560",
-            appId: "1:381624685560:web:61266ebc5e5031d717bc0d"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        // Configuração do Firebase (Frequência Única do Sistema)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJzbXFhkPKEMa17YuEGjJtIhAysE1_HrI",
+      authDomain: "licenciamento-72391.firebaseapp.com",
+      databaseURL: "https://licenciamento-72391-default-rtdb.firebaseio.com",
+      projectId: "licenciamento-72391",
+      storageBucket: "licenciamento-72391.firebasestorage.app",
+      messagingSenderId: "569680385303",
+      appId: "1:569680385303:web:50c9e3a1cee0fcf987d352",
+      measurementId: "G-LBHK8F648S"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
         const mapaTatico = {
             'GL': { top: '88%', left: '50%' }, 'LD': { top: '74%', left: '88%' }, 'LE': { top: '74%', left: '12%' }, 
