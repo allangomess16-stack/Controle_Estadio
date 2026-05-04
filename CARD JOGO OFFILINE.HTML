@@ -145,10 +145,9 @@
         let lastEventTimestamp = 0;
         const wrapper = document.getElementById('main-wrapper');
 
-        // Função que reseta e dispara as animações CSS de entrada
         function dispararAnimacao() {
             wrapper.classList.remove('show');
-            void wrapper.offsetWidth; // Força o navegador a recalcular a tela
+            void wrapper.offsetWidth; 
             wrapper.classList.add('show');
         }
 
@@ -159,7 +158,6 @@
             const evento = jogo.eventoCard;
 
             if (evento.tipo === 'CONFRONTO') {
-                // Injeta os dados que vieram da Controladora
                 document.getElementById('nome-a').innerText = evento.timeA;
                 document.getElementById('logo-a').src = evento.escudoA;
                 document.getElementById('fundo-a').src = evento.escudoA;
@@ -170,27 +168,45 @@
                 document.getElementById('fundo-b').src = evento.escudoB;
                 document.getElementById('lado-b').style.backgroundColor = evento.corB;
 
-                // Traz a tela do fundo para a frente e aciona o Take
                 dispararAnimacao();
             } else if (evento.tipo === 'OCULTAR') {
-                // Quando clicar em "RETIRAR ARTE DO TELÃO", esconde suavemente
                 wrapper.classList.remove('show');
             }
         }
 
-        // 1. Escuta a Internet (Modo Server - Firebase)
+        // --- BLOCO DE TIMES FIXOS COM CAMINHO LOCAL ---
+        window.onload = () => {
+            const jogoFixo = {
+                eventoCard: {
+                    timestamp: Date.now(),
+                    tipo: 'CONFRONTO',
+                    timeA: 'BOTAFOGO',
+                    // Ajustado para padrão de URL local e barras corrigidas
+                    escudoA: 'file:///C:/Users/Allan/Desktop/Nova%20pasta/escudos/Botafogo.png', 
+                    corA: '#000000', 
+                    timeB: 'INTERNACIONAL',
+                    escudoB: 'file:///C:/Users/Allan/Desktop/Nova%20pasta/escudos/Internacional.png',
+                    corB: '#E5050F'
+                }
+            };
+            
+            renderConfronto(jogoFixo);
+        };
+
+        /* // Escuta a Internet (Comentado para priorizar o fixo, mas mantido conforme solicitado)
         db.ref('transmissao/vMixData').on('value', (snapshot) => {
             const dadosJogo = snapshot.val();
             if(dadosJogo) renderConfronto(dadosJogo);
         });
 
-        // 2. Escuta a Memória Interna (Modo Local - Off-line)
+        // Escuta a Memória Interna
         window.addEventListener('storage', (event) => {
             if (event.key === 'vMixDataLocal' && event.newValue) {
                 const dadosJogo = JSON.parse(event.newValue);
                 if(dadosJogo) renderConfronto(dadosJogo);
             }
         });
+        */
     </script>
 </body>
 </html>

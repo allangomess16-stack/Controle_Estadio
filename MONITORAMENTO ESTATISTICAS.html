@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitor de Inteligência - Live Stats</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #111111;
+            --primary: #f1c40f;
+            --border: #333;
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background: #000;
+            padding: 10px 20px;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            flex-grow: 1;
+            max-width: 600px;
+        }
+
+        input {
+            background: #1a1a1a;
+            border: 1px solid var(--border);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        button {
+            background: var(--primary);
+            color: black;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        button:hover {
+            filter: brightness(1.2);
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Lado a Lado */
+            gap: 10px;
+            padding: 10px;
+            flex-grow: 1;
+            min-height: 0; /* Fix para scroll interno */
+        }
+
+        .widget-container {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .widget-header {
+            background: #1a1a1a;
+            padding: 8px 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        iframe {
+            width: 100%;
+            flex-grow: 1;
+            border: none;
+        }
+
+        .status-msg {
+            font-size: 0.7rem;
+            color: #888;
+        }
+
+        /* Otimização para Zoom 67% */
+        @media screen and (max-width: 1000px) {
+            main {
+                grid-template-columns: 1fr;
+                overflow-y: auto;
+            }
+            iframe {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size: 1.2rem;">📊</span>
+        <h1 style="margin:0; font-size: 1rem; text-transform: uppercase;">Monitor SofaScore</h1>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="matchInput" placeholder="Cole o link do jogo ou ID (ex: 15235529)">
+        <button onclick="carregarMonitor()">Conectar Monitor</button>
+    </div>
+
+    <div class="status-msg" id="statusMsg">Aguardando ID...</div>
+</header>
+
+<main id="monitorArea" style="display: none;">
+    <div class="widget-container">
+        <div class="widget-header">📋 Escalação em Tempo Real</div>
+        <iframe id="frameLineups" src=""></iframe>
+    </div>
+
+    <div class="widget-container">
+        <div class="widget-header">📈 Estatísticas da Partida</div>
+        <iframe id="frameStats" src=""></iframe>
+    </div>
+</main>
+
+<div id="welcome" style="flex-grow: 1; display: flex; align-items: center; justify-content: center; color: #444; flex-direction: column;">
+    <span style="font-size: 4rem;">🏟️</span>
+    <p>Insira o ID da partida para iniciar o monitoramento simultâneo.</p>
+</div>
+
+<script>
+    // Carrega o último ID salvo
+    window.onload = function() {
+        const lastId = localStorage.getItem('lastSofaMatchId');
+        if(lastId) {
+            document.getElementById('matchInput').value = lastId;
+            atualizarWidgets(lastId);
+        }
+    };
+
+    function carregarMonitor() {
+        const input = document.getElementById('matchInput').value;
+        if(!input) {
+            alert("Por favor, insira um link ou ID válido.");
+            return;
+        }
+
+        // Lógica para extrair ID do link caso o usuário cole a URL inteira
+        // Ex: https://www.sofascore.com/pt/football/match/internacional-botafogo/iOsqO#id:15235529
+        let matchId = input;
+        if(input.includes('id:')) {
+            matchId = input.split('id:')[1].split(/[?&#]/)[0];
+        } else if (input.includes('/')) {
+            // Tenta pegar o último conjunto de números se for uma URL diferente
+            const matches = input.match(/\d+/g);
+            if (matches) matchId = matches[matches.length - 1];
+        }
+
+        if(isNaN(matchId)) {
+            alert("ID inválido. Certifique-se de que o link contém o ID numérico.");
+            return;
+        }
+
+        localStorage.setItem('lastSofaMatchId', matchId);
+        atualizarWidgets(matchId);
+    }
+
+    function atualizarWidgets(id) {
+        document.getElementById('welcome').style.display = 'none';
+        document.getElementById('monitorArea').style.display = 'grid';
+
+        // Atualiza os SRCs dos iframes
+        document.getElementById('frameLineups').src = `https://widgets.sofascore.com/pt-BR/embed/lineups?id=${id}&widgetTheme=dark`;
+        document.getElementById('frameStats').src = `https://widgets.sofascore.com/pt-BR/embed/statistics?id=${id}&widgetTheme=dark`;
+
+        document.getElementById('statusMsg').innerText = `Monitorando partida: ${id}`;
+        document.getElementById('statusMsg').style.color = '#2ecc71';
+    }
+</script>
+
+</body>
+</html>
