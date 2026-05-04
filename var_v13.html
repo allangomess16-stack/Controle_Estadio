@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>VAR - Decisão de Arbitragem</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap');
+        
+        body, html { margin: 0; padding: 0; overflow: hidden; background: transparent; font-family: 'Montserrat', sans-serif; width: 1920px; height: 1080px; }
+
+        #var-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.4s;
+            background: rgba(0, 0, 0, 0.4); /* Fundo sutil para escurecer o jogo atrás */
+        }
+        #var-container.show { opacity: 1; }
+
+        /* CARD CENTRAL TIPO MONITOR */
+        #var-card {
+            background: linear-gradient(135deg, #111 0%, #000 100%);
+            border: 6px solid #f1c40f; border-radius: 20px;
+            width: 1100px; padding: 70px 50px; text-align: center;
+            box-shadow: 0 0 60px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.8);
+            transform: scale(0.7); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; overflow: hidden;
+        }
+        #var-container.show #var-card { transform: scale(1); }
+
+        .status-var { color: #f1c40f; font-size: 2.5rem; letter-spacing: 12px; margin-bottom: 25px; text-shadow: 2px 2px 5px #000; }
+        .decisao-texto { color: #fff; font-size: 5.5rem; text-transform: uppercase; line-height: 1.1; text-shadow: 4px 4px 10px #000; }
+
+        /* CORES DE DECISÃO */
+        .verde { color: #2ecc71 !important; text-shadow: 0 0 40px rgba(46, 204, 113, 0.6), 4px 4px 10px #000; }
+        .vermelho { color: #ff4757 !important; text-shadow: 0 0 40px rgba(255, 71, 87, 0.6), 4px 4px 10px #000; }
+
+        /* EFEITO DE SCANLINES (TELA DE TV) */
+        .scanlines {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%);
+            background-size: 100% 4px; pointer-events: none; z-index: 10;
+        }
+
+        /* ANIMAÇÃO DE PULSO QUANDO EM ANÁLISE */
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .em-analise { animation: pulse 1.5s infinite; color: #fff; }
+    </style>
+</head>
+<body>
+    <div id="var-container">
+        <div id="var-card">
+            <div class="scanlines"></div>
+            <div class="status-var">ÁRBITRO DE VÍDEO</div>
+            <div class="decisao-texto" id="var-decisao">EM ANÁLISE...</div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeWhpLh1tO_axQSDtckMVyoE-f4Egno8A",
+            authDomain: "controladoravmixestadio.firebaseapp.com",
+            databaseURL: "https://controladoravmixestadio-default-rtdb.firebaseio.com",
+            projectId: "controladoravmixestadio",
+            storageBucket: "controladoravmixestadio.firebasestorage.app",
+            messagingSenderId: "381624685560",
+            appId: "1:381624685560:web:61266ebc5e5031d717bc0d"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let lastTs = 0;
+        const container = document.getElementById('var-container');
+        const texto = document.getElementById('var-decisao');
+
+        function processarDadosVAR(d) {
+            if(!d || !d.eventoCard || d.eventoCard.timestamp === lastTs) return;
+            lastTs = d.eventoCard.timestamp;
+            const evento = d.eventoCard;
+
+            if(evento.tipo === 'OCULTAR') {
+                container.classList.remove('show');
+                return;
+            }
+
+            if(evento.tipo === 'VAR') {
+                texto.classList.remove('verde', 'vermelho', 'em-analise'); // Limpa cores velhas
+                
+                if(evento.decisao === 'ANÁLISE') {
+                    texto.innerText = "EM ANÁLISE...";
+                    texto.classList.add('em-analise');
+                } else if(evento.decisao === 'GOL CONFIRMADO' || evento.decisao === 'PÊNALTI') {
+                    texto.innerText = evento.decisao;
+                    texto.classList.add('verde');
+                } else if(evento.decisao === 'GOL ANULADO' || evento.decisao === 'IMPEDIMENTO' || evento.decisao === 'CARTÃO VERMELHO') {
+                    texto.innerText = evento.decisao;
+                    texto.classList.add('vermelho');
+                }
+                container.classList.add('show');
+            }
+        }
+
+        // Modo Nuvem
+        db.ref('transmissao/vMixData').on('value', (snapshot) => { processarDadosVAR(snapshot.val()); });
+
+        // Modo Local
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'vMixDataLocal' && event.newValue) { processarDadosVAR(JSON.parse(event.newValue)); }
+        });
+    </script>
+</body>
+</html>

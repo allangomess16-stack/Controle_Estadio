@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Espelho do Narrador - Master Control</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial Black', Impact, sans-serif; }
+        
+        body {
+            background-color: #0a0a0a;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* HEADER - PLACAR GERAL */
+        .top-bar {
+            height: 15vh;
+            background: linear-gradient(180deg, #1a1a1a 0%, #050505 100%);
+            border-bottom: 3px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
+
+        .score-board {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            font-size: 5rem;
+            font-weight: 900;
+        }
+
+        .team-name { color: #ccc; text-transform: uppercase; font-size: 3.5rem; }
+        .score-box { background: #000; padding: 10px 40px; border-radius: 12px; border: 2px solid #444; color: #fff; }
+        .match-timer { color: #2ecc71; font-family: monospace; font-size: 6rem; background: #000; padding: 5px 30px; border-radius: 12px; border: 2px solid #2ecc71; text-shadow: 0 0 15px rgba(46, 204, 113, 0.5); }
+
+        /* ÁREA DOS PAINÉIS */
+        .panels-container {
+            display: flex;
+            height: 85vh;
+            width: 100%;
+        }
+
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* PAINEL ESQUERDO: PREVIEW */
+        .panel-preview { border-right: 4px solid #333; }
+        .header-preview {
+            background: #f1c40f; color: #000; font-size: 2.5rem; font-weight: 900;
+            text-align: center; padding: 15px; text-transform: uppercase; letter-spacing: 2px;
+            box-shadow: 0 5px 15px rgba(241, 196, 15, 0.2);
+        }
+        .content-preview {
+            flex: 1; padding: 40px; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            background: radial-gradient(circle at center, rgba(241, 196, 15, 0.1) 0%, transparent 70%);
+            font-size: 2rem; /* Escala o HTML que vem do GC */
+        }
+
+        /* PAINEL DIREITO: PGM (NO AR) */
+        .header-pgm {
+            background: #2ecc71; color: #000; font-size: 2.5rem; font-weight: 900;
+            text-align: center; padding: 15px; text-transform: uppercase; letter-spacing: 2px;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.2);
+        }
+        .content-pgm {
+            flex: 1; padding: 40px; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            background: radial-gradient(circle at center, rgba(46, 204, 113, 0.1) 0%, transparent 70%);
+        }
+
+        .idle-text { color: #555; font-size: 3rem; font-weight: bold; text-transform: uppercase; }
+        
+        /* ESTILOS PARA OS CARDS DO PGM */
+        .card-title { font-size: 3.5rem; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; }
+        .card-main-text { font-size: 4.5rem; font-weight: 900; color: #fff; text-shadow: 2px 2px 10px #000; margin-bottom: 10px; }
+        .card-sub-text { font-size: 2.5rem; color: #aaa; font-weight: bold; }
+        .sub-row { font-size: 2.2rem; background: rgba(0,0,0,0.5); border: 1px solid #444; padding: 10px 20px; margin-bottom: 10px; border-radius: 8px; width: 100%; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div class="score-board">
+            <span class="team-name" id="nar-timeA">CASA</span>
+            <span class="score-box" id="nar-golsA">0</span>
+            <span class="match-timer" id="nar-tempo">00:00</span>
+            <span class="score-box" id="nar-golsB">0</span>
+            <span class="team-name" id="nar-timeB">FORA</span>
+        </div>
+    </div>
+
+    <div class="panels-container">
+        
+        <div class="panel panel-preview">
+            <div class="header-preview">⚠️ A PREPARAR (PRÉVIA)</div>
+            <div class="content-preview" id="box-preview">
+                <div class="idle-text">Aguardando operação...</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="header-pgm">🟢 NO AR (PGM)</div>
+            <div class="content-pgm" id="box-pgm">
+                <div class="idle-text">Câmera Aberta<br><span style="font-size: 2rem;">(Sem Gráficos)</span></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // LIGAR AO MESMO BANCO DE DADOS DA CONTROLADORA
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeWhpLh1tO_axQSDtckMVyoE-f4Egno8A",
+            authDomain: "controladoravmixestadio.firebaseapp.com",
+            databaseURL: "https://controladoravmixestadio-default-rtdb.firebaseio.com",
+            projectId: "controladoravmixestadio",
+            storageBucket: "controladoravmixestadio.firebasestorage.app",
+            messagingSenderId: "381624685560",
+            appId: "1:381624685560:web:61266ebc5e5031d717bc0d"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 1. ESCUTAR A PRÉVIA (O QUE VOCÊ CLICA ANTES DE DAR O TAKE)
+        db.ref('transmissao/vMixPreview').on('value', (snapshot) => {
+            const val = snapshot.val();
+            const boxPreview = document.getElementById('box-preview');
+            
+            if(val && val.html) {
+                // Injeta exatamente o HTML que você vê no seu ecrã, mas ampliado
+                boxPreview.innerHTML = `
+                    <div style="font-size: 2rem; color: #f1c40f; font-weight: 900; margin-bottom: 20px;">${val.title}</div>
+                    <div style="background: rgba(0,0,0,0.8); padding: 30px; border-radius: 12px; border: 2px solid #f1c40f; width: 90%;">
+                        ${val.html}
+                    </div>
+                `;
+            } else {
+                boxPreview.innerHTML = '<div class="idle-text">Aguardando operação...</div>';
+            }
+        });
+
+        // 2. ESCUTAR O PGM (O QUE ESTÁ NO AR + TEMPO/PLACAR)
+        db.ref('transmissao/vMixData').on('value', (snapshot) => {
+            const val = snapshot.val();
+            if(val) {
+                // Atualiza o cabeçalho
+                document.getElementById('nar-timeA').innerText = val.timeA || 'CASA';
+                document.getElementById('nar-timeB').innerText = val.timeB || 'FORA';
+                document.getElementById('nar-golsA').innerText = val.golsA || '0';
+                document.getElementById('nar-golsB').innerText = val.golsB || '0';
+                document.getElementById('nar-tempo').innerText = val.tempo || '00:00';
+
+                // Lógica de visualização do que está no ar
+                const boxPgm = document.getElementById('box-pgm');
+                const card = val.eventoCard;
+
+                // Se retirou do ar ou limpou a tela
+                if(!card || card.tipo === 'OCULTAR' || card.tipo === 'LIMPAR_CAMPO') {
+                    boxPgm.innerHTML = '<div class="idle-text">Câmera Aberta<br><span style="font-size: 2rem;">(Sem Gráficos)</span></div>';
+                    return;
+                }
+
+                // Renderização inteligente para o Narrador ler facilmente
+                let html = '';
+                
+                if (card.tipo === 'GOL') {
+                    html = `<div class="card-title" style="color: #2ecc71;">⚽ GOL DA EQUIPA: ${card.time}</div>`;
+                } 
+                else if (card.tipo === 'CARTAO') {
+                    let cor = card.textoCartao.includes('AMARELO') ? '#f1c40f' : '#ff4757';
+                    html = `<div class="card-title" style="color: ${cor};">${card.textoCartao}</div>
+                            <div class="card-main-text">${card.numero ? card.numero + ' - ' : ''}${card.jogador}</div>
+                            <div class="card-sub-text">${card.time}</div>`;
+                } 
+                else if (card.tipo === 'SUB') {
+                    html = `<div class="card-title" style="color: #1e90ff;">⇄ SUBSTITUIÇÃO - ${card.time}</div>
+                            <div class="card-main-text" style="color: #ff4757; font-size: 3.5rem;">SAI: ${card.sai}</div>
+                            <div class="card-main-text" style="color: #2ecc71; font-size: 3.5rem; margin-top:20px;">ENTRA: ${card.entra}</div>`;
+                } 
+                else if (card.tipo === 'SUB_MULTIPLA') {
+                    html = `<div class="card-title" style="color: #1e90ff;">⇄ SUBSTITUIÇÕES - ${card.time}</div>
+                            <div style="width: 100%; max-width: 800px;">`;
+                    card.subs.forEach(s => {
+                        // A sua controladora já manda formatado: "Sai: X-Nome | Entra: Y-Nome"
+                        html += `<div class="sub-row">
+                                    <span style="color:#ff4757;">${s.split('|')[0]}</span> | 
+                                    <span style="color:#2ecc71;">${s.split('|')[1]}</span>
+                                 </div>`;
+                    });
+                    html += `</div>`;
+                } 
+                else if (card.tipo === 'VAR') {
+                    html = `<div class="card-title" style="color: #e67e22;">🖥️ REVISÃO DO VAR</div>
+                            <div class="card-main-text">${card.decisao}</div>`;
+                } 
+                else if (card.tipo === 'ESCALAR') {
+                    html = `<div class="card-title" style="color: #9b59b6;">👤 DESTAQUE - ${card.time}</div>
+                            <div class="card-main-text">${card.numero} - ${card.jogador}</div>
+                            <div class="card-sub-text">Posição: ${card.posicaoTatica}</div>`;
+                } 
+                else if (card.tipo === 'CONFRONTO') {
+                    html = `<div class="card-title" style="color: #f1c40f;">🥊 CONFRONTO</div>
+                            <div class="card-main-text">${card.timeA} X ${card.timeB}</div>`;
+                } 
+                else if (card.tipo === 'PLACAR_ESPERA') {
+                    html = `<div class="card-title" style="color: #ff4757; font-size:5rem;">⚠️ TELA DE ESPERA ATIVA</div>
+                            <div class="card-sub-text">Sinal de Vídeo Interrompido</div>`;
+                } 
+                else {
+                    html = `<div class="card-title" style="color: #fff;">GRÁFICO NO AR</div>
+                            <div class="card-sub-text">${card.tipo}</div>`;
+                }
+
+                boxPgm.innerHTML = html;
+            }
+        });
+    </script>
+</body>
+</html>
