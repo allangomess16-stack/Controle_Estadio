@@ -740,20 +740,20 @@
         if (!input) return { cor: "#333", logo: "", sigla: "", nome: "" }; 
         let cleanInput = input.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
         const timesBase = { 
-            "AMERICA-MG": { cor: "#27ae60", logo: "PREJOGO/escudos/America-MG.png", sigla: "AME", nome: "América-MG" }, 
-            "ATHLETICO PARANAENSE": { cor: "#c0392b", logo: "PREJOGO/escudos/Athletico Paranaense.png", sigla: "CAP", nome: "Athletico-PR" }, 
-            "BOTAFOGO": { cor: "#111111", logo: "PREJOGO/escudos/Botafogo.png", sigla: "BOT", nome: "Botafogo" }, 
-            "CHAPECOENSE": { cor: "#27ae60", logo: "PREJOGO/escudos/Chapecoense.png", sigla: "CHA", nome: "Chapecoense" }, 
-            "CORINTHIANS": { cor: "#000000", logo: "PREJOGO/escudos/Corinthians.png", sigla: "COR", nome: "Corinthians" }, 
-            "CRUZEIRO": { cor: "#2980b9", logo: "PREJOGO/escudos/Cruzeiro.png", sigla: "CRU", nome: "Cruzeiro" }, 
-            "FLAMENGO": { cor: "#c0392b", logo: "PREJOGO/escudos/Flamengo.png", sigla: "FLA", nome: "Flamengo" }, 
-            "FLUMINENSE": { cor: "#800000", logo: "PREJOGO/escudos/Fluminense.png", sigla: "FLU", nome: "Fluminense" }, 
-            "GREMIO": { cor: "#3498db", logo: "PREJOGO/escudos/Grêmio.png", sigla: "GRE", nome: "Grêmio" }, 
-            "INTERNACIONAL": { cor: "#e74c3c", logo: "PREJOGO/escudos/Internacional.png", sigla: "INT", nome: "Internacional" }, 
-            "PALMEIRAS": { cor: "#27ae60", logo: "PREJOGO/escudos/Palmeiras.png", sigla: "PAL", nome: "Palmeiras" }, 
-            "SAO PAULO": { cor: "#ff0000", logo: "PREJOGO/escudos/São Paulo.png", sigla: "SAO", nome: "São Paulo" }, 
-            "VASCO DA GAMA": { cor: "#000000", logo: "PREJOGO/escudos/Vasco da Gama.png", sigla: "VAS", nome: "Vasco da Gama" }, 
-            "VASCO": { cor: "#000000", logo: "PREJOGO/escudos/Vasco da Gama.png", sigla: "VAS", nome: "Vasco da Gama" } 
+            "AMERICA-MG": { cor: "#27ae60", logo: "escudos/America-MG.png", sigla: "AME", nome: "América-MG" }, 
+            "ATHLETICO PARANAENSE": { cor: "#c0392b", logo: "escudos/Athletico-PR.png", sigla: "CAP", nome: "Athletico-PR" }, 
+            "BOTAFOGO": { cor: "#111111", logo: "escudos/Botafogo.png", sigla: "BOT", nome: "Botafogo" }, 
+            "CHAPECOENSE": { cor: "#27ae60", logo: "escudos/Chapecoense.png", sigla: "CHA", nome: "Chapecoense" }, 
+            "CORINTHIANS": { cor: "#000000", logo: "escudos/Corinthians.png", sigla: "COR", nome: "Corinthians" }, 
+            "CRUZEIRO": { cor: "#2980b9", logo: "escudos/Cruzeiro.png", sigla: "CRU", nome: "Cruzeiro" }, 
+            "FLAMENGO": { cor: "#c0392b", logo: "escudos/Flamengo.png", sigla: "FLA", nome: "Flamengo" }, 
+            "FLUMINENSE": { cor: "#800000", logo: "escudos/Fluminense.png", sigla: "FLU", nome: "Fluminense" }, 
+            "GREMIO": { cor: "#3498db", logo: "escudos/Gremio.png", sigla: "GRE", nome: "Grêmio" }, 
+            "INTERNACIONAL": { cor: "#e74c3c", logo: "escudos/Internacional.png", sigla: "INT", nome: "Internacional" }, 
+            "PALMEIRAS": { cor: "#27ae60", logo: "escudos/Palmeiras.png", sigla: "PAL", nome: "Palmeiras" }, 
+            "SAO PAULO": { cor: "#ff0000", logo: "escudos/Sao_Paulo.png", sigla: "SAO", nome: "São Paulo" }, 
+            "VASCO DA GAMA": { cor: "#000000", logo: "escudos/Vasco.png", sigla: "VAS", nome: "Vasco da Gama" }, 
+            "VASCO": { cor: "#000000", logo: "escudos/Vasco.png", sigla: "VAS", nome: "Vasco da Gama" } 
         };
         return timesBase[cleanInput] || { cor: "#333", logo: "", sigla: input.substring(0, 3).toUpperCase(), nome: input };
     }
