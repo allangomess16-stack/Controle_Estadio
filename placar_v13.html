@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Placar Superior - Transmissão</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;0,900;1,900&display=swap');
+
+        body { 
+            margin: 0; padding: 0; overflow: hidden; 
+            background-color: transparent; /* Fundo transparente para o vMix */
+            display: flex; justify-content: center; align-items: flex-start; 
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .scoreboard-wrapper { 
+            margin-top: 45px; 
+            display: flex; flex-direction: column; align-items: center; 
+            z-index: 100;
+            animation: slideDown 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transition: opacity 0.4s ease;
+        }
+        
+        .main-bar { 
+            display: flex; align-items: stretch; height: 75px; 
+            gap: 4px; position: relative;
+        }
+
+        .bloco {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+            border-top: 2px solid rgba(255,255,255,0.2);
+            border-bottom: 2px solid rgba(0,0,0,0.8);
+        }
+
+        /* ==============================================
+           ESCUDO DO TORNEIO (LADO ESQUERDO)
+           ============================================== */
+        .torneio-section {
+            background: linear-gradient(180deg, #1f1f1f 0%, #050505 100%);
+            padding: 0 25px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 15px 0 0 15px; 
+            border-right: 2px solid rgba(255,255,255,0.1);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .torneio-logo {
+            width: 50px; 
+            height: 50px; 
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8));
+            transition: transform 0.3s ease;
+        }
+
+        @keyframes pulseEvent {
+            0% { transform: scale(1); filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8)); }
+            50% { transform: scale(1.3); filter: drop-shadow(0 0 20px #f1c40f); }
+            100% { transform: scale(1); filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8)); }
+        }
+        .anim-pulse {
+            animation: pulseEvent 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* ==============================================
+           TIMES E RESULTADOS (CENTRO)
+           ============================================== */
+        .team-section { 
+            display: flex; align-items: center; justify-content: center; padding: 0 40px; gap: 15px;
+            color: white; font-size: 2.2rem; font-weight: 900; text-transform: uppercase; 
+            transition: background 0.5s, color 0.5s; position: relative; min-width: 250px;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.6), 0 15px 30px rgba(0,0,0,0.8);
+        }
+        #timeA, #timeB { text-shadow: 2px 2px 5px rgba(0,0,0,0.9), -1px -1px 0 rgba(0,0,0,0.5); }
+        .escudo-placar { width: 55px; height: 55px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8)); display: none; }
+        
+        .score-box { 
+            background: linear-gradient(180deg, #ffffff 0%, #d4d4d4 100%); 
+            color: #000; display: flex; align-items: center; justify-content: center;
+            padding: 0 25px; font-size: 3.5rem; font-weight: 900; min-width: 60px; 
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.2), inset 0 -5px 10px rgba(0,0,0,0.1), 0 15px 30px rgba(0,0,0,0.8);
+            border-top: 2px solid #fff;
+        }
+
+        /* ==============================================
+           CRONÔMETRO E ACRÉSCIMOS (LADO DIREITO)
+           ============================================== */
+        .timer-section { 
+            background: linear-gradient(180deg, #2a2a2a 0%, #050505 100%); 
+            color: #fff; padding: 0 30px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            min-width: 120px; 
+            border-left: 2px solid rgba(255,255,255,0.1);
+            transition: border-radius 0.3s ease;
+        }
+        #tempo { font-family: 'Courier New', monospace; font-size: 2.6rem; font-weight: bold; color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.4); line-height: 1;}
+        #periodo { font-size: 1rem; font-weight: 900; color: #f1c40f; letter-spacing: 2px; line-height: 1; margin-bottom: 2px;}
+
+        #acrescimo-box { 
+            background: linear-gradient(180deg, #f1c40f 0%, #e67e22 100%); 
+            color: #000; font-weight: 900; padding: 0 20px; font-size: 2.2rem; 
+            display: none; align-items: center; justify-content: center;
+            border-radius: 0 15px 15px 0; 
+            border-top: 2px solid rgba(255,255,255,0.5);
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+        }
+        
+        .red-container { position: absolute; top: -18px; left: 0; right: 0; display: flex; gap: 6px; justify-content: center; z-index: 10; pointer-events: none;}
+        .cartao-vermelho { width: 14px; height: 22px; background: linear-gradient(180deg, #ff4757 0%, #c0392b 100%); border: 2px solid #fff; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.9); }
+    </style>
+</head>
+<body>
+    
+    <div class="scoreboard-wrapper" id="masterPlacarWrapper">
+        <div class="main-bar">
+            <!-- LOGO DO CAMPEONATO (ESQUERDA) -->
+            <div class="torneio-section bloco" id="boxTorneio">
+                <img src="" id="logoTorneio" class="torneio-logo" alt="Torneio">
+            </div>
+            
+            <!-- TIME CASA -->
+            <div class="team-section bloco" id="boxTimeA">
+                <div id="redA" class="red-container"></div>
+                <img id="escudoA" class="escudo-placar" src="">
+                <span id="timeA">TIME A</span>
+            </div>
+            
+            <div class="score-box bloco" id="golsA">0</div>
+            <div class="score-box bloco" id="golsB">0</div>
+            
+            <!-- TIME FORA -->
+            <div class="team-section bloco" id="boxTimeB">
+                <div id="redB" class="red-container"></div>
+                <span id="timeB">TIME B</span>
+                <img id="escudoB" class="escudo-placar" src="">
+            </div>
+            
+            <!-- CRONÔMETRO (DIREITA) -->
+            <div class="timer-section bloco" id="boxTimer">
+                <span id="periodo">1T</span>
+                <span id="tempo">00:00</span>
+            </div>
+            
+            <!-- ACRÉSCIMOS -->
+            <div id="acrescimo-box" class="bloco">+<span id="extra">0</span>'</div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+    // ========================================================
+    // ROTA WEB GITHUB (MÉTODO SEGURO PARA IMAGENS)
+    // ========================================================
+    const CAMINHO_WEB = "https://raw.githubusercontent.com/allangomess16-stack/Controle_Estadio/main/escudos/";
+    
+    // Configura o escudo do torneio com 't' minúsculo
+    document.getElementById('logoTorneio').src = CAMINHO_WEB + "Escudo%20torneio.png";
+
+    // Pega o caminho da Master e converte para link Web
+    function getWebUrl(caminhoMaster) {
+        if (!caminhoMaster) return "";
+        let nomeArquivo = caminhoMaster.split('/').pop(); 
+        return CAMINHO_WEB + encodeURIComponent(nomeArquivo);
+    }
+    // ========================================================
+
+    // Configuração do Firebase (Frequência Única do Sistema)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJzbXFhkPKEMa17YuEGjJtIhAysE1_HrI",
+      authDomain: "licenciamento-72391.firebaseapp.com",
+      databaseURL: "https://licenciamento-72391-default-rtdb.firebaseio.com",
+      projectId: "licenciamento-72391",
+      storageBucket: "licenciamento-72391.firebasestorage.app",
+      messagingSenderId: "569680385303",
+      appId: "1:569680385303:web:50c9e3a1cee0fcf987d352",
+      measurementId: "G-LBHK8F648S"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let lastGolsA = -1;
+    let lastGolsB = -1;
+    let lastEventTimestamp = 0;
+
+    function renderRedCards(idContainer, qty) {
+        const container = document.getElementById(idContainer);
+        container.innerHTML = '';
+        for(let i=0; i < (qty || 0); i++) { container.innerHTML += '<div class="cartao-vermelho"></div>'; }
+    }
+
+    function obterCorContraste(hexcolor) {
+        if (!hexcolor || hexcolor === 'transparent') return 'white'; 
+        hexcolor = hexcolor.replace('#', '');
+        var r = parseInt(hexcolor.substr(0, 2), 16);
+        var g = parseInt(hexcolor.substr(2, 2), 16);
+        var b = parseInt(hexcolor.substr(4, 2), 16);
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        return (yiq >= 128) ? 'black' : 'white';
+    }
+
+    function pulsarLogoTorneio() {
+        const logo = document.getElementById('logoTorneio');
+        logo.classList.remove('anim-pulse');
+        void logo.offsetWidth; 
+        logo.classList.add('anim-pulse');
+    }
+
+    db.ref('transmissao/vMixData').on('value', (snapshot) => {
+        const jogo = snapshot.val();
+        if(!jogo) return;
+        
+        const wrapperPlacar = document.getElementById('masterPlacarWrapper');
+        if (jogo.routePlacar === false) { wrapperPlacar.style.opacity = '0'; } 
+        else { wrapperPlacar.style.opacity = '1'; }
+
+        document.getElementById('tempo').innerText = jogo.tempo || "00:00";
+        document.getElementById('periodo').innerText = jogo.periodo || "1T";
+        document.getElementById('timeA').innerText = jogo.timeA || "";
+        document.getElementById('golsA').innerText = jogo.golsA || "0";
+        document.getElementById('timeB').innerText = jogo.timeB || "";
+        document.getElementById('golsB').innerText = jogo.golsB || "0";
+
+        const boxA = document.getElementById('boxTimeA');
+        boxA.style.backgroundColor = jogo.corA || 'transparent';
+        boxA.style.color = obterCorContraste(jogo.corA);
+
+        const boxB = document.getElementById('boxTimeB');
+        boxB.style.backgroundColor = jogo.corB || 'transparent';
+        boxB.style.color = obterCorContraste(jogo.corB);
+        
+        // INJEÇÃO DOS ESCUDOS DOS TIMES (LINK WEB GITHUB)
+        const logoA = document.getElementById('escudoA');
+        if (jogo.escudoA && jogo.escudoA.trim() !== "") { 
+            logoA.src = getWebUrl(jogo.escudoA); 
+            logoA.style.display = 'block'; 
+        } else { 
+            logoA.style.display = 'none'; 
+        }
+        
+        const logoB = document.getElementById('escudoB');
+        if (jogo.escudoB && jogo.escudoB.trim() !== "") { 
+            logoB.src = getWebUrl(jogo.escudoB); 
+            logoB.style.display = 'block'; 
+        } else { 
+            logoB.style.display = 'none'; 
+        }
+
+        renderRedCards('redA', jogo.redA);
+        renderRedCards('redB', jogo.redB);
+
+        // INTELIGÊNCIA DE BORDAS DO CRONÔMETRO E ACRÉSCIMOS
+        const boxTimer = document.getElementById('boxTimer');
+        const boxAcrescimo = document.getElementById('acrescimo-box');
+        
+        if (jogo.extra && parseInt(jogo.extra) > 0) {
+            document.getElementById('extra').innerText = jogo.extra;
+            boxAcrescimo.style.display = "flex";
+            boxTimer.style.borderRadius = "0";
+        } else {
+            boxAcrescimo.style.display = "none";
+            boxTimer.style.borderRadius = "0 15px 15px 0";
+        }
+
+        let devePulsar = false;
+        if (lastGolsA !== -1 && (jogo.golsA != lastGolsA || jogo.golsB != lastGolsB)) { devePulsar = true; }
+        if (jogo.eventoCard && jogo.eventoCard.timestamp && jogo.eventoCard.timestamp !== lastEventTimestamp) {
+            devePulsar = true;
+            lastEventTimestamp = jogo.eventoCard.timestamp;
+        }
+
+        if (devePulsar) pulsarLogoTorneio();
+
+        lastGolsA = jogo.golsA;
+        lastGolsB = jogo.golsB;
+    });
+    </script>
+</body>
+</html>

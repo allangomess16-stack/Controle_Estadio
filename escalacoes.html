@@ -14,9 +14,10 @@
 
         * { box-sizing: border-box; }
 
+        /* FUNDO TRANSPARENTE: O vMix entende o Alpha Channel nativo */
         body { 
             margin: 0; padding: 0; overflow: hidden; 
-            background-color: #00FF00; /* Chroma Key */
+            background-color: transparent; 
             font-family: 'Montserrat', sans-serif; 
             color: white; width: 1920px; height: 1080px;
         }
@@ -113,35 +114,7 @@
         .arb-emoji { font-size: 3.5rem; flex-shrink: 0; filter: drop-shadow(3px 5px 5px rgba(0,0,0,0.6)); }
         .arb-text { display: flex; flex-direction: column; justify-content: center; flex: 1; text-align: left; min-width: 0; }
         .arb-cargo { color: var(--cor-arb); font-size: 1.1rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .arb-nome { color: #fff; font-size: 1.7rem; font-weight: 900; text-transform: uppercase; text-shadow: 2px 2px 4px #000; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; overflow-wrap: break-word; word-wrap: break-word; }
-
-        /* =========================================================
-           STANDBY CARD (QUEDA DE SINAL / TELA DE ESPERA) - TELA CHEIA
-           ========================================================= */
-        #standby-card {
-            position: absolute; top: 0; left: 0; width: 1920px; height: 1080px;
-            background: radial-gradient(circle at center, rgba(15,15,15,0.98) 0%, rgba(0,0,0,1) 100%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            opacity: 0; transition: opacity 0.6s ease; z-index: 900; pointer-events: none;
-        }
-        #standby-card.show { opacity: 1; }
-        .stb-logo-torneio { width: 160px; height: auto; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.9)); margin-bottom: 50px; }
-        .stb-placar-box {
-            background: linear-gradient(135deg, rgba(30,30,30,0.9), rgba(10,10,10,0.9));
-            border: 4px solid var(--cor-arb); border-radius: 30px;
-            padding: 50px 80px; display: flex; align-items: center; gap: 60px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 50px rgba(255,215,0,0.1);
-        }
-        .stb-team { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 300px;}
-        .stb-team img { width: 180px; height: 180px; object-fit: contain; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.8)); }
-        .stb-team-name { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; text-shadow: 3px 3px 10px #000; text-align: center; line-height: 1.1; color: #fff;}
-        .stb-score-area { display: flex; align-items: center; gap: 40px; }
-        .stb-score { font-size: 10rem; font-weight: 900; color: #fff; text-shadow: 0 15px 30px #000; line-height: 1; }
-        .stb-x { font-size: 5rem; font-weight: 900; color: var(--cor-arb); }
-        .stb-timer-box { margin-top: 50px; font-size: 4rem; font-weight: 900; color: #fff; background: rgba(0,0,0,0.8); padding: 15px 50px; border-radius: 20px; border-bottom: 4px solid var(--cor-arb); font-family: monospace; letter-spacing: 5px; }
-        .stb-msg { margin-top: 40px; font-size: 2rem; color: #ff4757; font-weight: 900; letter-spacing: 10px; text-transform: uppercase; animation: flash 1.5s infinite; }
-        @keyframes flash { 0%, 100% { opacity: 1; text-shadow: 0 0 20px rgba(255, 71, 87, 0.8); } 50% { opacity: 0.3; text-shadow: none; } }
-
+        .arb-nome { color: #fff; font-size: 1.7rem; font-weight: 900; text-transform: uppercase; text-shadow: 2px 2px 4px #000; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; overflow-wrap: break-word; word-wrap: break-word; }
     </style>
 </head>
 <body>
@@ -163,22 +136,6 @@
 
     <div id="arbitragem-card"></div>
 
-    <!-- TELA DE STANDBY (QUEDA DE SINAL) -->
-    <div id="standby-card">
-        <img class="stb-logo-torneio" id="stb-torneio" src="">
-        <div class="stb-placar-box">
-            <div class="stb-team"><img id="stb-logoA" src=""><div class="stb-team-name" id="stb-nameA">CASA</div></div>
-            <div class="stb-score-area">
-                <span class="stb-score" id="stb-golsA">0</span>
-                <span class="stb-x">X</span>
-                <span class="stb-score" id="stb-golsB">0</span>
-            </div>
-            <div class="stb-team"><img id="stb-logoB" src=""><div class="stb-team-name" id="stb-nameB">FORA</div></div>
-        </div>
-        <div class="stb-timer-box"><span id="stb-per">1T</span> <span id="stb-tempo">00:00</span></div>
-        <div class="stb-msg">SINAL INTERROMPIDO &bull; AGUARDE</div>
-    </div>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
@@ -189,22 +146,19 @@
             return CAMINHO_WEB + encodeURIComponent(nomeArquivo);
         }
         
-        document.getElementById('stb-torneio').src = CAMINHO_WEB + "Escudo%20torneio.png";
-
-        // Configuração do Firebase (Frequência Única do Sistema)
-    const firebaseConfig = {
-      apiKey: "AIzaSyCJzbXFhkPKEMa17YuEGjJtIhAysE1_HrI",
-      authDomain: "licenciamento-72391.firebaseapp.com",
-      databaseURL: "https://licenciamento-72391-default-rtdb.firebaseio.com",
-      projectId: "licenciamento-72391",
-      storageBucket: "licenciamento-72391.firebasestorage.app",
-      messagingSenderId: "569680385303",
-      appId: "1:569680385303:web:50c9e3a1cee0fcf987d352",
-      measurementId: "G-LBHK8F648S"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+        // CHAVES DO NOVO PROJETO NO FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCJzbXFhkPKEMa17YuEGjJtIhAysE1_HrI",
+            authDomain: "licenciamento-72391.firebaseapp.com",
+            databaseURL: "https://licenciamento-72391-default-rtdb.firebaseio.com",
+            projectId: "licenciamento-72391",
+            storageBucket: "licenciamento-72391.firebasestorage.app",
+            messagingSenderId: "569680385303",
+            appId: "1:569680385303:web:50c9e3a1cee0fcf987d352",
+            measurementId: "G-LBHK8F648S"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
         const mapaTatico = {
             'GL': { top: '88%', left: '50%' }, 'LD': { top: '74%', left: '88%' }, 'LE': { top: '74%', left: '12%' }, 
@@ -220,7 +174,6 @@
         const listaView = document.getElementById('listaView');
         const highlightCard = document.getElementById('highlight-card');
         const arbCard = document.getElementById('arbitragem-card');
-        const stbCard = document.getElementById('standby-card');
 
         let currentHighlightTimer = null;
         let lastEventTimestamp = 0;
@@ -230,7 +183,6 @@
             listaView.classList.remove('show');
             highlightCard.classList.remove('show');
             arbCard.classList.remove('show');
-            stbCard.classList.remove('show');
             document.getElementById('headerTime').classList.remove('visible');
         }
 
@@ -385,18 +337,6 @@
                         arbCard.innerHTML += htmlGrid;
                     }
                     arbCard.classList.add('show');
-                }
-                else if (evento.tipo === 'PLACAR_ESPERA') {
-                    ocultarTodasAsTelas();
-                    if(evento.escudoA) document.getElementById('stb-logoA').src = getWebUrl(evento.escudoA);
-                    if(evento.escudoB) document.getElementById('stb-logoB').src = getWebUrl(evento.escudoB);
-                    document.getElementById('stb-nameA').innerText = evento.timeA;
-                    document.getElementById('stb-nameB').innerText = evento.timeB;
-                    document.getElementById('stb-golsA').innerText = evento.golsA;
-                    document.getElementById('stb-golsB').innerText = evento.golsB;
-                    document.getElementById('stb-per').innerText = evento.periodo;
-                    document.getElementById('stb-tempo').innerText = evento.tempo;
-                    stbCard.classList.add('show');
                 }
                 else if (evento.tipo === 'LIMPAR_CAMPO') { ocultarTodasAsTelas(); document.querySelectorAll('.slot-jogador').forEach(el => el.remove()); }
                 else if (evento.tipo === 'OCULTAR') { ocultarTodasAsTelas(); }

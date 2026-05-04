@@ -2,112 +2,368 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>VAR - Decisão de Arbitragem</title>
+    <title>Eventos Inferiores - Transmissão Premium</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap');
-        
-        body, html { margin: 0; padding: 0; overflow: hidden; background: transparent; font-family: 'Montserrat', sans-serif; width: 1920px; height: 1080px; }
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;0,900;1,900&display=swap');
 
-        #var-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        body { 
+            margin: 0; padding: 0; overflow: hidden; 
+            background-color: #00FF00; /* Verde Chroma Key ativado */
+            display: flex; justify-content: center; align-items: flex-end; 
+            height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* =========================================================
+           VINHETA TELA CHEIA (O METEORO DO PLACAR)
+           ========================================================= */
+        #intro-torneio {
+            position: absolute; top: 0; left: 0; width: 1920px; height: 1080px;
             display: flex; justify-content: center; align-items: center;
-            opacity: 0; transition: opacity 0.4s;
-            background: rgba(0, 0, 0, 0.4); /* Fundo sutil para escurecer o jogo atrás */
+            background: radial-gradient(circle at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease-out; z-index: 999;
         }
-        #var-container.show { opacity: 1; }
-
-        /* CARD CENTRAL TIPO MONITOR */
-        #var-card {
-            background: linear-gradient(135deg, #111 0%, #000 100%);
-            border: 6px solid #f1c40f; border-radius: 20px;
-            width: 1100px; padding: 70px 50px; text-align: center;
-            box-shadow: 0 0 60px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.8);
-            transform: scale(0.7); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative; overflow: hidden;
-        }
-        #var-container.show #var-card { transform: scale(1); }
-
-        .status-var { color: #f1c40f; font-size: 2.5rem; letter-spacing: 12px; margin-bottom: 25px; text-shadow: 2px 2px 5px #000; }
-        .decisao-texto { color: #fff; font-size: 5.5rem; text-transform: uppercase; line-height: 1.1; text-shadow: 4px 4px 10px #000; }
-
-        /* CORES DE DECISÃO */
-        .verde { color: #2ecc71 !important; text-shadow: 0 0 40px rgba(46, 204, 113, 0.6), 4px 4px 10px #000; }
-        .vermelho { color: #ff4757 !important; text-shadow: 0 0 40px rgba(255, 71, 87, 0.6), 4px 4px 10px #000; }
-
-        /* EFEITO DE SCANLINES (TELA DE TV) */
-        .scanlines {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%);
-            background-size: 100% 4px; pointer-events: none; z-index: 10;
+        #intro-torneio.show { opacity: 1; }
+        
+        #logoTorneioGigante {
+            height: 600px; width: auto; object-fit: contain;
+            opacity: 0; transform-origin: bottom center; 
         }
 
-        /* ANIMAÇÃO DE PULSO QUANDO EM ANÁLISE */
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .em-analise { animation: pulse 1.5s infinite; color: #fff; }
+        @keyframes releaseEvent {
+            0% { transform: translate(-450px, -450px) scale(0.1); opacity: 0; }
+            10% { transform: translate(-450px, -450px) scale(0.15); opacity: 1; filter: drop-shadow(0 0 20px #f1c40f); }
+            40% { transform: translate(0, -50px) scale(1); opacity: 1; filter: drop-shadow(0 25px 50px rgba(241,196,15,0.8)); }
+            65% { transform: translate(0, -50px) scale(1.05); opacity: 1; filter: drop-shadow(0 25px 50px rgba(241,196,15,1)); }
+            80% { transform: translate(0, 300px) scaleX(0.8) scaleY(1.3); opacity: 1; filter: drop-shadow(0 10px 20px rgba(241,196,15,0.8)); }
+            85% { transform: translate(0, 480px) scaleX(1.5) scaleY(0.2); opacity: 1; }
+            88% { transform: translate(0, 480px) scale(0); opacity: 0; }
+            100% { transform: translate(0, 480px) scale(0); opacity: 0; }
+        }
+
+        #logoTorneioGigante.animate { 
+            animation: releaseEvent 2s cubic-bezier(0.25, 1, 0.5, 1) forwards; 
+        }
+
+        /* =========================================================
+           TARJAS INFERIORES (DESIGN PREMIUM GLASSMORPHISM)
+           ========================================================= */
+        .cards-gigantes-wrapper {
+            position: absolute; bottom: 80px; left: 50%; 
+            transform: translateX(-50%) translateY(80px) scale(0.95); 
+            opacity: 0; 
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1.05); /* Animação sofisticada e fluida */
+            width: 80%; max-width: 1400px; display: flex; justify-content: center; z-index: 50;
+        }
+        .cards-gigantes-wrapper.visible { 
+            transform: translateX(-50%) translateY(0) scale(1); 
+            opacity: 1; 
+        }
+
+        /* Base Única de Design para todos os Cards */
+        .card-master {
+            position: relative; display: none; width: 100%;
+            background: linear-gradient(135deg, rgba(15,15,15,0.96) 0%, rgba(5,5,5,0.98) 100%);
+            border-radius: 12px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 2px 10px rgba(255,255,255,0.08);
+            overflow: hidden; /* Corta a imagem gigante no limite do card */
+            border-left: 18px solid var(--cor-time, #3498db); /* Barra Lateral Fixa com a cor do time */
+            padding: 35px 55px;
+        }
+        .card-master.active { display: block; }
+
+        /* O NOVO ESCUDO DE FUNDO (WATERMARK) */
+        .watermark-logo {
+            position: absolute;
+            right: -2%;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 220%;
+            opacity: 0.18;
+            z-index: 1;
+            pointer-events: none;
+            object-fit: contain;
+        }
+
+        /* Protege os textos para ficarem ACIMA da marca d'água */
+        .content-z { position: relative; z-index: 2; width: 100%; }
+
+        /* Textos Padrões */
+        .evt-label {
+            font-size: 2.2rem; font-weight: 900; letter-spacing: 5px; 
+            margin: 0 0 5px 0; text-shadow: 2px 2px 5px rgba(0,0,0,0.9);
+        }
+        .evt-team {
+            font-size: 5.5rem; font-weight: 900; margin: 0; line-height: 1; 
+            color: #fff; text-shadow: 0 5px 15px rgba(0,0,0,0.9); text-transform: uppercase;
+        }
+
+        /* --- CARD SUBSTITUIÇÃO (NOVO LAYOUT LADO A LADO) --- */
+        .sub-header-container {
+            display: flex; flex-direction: column; margin-bottom: 25px;
+            border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 20px;
+        }
+        .sub-list {
+            display: flex; flex-direction: column; gap: 10px; width: 100%;
+        }
+        .sub-row {
+            display: flex; width: 100%; padding: 12px 0; align-items: center;
+        }
+        .sub-col {
+            flex: 1; display: flex; align-items: center; gap: 20px;
+        }
+        
+        .col-sai { justify-content: flex-end; padding-right: 40px; border-right: 2px solid rgba(255,255,255,0.1); }
+        .col-entra { justify-content: flex-start; padding-left: 40px; }
+        
+        .indicator-sai { font-size: 1.5rem; font-weight: 900; color: #ff4757; letter-spacing: 2px; }
+        .indicator-entra { font-size: 1.5rem; font-weight: 900; color: #2ecc71; letter-spacing: 2px; }
+        
+        .sub-name { 
+            font-size: 2.8rem; 
+            font-weight: 900; color: #fff; text-transform: uppercase; 
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+            line-height: 1.15;
+            max-width: 480px; 
+            display: -webkit-box;
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
+
+        /* --- CARD ESTATÍSTICA --- */
+        .card-estatistica {
+            text-align: center; border-left: none;
+            border-bottom: 15px solid var(--cor-stat, #3498db);
+        }
     </style>
 </head>
 <body>
-    <div id="var-container">
-        <div id="var-card">
-            <div class="scanlines"></div>
-            <div class="status-var">ÁRBITRO DE VÍDEO</div>
-            <div class="decisao-texto" id="var-decisao">EM ANÁLISE...</div>
+
+    <div id="intro-torneio">
+        <img id="logoTorneioGigante" src="" alt="Torneio">
+    </div>
+    
+    <div class="cards-gigantes-wrapper" id="masterContainerCards">
+        
+        <!-- CARD GOL -->
+        <div class="card-master" id="painelGol">
+            <img class="watermark-logo" id="golLogoBg" src="" alt="Fundo">
+            <div class="content-z">
+                <p class="evt-label" style="color: #f1c40f">⚽ GOL DO</p>
+                <p class="evt-team" id="golTime">TIME</p>
+            </div>
         </div>
+        
+        <!-- CARD SUBSTITUIÇÃO -->
+        <div class="card-master" id="painelSub">
+            <img class="watermark-logo" id="subLogoBg" src="" alt="Fundo">
+            <div class="content-z">
+                <div class="sub-header-container">
+                    <p class="evt-label" style="color: var(--cor-time, #3498db)">⇄ SUBSTITUIÇÃO</p>
+                    <p class="evt-team" id="subTeamNameDisplay">TIME</p>
+                </div>
+                <div class="sub-list" id="subPlayersList">
+                    <!-- O javascript vai preencher as colunas aqui -->
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD CARTÃO -->
+        <div class="card-master" id="painelCartao">
+            <img class="watermark-logo" id="cartaoLogoBg" src="" alt="Fundo">
+            <div class="content-z">
+                <p class="evt-label" id="cartaoTitulo" style="color: var(--cor-cartao, #fff)">CARTÃO AMARELO</p>
+                <p class="evt-team" id="cartaoJogador">NOME DO JOGADOR</p>
+            </div>
+        </div>
+
+        <!-- CARD ESTATÍSTICA -->
+        <div class="card-master card-estatistica" id="painelEstatistica">
+            <div class="content-z">
+                <p class="evt-label" id="statTitulo" style="color: var(--cor-stat, #3498db)">PÚBLICO TOTAL</p>
+                <p class="evt-team" id="statValor" style="font-size: 7.5rem;">0</p>
+            </div>
+        </div>
+
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAeWhpLh1tO_axQSDtckMVyoE-f4Egno8A",
-            authDomain: "controladoravmixestadio.firebaseapp.com",
-            databaseURL: "https://controladoravmixestadio-default-rtdb.firebaseio.com",
-            projectId: "controladoravmixestadio",
-            storageBucket: "controladoravmixestadio.firebasestorage.app",
-            messagingSenderId: "381624685560",
-            appId: "1:381624685560:web:61266ebc5e5031d717bc0d"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+    // ========================================================
+    // ROTA WEB GITHUB
+    // ========================================================
+    const CAMINHO_WEB = "https://raw.githubusercontent.com/allangomess16-stack/Controle_Estadio/main/escudos/";
+    
+    document.getElementById('logoTorneioGigante').src = CAMINHO_WEB + "Escudo%20torneio.png";
 
-        let lastTs = 0;
-        const container = document.getElementById('var-container');
-        const texto = document.getElementById('var-decisao');
+    function getWebUrl(caminhoMaster) {
+        if (!caminhoMaster) return "";
+        let nomeArquivo = caminhoMaster.split('/').pop(); 
+        return CAMINHO_WEB + encodeURIComponent(nomeArquivo);
+    }
+    // ========================================================
 
-        function processarDadosVAR(d) {
-            if(!d || !d.eventoCard || d.eventoCard.timestamp === lastTs) return;
-            lastTs = d.eventoCard.timestamp;
-            const evento = d.eventoCard;
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJzbXFhkPKEMa17YuEGjJtIhAysE1_HrI",
+      authDomain: "licenciamento-72391.firebaseapp.com",
+      databaseURL: "https://licenciamento-72391-default-rtdb.firebaseio.com",
+      projectId: "licenciamento-72391",
+      storageBucket: "licenciamento-72391.firebasestorage.app",
+      messagingSenderId: "569680385303",
+      appId: "1:569680385303:web:50c9e3a1cee0fcf987d352",
+      measurementId: "G-LBHK8F648S"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-            if(evento.tipo === 'OCULTAR') {
-                container.classList.remove('show');
-                return;
-            }
+    let lastEventTimestamp = 0;
 
-            if(evento.tipo === 'VAR') {
-                texto.classList.remove('verde', 'vermelho', 'em-analise'); // Limpa cores velhas
+    // ========================================================
+    // MOTOR DE COREOGRAFIA FÍSICA
+    // ========================================================
+    function playEventIntro(callbackFinal) {
+        const introBox = document.getElementById('intro-torneio');
+        const introImg = document.getElementById('logoTorneioGigante');
+        
+        document.getElementById('masterContainerCards').classList.remove('visible');
+
+        introBox.classList.add('show');
+        introImg.classList.remove('animate');
+        void introImg.offsetWidth; 
+        introImg.classList.add('animate');
+
+        setTimeout(() => {
+            callbackFinal(); 
+        }, 1700); 
+
+        setTimeout(() => {
+            introBox.classList.remove('show');
+        }, 1700);
+        
+        setTimeout(() => {
+            introImg.classList.remove('animate');
+        }, 2200); 
+    }
+
+    function buildSubRow(saiTxt, entraTxt) {
+        return `
+            <div class="sub-row">
+                <div class="sub-col col-sai">
+                    <span class="indicator-sai">SAI ▼</span>
+                    <span class="sub-name" title="${saiTxt}">${saiTxt}</span>
+                </div>
+                <div class="sub-col col-entra">
+                    <span class="indicator-entra">ENTRA ▲</span>
+                    <span class="sub-name" title="${entraTxt}">${entraTxt}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    db.ref('transmissao/vMixData').on('value', (snapshot) => {
+        const jogo = snapshot.val();
+        if(!jogo) return;
+
+        const containerCards = document.getElementById('masterContainerCards');
+        const painelGol = document.getElementById('painelGol');
+        const painelSub = document.getElementById('painelSub');
+        const painelCartao = document.getElementById('painelCartao');
+        const painelEstatistica = document.getElementById('painelEstatistica');
+
+        if (!jogo.eventoCard || jogo.eventoCard.tipo === 'OCULTAR' || jogo.routeEventos === false) {
+            containerCards.classList.remove('visible');
+            if(jogo.eventoCard) lastEventTimestamp = jogo.eventoCard.timestamp;
+            return;
+        } 
+
+        if (jogo.eventoCard.timestamp === lastEventTimestamp) return;
+        
+        if (['GOL', 'SUB', 'SUB_MULTIPLA', 'CARTAO', 'ESTATISTICA'].includes(jogo.eventoCard.tipo)) {
+            
+            lastEventTimestamp = jogo.eventoCard.timestamp;
+            
+            playEventIntro(() => {
                 
-                if(evento.decisao === 'ANÁLISE') {
-                    texto.innerText = "EM ANÁLISE...";
-                    texto.classList.add('em-analise');
-                } else if(evento.decisao === 'GOL CONFIRMADO' || evento.decisao === 'PÊNALTI') {
-                    texto.innerText = evento.decisao;
-                    texto.classList.add('verde');
-                } else if(evento.decisao === 'GOL ANULADO' || evento.decisao === 'IMPEDIMENTO' || evento.decisao === 'CARTÃO VERMELHO') {
-                    texto.innerText = evento.decisao;
-                    texto.classList.add('vermelho');
+                painelGol.classList.remove('active');
+                painelSub.classList.remove('active');
+                painelCartao.classList.remove('active');
+                painelEstatistica.classList.remove('active');
+
+                if (jogo.eventoCard.tipo === 'GOL') {
+                    document.documentElement.style.setProperty('--cor-time', jogo.eventoCard.cor);
+                    if(jogo.eventoCard.escudo) {
+                        document.getElementById('golLogoBg').src = getWebUrl(jogo.eventoCard.escudo);
+                        document.getElementById('golLogoBg').style.display = 'block';
+                    } else { document.getElementById('golLogoBg').style.display = 'none'; }
+                    document.getElementById('golTime').innerText = jogo.eventoCard.time;
+                    painelGol.classList.add('active');
+                } 
+                
+                // ========================================================
+                // MOTOR DE SUBSTITUIÇÃO (CLEAN E DIVIDIDO)
+                // ========================================================
+                else if (jogo.eventoCard.tipo === 'SUB' || jogo.eventoCard.tipo === 'SUB_MULTIPLA') {
+                    document.documentElement.style.setProperty('--cor-time', jogo.eventoCard.cor || '#3498db');
+                    document.getElementById('subTeamNameDisplay').innerText = jogo.eventoCard.time || 'TIME';
+
+                    if(jogo.eventoCard.escudo) {
+                        document.getElementById('subLogoBg').src = getWebUrl(jogo.eventoCard.escudo);
+                        document.getElementById('subLogoBg').style.display = 'block';
+                    } else { document.getElementById('subLogoBg').style.display = 'none'; }
+                    
+                    const subListContainer = document.getElementById('subPlayersList');
+                    subListContainer.innerHTML = ''; 
+
+                    if (jogo.eventoCard.tipo === 'SUB_MULTIPLA' && jogo.eventoCard.subs) {
+                        jogo.eventoCard.subs.forEach(subLine => {
+                            let parts = subLine.split('|');
+                            let saiTxt = parts[0] ? parts[0].replace('Sai:', '').trim() : '';
+                            let entraTxt = parts[1] ? parts[1].replace('Entra:', '').trim() : '';
+                            
+                            subListContainer.innerHTML += buildSubRow(saiTxt, entraTxt);
+                        });
+                    } else {
+                        subListContainer.innerHTML = buildSubRow(jogo.eventoCard.sai || '', jogo.eventoCard.entra || '');
+                    }
+                    painelSub.classList.add('active');
                 }
-                container.classList.add('show');
-            }
+                
+                // ========================================================
+                // AJUSTE: NÚMERO JUNTO COM O NOME NO CARTÃO
+                // ========================================================
+                else if (jogo.eventoCard.tipo === 'CARTAO') {
+                    document.documentElement.style.setProperty('--cor-cartao', jogo.eventoCard.corCartao);
+                    if(jogo.eventoCard.escudo) {
+                        document.getElementById('cartaoLogoBg').src = getWebUrl(jogo.eventoCard.escudo);
+                        document.getElementById('cartaoLogoBg').style.display = 'block';
+                    } else { document.getElementById('cartaoLogoBg').style.display = 'none'; }
+                    
+                    document.getElementById('cartaoTitulo').innerText = jogo.eventoCard.textoCartao;
+                    
+                    // Adiciona o NÚMERO seguido de hífen e NOME
+                    let numeroDoJogador = jogo.eventoCard.numero ? jogo.eventoCard.numero + " - " : "";
+                    document.getElementById('cartaoJogador').innerText = numeroDoJogador + jogo.eventoCard.jogador;
+                    
+                    painelCartao.classList.add('active');
+                }
+                else if (jogo.eventoCard.tipo === 'ESTATISTICA') {
+                    const isPublico = jogo.eventoCard.info === 'PUBLICO';
+                    document.documentElement.style.setProperty('--cor-stat', isPublico ? '#2ecc71' : '#3498db');
+                    document.getElementById('statTitulo').innerText = isPublico ? "PÚBLICO TOTAL" : "RENDA DA PARTIDA";
+                    document.getElementById('statValor').innerText = jogo.eventoCard.valor;
+                    painelEstatistica.classList.add('active');
+                }
+
+                containerCards.classList.add('visible');
+            });
         }
-
-        // Modo Nuvem
-        db.ref('transmissao/vMixData').on('value', (snapshot) => { processarDadosVAR(snapshot.val()); });
-
-        // Modo Local
-        window.addEventListener('storage', (event) => {
-            if (event.key === 'vMixDataLocal' && event.newValue) { processarDadosVAR(JSON.parse(event.newValue)); }
-        });
+    });
     </script>
 </body>
 </html>
