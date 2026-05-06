@@ -1,7 +1,7 @@
 {
-  "name": "Master Control PRO v14",
+  "name": "Master Control ",
   "short_name" : "MasterControl",
-  "start_url": ".",
+  "start_url": "./v13.3protege.html",
   "display": "standalone",
   "background_color": "#0a0a0a",
   "theme_color": "#f1c40f",
