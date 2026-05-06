@@ -231,7 +231,15 @@
         
         <div id="modalEditJogador" class="modal-overlay"><div class="modal-box" style="max-width: 320px; border-color: var(--primary); padding:20px;"><h2 style="color: var(--primary); margin-top: 0; font-size:1.1rem;">✏️ EDIÇÃO RÁPIDA</h2><input type="hidden" id="editJogTargetRow"><input type="hidden" id="editJogTeam"><div style="text-align: left; margin-bottom: 8px;"><label style="color:#ccc; font-size:0.8rem;">NÚMERO</label><input type="number" id="editJogNum" style="font-size:1.1rem; text-align:center;"></div><div style="text-align: left; margin-bottom: 8px;"><label style="color:#ccc; font-size:0.8rem;">NOME</label><input type="text" id="editJogNome" style="font-size:1rem; text-align:center;"></div><div style="text-align: left; margin-bottom: 12px;"><label style="color:#ccc; font-size:0.8rem;">POSIÇÃO</label><select id="editJogPos"></select></div><div style="display:flex; gap:8px;"><button class="btn-op" style="background:#333; color:#fff; padding:10px; width:50%;" onclick="fecharModal('modalEditJogador')">CANCELAR</button><button class="btn-op" style="background:var(--primary); color:#000; padding:10px; width:50%;" onclick="salvarEdicaoRapidaJogador()">SALVAR</button></div></div></div>
         
-        <div id="modalRestaurarBackup" class="modal-overlay"><div class="modal-box" style="border-color: var(--green); max-width: 450px; padding:25px;"><h2 style="color: var(--green); margin-top: 0; font-size:1.3rem;">🔄 CARREGAR PROJETO</h2><p style="color: #ccc; font-size: 0.8rem; margin-bottom:15px;">Selecione o arquivo .json baixado no seu computador.</p><input type="file" id="arquivoBackup" accept=".json" style="margin-bottom: 15px; background:#222; padding:10px; width:100%; color:#fff; border:1px dashed #555; border-radius:6px; cursor:pointer;"><div style="margin: 10px 0; display:flex; flex-direction:column; gap:6px; background:#111; padding:12px; border-radius:6px; border:1px solid #333; text-align:left;"><label style="display:flex; justify-content:space-between; color:#fff; font-size:0.85rem;"><span>⏱️ Placar e Tempo</span><input type="checkbox" id="bkpPlacar" checked></label><label style="display:flex; justify-content:space-between; color:#fff; font-size:0.85rem;"><span>🛡️ Times e Escudos</span><input type="checkbox" id="bkpTimes" checked></label><label style="display:flex; justify-content:space-between; color:#fff; font-size:0.85rem;"><span>👥 Elencos</span><input type="checkbox" id="bkpElencoMaster" checked></label><label style="display:flex; justify-content:space-between; color:#fff; font-size:0.85rem;"><span>📋 Roteiro e Logs</span><input type="checkbox" id="bkpRoteiro" checked></label><label style="display:flex; justify-content:space-between; color:#fff; font-size:0.85rem;"><span>⌨️ Configs</span><input type="checkbox" id="bkpHotkeys" checked></label></div><div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-op" style="background:#333; color:#fff; width:40%; padding:12px;" onclick="fecharModal('modalRestaurarBackup')">CANCELAR</button><button class="btn-op" style="background:var(--green); color:#000; width:60%; padding:12px;" onclick="aplicarRestauracaoArquivo()">CARREGAR ARQUIVO</button></div></div></div>
+        <div id="modalRestaurarBackup" class="modal-overlay"><div class="modal-box" style="border-color: var(--green); max-width: 450px; padding:25px;"><h2 style="color: var(--green); margin-top: 0; font-size:1.3rem;">🔄 CARREGAR PROJETO</h2><p style="color: #ccc; font-size: 0.8rem; margin-bottom:15px;">Selecione o arquivo .json baixado no seu computador.</p><input type="file" id="arquivoBackup" accept=".json" style="margin-bottom: 15px; background:#222; padding:10px; width:100%; color:#fff; border:1px dashed #555; border-radius:6px; cursor:pointer;"><div style="margin: 10px 0; display:flex; flex-direction:column; gap:6px; background:#111; padding:12px; border-radius:6px; border:1px solid #333; text-align:left;">
+            <label style="display:flex; justify-content:space-between; color:#fff; font-size:0.85rem;"><span>⏱️ Placar e Tempo</span><input type="checkbox" id="bkpPlacar" checked></label>
+            <label style="display:flex; justify-content:space-between; color:#fff; font-size:0.85rem;"><span>🛡️ Times e Escudos</span><input type="checkbox" id="bkpTimes" checked></label>
+            <label style="display:flex; justify-content:space-between; color:#fff; font-size:0.85rem;"><span>👥 Pré-Jogo (Vestiário)</span><input type="checkbox" id="bkpElencoMaster" checked></label>
+            <label style="display:flex; justify-content:space-between; color:#fff; font-size:0.85rem;"><span>⚽ Escalações da Mesa</span><input type="checkbox" id="bkpSquads" checked></label>
+            <label style="display:flex; justify-content:space-between; color:#fff; font-size:0.85rem;"><span>📋 Roteiro de Eventos</span><input type="checkbox" id="bkpRoteiro" checked></label>
+            <label style="display:flex; justify-content:space-between; color:#fff; font-size:0.85rem;"><span>📝 Histórico/Logs</span><input type="checkbox" id="bkpLogs" checked></label>
+            <label style="display:flex; justify-content:space-between; color:#fff; font-size:0.85rem;"><span>⌨️ Configurações (Atalhos)</span><input type="checkbox" id="bkpHotkeys" checked></label>
+        </div><div style="display:flex; gap:8px; margin-top:15px;"><button class="btn-op" style="background:#333; color:#fff; width:40%; padding:12px;" onclick="fecharModal('modalRestaurarBackup')">CANCELAR</button><button class="btn-op" style="background:var(--green); color:#000; width:60%; padding:12px;" onclick="aplicarRestauracaoArquivo()">CARREGAR ARQUIVO</button></div></div></div>
 
         <div id="modalEditRundown" class="modal-overlay"><div class="modal-box" style="max-width: 380px; padding:20px;"><h2 style="color: var(--primary); margin-top: 0; font-size:1.2rem;" id="tituloModalRoteiro">✏️ EDITAR EVENTO</h2><input type="hidden" id="editRundownMode" value="edit"> <input type="hidden" id="editRundownParentId"> <div id="boxEditTime" style="text-align: left; margin-bottom: 8px;"><label style="color:#ccc; font-size:0.8rem;">HORÁRIO PREVISTO</label><input type="time" id="editRundownTime" style="width:100%; padding:6px; font-size:1rem; background:#222; border:1px solid #555; color:#fff; border-radius:4px;"></div><div style="text-align: left; margin-bottom: 8px;"><label style="color:#ccc; font-size:0.8rem;">DESCRIÇÃO</label><input type="text" id="editRundownTitle" placeholder="Ex: Entrada" style="width:100%; padding:6px; font-size:0.95rem; background:#222; border:1px solid #555; color:#fff; border-radius:4px;"></div><div id="boxEditTag" style="text-align: left; margin-bottom: 12px;"><label style="color:#ccc; font-size:0.8rem;">TAG (Setor)</label><select id="editRundownTag" style="width:100%; padding:6px; font-size:0.85rem; background:#222; border:1px solid #555; color:#fff; border-radius:4px;"><option value="PRODUÇÃO|#3498db">PRODUÇÃO (Azul)</option><option value="MÍDIAS|#e67e22">MÍDIAS (Laranja)</option><option value="GRÁFICOS|#9b59b6">GRÁFICOS (Roxo)</option><option value="JOGO|#2ecc71">JOGO (Verde)</option></select></div><div style="display:flex; gap:8px;"><button class="btn-op" style="background:#c0392b; color:#fff; padding:10px; width:100%; font-size:0.75rem;" onclick="excluirRundown()">🗑️ EXCLUIR</button><button class="btn-op" style="background:var(--primary); color:#000; padding:10px; width:100%; font-size:0.75rem;" onclick="salvarRundown()">SALVAR</button><button class="btn-op" style="background:#333; color:#fff; padding:10px; width:100%; font-size:0.75rem;" onclick="fecharModal('modalEditRundown')">CANCELAR</button></div></div></div>
     
@@ -307,7 +315,7 @@
                                 <div style="display:flex; gap:4px; margin-bottom:8px; width:100%;"><button id="btn_1T" class="btn-placar" style="flex:1; background:var(--blue); color:#fff; font-size:0.7rem;" onclick="setP('1T')">1ºT</button><button id="btn_2T" class="btn-placar" style="flex:1; background:#333; color:#fff; font-size:0.7rem;" onclick="setP('2T')">2ºT</button></div>
                                 <div class="timer-display" id="timer" onclick="setCustomTime()" title="Clique para Editar">00:00</div>
                                 <div style="display:flex; gap:4px; margin-bottom:8px; width:100%;"><button class="btn-placar" style="flex:1; background:var(--green); color:#000; font-size:0.7rem;" onclick="startT()">▶ PLAY</button><button class="btn-placar" style="flex:1; background:var(--red); color:#fff; font-size:0.7rem;" onclick="stopT()">⏸ PAUSA</button></div>
-                                <div style="display:flex; justify-content:center; gap:4px; width:100%; margin-bottom:8px;"><button class="btn-placar" style="flex:1; background:#555; color:#fff; font-size:0.65rem;" onclick="resetT()">ZERAR</button><button class="btn-placar" style="flex:1; background:#e67e22; color:#fff; font-size:0.65rem;" onclick="setCustomTime()">AJUSTAR ⏱</button></div>
+                                <div style="display:flex; justify-content:center; gap:4px; width:100%; margin-bottom:8px;"><button class="btn-placar" style="flex:1; background:#555; color:#fff; font-size:0.65rem;" onclick="resetT()">ZERAR</button><button class="btn-placar" style="flex:1; background:#e67e22; color:#fff; font-size:0.65rem;" onclick="setCustomTime()">AJUSTAR ⏱</button><button class="btn-placar" style="flex:1; background:#8e44ad; color:#fff; font-size:0.65rem; border-color:#9b59b6;" onclick="recuperarPlacarLocal()" title="Recuperar após fechar a aba">🛟 SALVA-VIDAS</button></div>
                                 <div style="display:flex; align-items:center; justify-content:space-between; background:#000; padding:4px 8px; border-radius:4px; border: 1px solid #333; width:100%;"><span style="font-size:0.7rem; font-weight:bold; color: #ddd;">ACRÉSCIMO:</span><div style="display:flex; gap: 4px;"><input type="number" id="extra" value="0" min="0" style="width:35px; padding:2px; text-align:center; color:var(--yellow); background:transparent; border:none; font-size:1rem;"><button class="btn-placar" style="background:var(--yellow); color:black; padding:2px 6px; font-size:0.65rem;" onclick="transmitData(true); showToast('Enviado!', 'var(--green)', 'black')">OK</button></div></div>
                             </div>
                             <div class="box-placar"><div class="score-num" id="golsB">0</div><div style="display:flex; gap:6px; margin-top:8px; width:100%;"><button class="btn-placar add" style="flex:1;" onclick="chScore('B',1)">+</button><button class="btn-placar sub" style="flex:1;" onclick="chScore('B',-1)">-</button></div></div>
@@ -682,7 +690,7 @@
         return todasPosicoes.map(p => `<option value="${p}" ${p === selecionada ? 'selected' : ''}>${p}</option>`).join('');
     }
 
-    
+
 
     function iniciarSistema() { 
         gen('tA_tit', 11, 'A_t'); gen('tA_res', 15, 'A_r'); 
@@ -1688,6 +1696,60 @@
     let avisosJaDados = []; setInterval(tickRelogio, 1000);
     function tickRelogio() { const now = new Date(); const hh = String(now.getHours()).padStart(2, '0'); const mm = String(now.getMinutes()).padStart(2, '0'); const ss = now.getSeconds(); document.querySelectorAll('.roteiro-relogio-texto').forEach(el => el.innerText = `${hh}:${mm}`); document.querySelectorAll('.progress-ring__circle').forEach(circle => { const circ = 226.19; circle.style.strokeDasharray = `${circ} ${circ}`; const offset = circ - (ss / 60) * circ; circle.style.strokeDashoffset = offset; }); atualizarTimeline(); }
     function atualizarTimeline() { const now = new Date(); const horaAtualMinutos = now.getHours() * 60 + now.getMinutes(); let targetLineHeight = 0; let minParaProximo = 9999; const abaRoteiro = document.querySelector('.tab-btn[onclick*="aba-roteiro"]'); if(abaRoteiro && abaRoteiro.classList.contains('active')) abaRoteiro.classList.remove('alerta-aba'); const listItems = document.querySelectorAll('.rundown-item'); if(listItems.length === 0) return; listItems.forEach(item => { if(item.classList.contains('rundown-sub-item')) return; item.classList.remove('ativo', 'passado'); const timeEl = item.querySelector('.rundown-time'); if(!timeEl) return; const timeStr = timeEl.innerText; const titleStr = item.querySelector('.rundown-title').innerText; if(timeStr.includes(':')) { const parts = timeStr.split(':'); const itemHora = parseInt(parts[0]) * 60 + parseInt(parts[1]); const diff = itemHora - horaAtualMinutos; if (diff > 0 && diff < minParaProximo) minParaProximo = diff; if(itemHora < horaAtualMinutos) { item.classList.add('passado'); targetLineHeight = item.offsetTop + item.offsetHeight; } else if (itemHora === horaAtualMinutos) { item.classList.add('ativo'); targetLineHeight = item.offsetTop + (item.offsetHeight / 2); minParaProximo = 0; } const id5 = timeStr + titleStr + "_5"; const id3 = timeStr + titleStr + "_3"; const cueBox = document.getElementById('cue-notification'); const cueTitle = document.getElementById('cue-title-status'); const cueText = document.getElementById('cue-text'); let emitiuAlerta = false; if(diff > 3 && diff <= 5 && !avisosJaDados.includes(id5)) { if (cueTitle) cueTitle.innerText = "ALERTA (FALTAM 5 MIN)"; if (cueBox) cueBox.style.background = "rgba(230, 126, 34, 0.98)"; if (cueText) cueText.innerText = titleStr; if (cueBox) cueBox.style.display = 'flex'; avisosJaDados.push(id5); setTimeout(() => { if (cueBox) cueBox.style.display = 'none'; }, 15000); emitiuAlerta = true; } else if(diff > 0 && diff <= 3 && !avisosJaDados.includes(id3)) { if (cueTitle) cueTitle.innerText = "CRÍTICO (FALTAM 3 MIN)"; if (cueBox) cueBox.style.background = "rgba(192, 57, 43, 0.98)"; if (cueText) cueText.innerText = titleStr; if (cueBox) cueBox.style.display = 'flex'; avisosJaDados.push(id3); setTimeout(() => { if (cueBox) cueBox.style.display = 'none'; }, 15000); emitiuAlerta = true; } if(emitiuAlerta && abaRoteiro && !abaRoteiro.classList.contains('active')) abaRoteiro.classList.add('alerta-aba'); } }); const linha = document.getElementById('linhaProgressoRoteiro'); if(linha) linha.style.height = targetLineHeight + "px"; document.querySelectorAll('.clock-container').forEach(clockContainer => { clockContainer.classList.remove('clock-piscar'); const circle = clockContainer.querySelector('.progress-ring__circle'); const relogioText = clockContainer.querySelector('.roteiro-relogio-texto'); if (minParaProximo === 0) { circle.style.stroke = "var(--red)"; relogioText.style.color = "var(--red)"; clockContainer.classList.add('clock-piscar'); } else if (minParaProximo <= 3) { circle.style.stroke = "var(--red)"; relogioText.style.color = "var(--red)"; } else if (minParaProximo <= 5) { circle.style.stroke = "#e67e22"; relogioText.style.color = "#e67e22"; } else { circle.style.stroke = "var(--primary)"; relogioText.style.color = "var(--primary)"; } }); }
+
+// ==========================================
+    // SISTEMA "SALVA-VIDAS" (AUTO-SAVE LOCAL)
+    // ==========================================
+    function autoSavePlacarLocal() {
+        const data = {
+            goals: goals, redCards: redCards, tSec: tSec, displaySec: displaySec, 
+            per: per, run: run, lastAnchor: lastAnchor, 
+            extra: document.getElementById('extra') ? document.getElementById('extra').value : "0",
+            tempoText: document.getElementById('timer') ? document.getElementById('timer').innerText : "00:00"
+        };
+        localStorage.setItem('bkpMasterPlacarLocal', JSON.stringify(data));
+    }
+
+    function recuperarPlacarLocal() {
+        const bkp = localStorage.getItem('bkpMasterPlacarLocal');
+        if(bkp) {
+            try {
+                const d = JSON.parse(bkp);
+                goals = d.goals; redCards = d.redCards;
+                document.getElementById('golsA').innerText = goals.A;
+                document.getElementById('golsB').innerText = goals.B;
+                if(document.getElementById('extra')) document.getElementById('extra').value = d.extra || "0";
+                
+                tSec = d.tSec; displaySec = d.displaySec;
+                per = d.per; run = d.run; lastAnchor = d.lastAnchor;
+                
+                // Ajusta os botões do período 1T/2T
+                document.getElementById('btn_1T').style.background = (per === '1T') ? 'var(--blue)' : '#333'; 
+                document.getElementById('btn_2T').style.background = (per === '2T') ? 'var(--blue)' : '#333';
+                
+                if(run) {
+                    clearInterval(timerVar);
+                    timerVar = setInterval(() => { 
+                        displaySec = tSec + Math.floor((Date.now() - lastAnchor) / 1000); 
+                        checkTimerLimits(); 
+                        if (displaySec !== lastTransmittedSec) { 
+                            lastTransmittedSec = displaySec; 
+                            updateClock(); 
+                            transmitData(false); 
+                        } 
+                    }, 200);
+                } else {
+                    document.getElementById('timer').innerText = d.tempoText;
+                }
+                showToast("⏱️ Cronômetro Recuperado com Sucesso!", "var(--green)", "black");
+                transmitData(true);
+            } catch(e) { console.error("Erro ao recuperar:", e); }
+        } else {
+            showToast("Nenhum backup local encontrado.", "var(--red)", "white");
+        }
+    }
+
+
     </script>
     
     <!-- ========================================================
