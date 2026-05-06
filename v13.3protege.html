@@ -678,6 +678,12 @@
         } else { alert("Código Incorreto."); } 
     }
 
+    function gerarOptionsPosicao(selecionada) {
+        return todasPosicoes.map(p => `<option value="${p}" ${p === selecionada ? 'selected' : ''}>${p}</option>`).join('');
+    }
+
+    
+
     function iniciarSistema() { 
         gen('tA_tit', 11, 'A_t'); gen('tA_res', 15, 'A_r'); 
         gen('tB_tit', 11, 'B_t'); gen('tB_res', 15, 'B_r');

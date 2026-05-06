@@ -647,6 +647,11 @@
             document.getElementById('login-overlay').style.display = 'none'; 
             showToast("ACESSO AUTORIZADO", "var(--green)", "black"); 
         } else { alert("Código Incorreto."); } 
+    
+    }
+
+    function gerarOptionsPosicao(selecionada) {
+        return todasPosicoes.map(p => `<option value="${p}" ${p === selecionada ? 'selected' : ''}>${p}</option>`).join('');
     }
 
     function iniciarSistema() { 
