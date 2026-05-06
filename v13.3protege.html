@@ -1564,7 +1564,9 @@
         
         if(isManualTake) { lastTransmittedExtra = valorExtra; lastTransmittedCard = cardDataEnvio; }
         db.ref('transmissao/vMixData').set(dados); 
-    }
+        autoSavePlacarLocal(); // Aciona o Salva-Vidas automaticamente
+    } 
+    
 
     function updateTally(isLive) { const tally = document.getElementById('tallyIndicator'); if (isLive) { tally.style.background = 'var(--green)'; tally.style.color = '#000'; tally.innerText = '🟢 PGM: NO AR'; } else { tally.style.background = 'var(--red)'; tally.style.color = '#fff'; tally.innerText = '🔴 PGM: OFF-AIR'; } }
     
